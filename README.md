@@ -1,4 +1,4 @@
 # autoxd
 A-share automated trading tool
 
-.. image:: http://www.cppblog.com/images/cppblog_com/wangkang2009/autoxd_enter.png
+![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_main.png)
