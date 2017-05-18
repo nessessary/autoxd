@@ -46,6 +46,8 @@ A-share automated trading tool
 	   默认使用的策略文件为boll_pramid.py
 2. 策略入口, 见boll_pramid.py
 	1) 系统会遍历下载的股票， 同时调用Run
+	2) 锁定策略处理的股票， 填写AllowCode里的list
+
 ```python
 class Strategy_Boll_Pre(qjjy.Strategy):
     """为了实现预埋单"""
@@ -92,13 +94,19 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	#PostTask(buy_at_price_once, 60*60*3)	
 	return	
 ```
-	2) 锁定策略处理的股票， 填写AllowCode里的list
 
-2. 如何调用交易接口
+3. 如何调用交易接口
 	1) 正确输入账号进入系统后， 交易账号即会登录， 且保持在线， 注意， 本系统使用的是通信协议登录方式，不影响其他软件，
 	   也就是一个机器上可以多个软件同时登陆
 	2) 上面的例子可以看见使用了股票列表查询account.StockList(), 和买入account.Order(0, code, cur_price, 100)
 	   全部的交易接口见tc.py
+	3) 使用命令行方式调用接口
+	   在ipython中
+```python
+import tc
+tc.Buy('300033', 60.1, 100)
+#tc.Buy(tc.ths, 60.1, 100)
+```
 
-交流请加qq群 213155151
+交流请加qq群 213155151 \<br>
 编写该文档时正在听beyond的歌 [Beyond 30th Anniversary](http://music.163.com/#/album?id=2659081)
