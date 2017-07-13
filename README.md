@@ -120,4 +120,3 @@ tc.Buy('300033', 60.1, 100)
 ```
 
 交流请加qq群 213155151 <br>
-编写该文档时正在听beyond的歌 [Beyond 30th Anniversary](http://music.163.com/#/album?id=2659081)
