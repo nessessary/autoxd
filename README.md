@@ -122,7 +122,6 @@ tc.Buy('300033', 60.1, 100)
 
 5. 回測<br>
 	回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 因此有必要在回測系统里做一下测试
-	1) 实现一个结果报告函数
 ```python
     def Report(self, start_day, end_day):
 	"""回測报告"""
@@ -155,6 +154,7 @@ tc.Buy('300033', 60.1, 100)
 	ui.TradeResult_Boll(self.code, bars, trade_positions, \
 	    stock.GuiYiHua(df_zhijing['资产']), changwei)
 ```
+	1) 实现一个结果报告函数
 
 	2) Tick级汇报函数
 	   暂未实现
