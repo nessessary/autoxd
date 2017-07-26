@@ -119,6 +119,54 @@ tc.Buy('300033', 60.1, 100)
 #tc.Buy(tc.ths, 60.1, 100)
 ```
 
+5. 回測
+	回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 因此有必要在回測系统里做一下测试
+	1) 实现一个结果报告函数
+```python
+    def Report(self, start_day, end_day):
+	"""回測报告"""
+	self._getAccount().Report(end_day)
+	#return
+	#绘制图形
+	#end_day = help.MyDate.s_Dec(end_day, 1)
+	bars = stock.CreateFenshiPd(self.code, start_day, end_day)
+	if len(bars) == 0:
+	    return
+	bars = bars.resample('1min').mean()
+	bars['positions'] = 0
+	bars['c'] = bars['p']
+	bars = bars.dropna()
+	df = self._getAccount().ChengJiao()
+	df_zhijing = self._getAccount().ZhiJing()
+	df_zhijing = df_zhijing[bars.index[0]:]
+	df_changwei = self._getAccount().ChengJiao()
+	cols = ['买卖标志','委托数量']
+	df_flag = df_changwei[cols[0]].map(lambda x: agl.where(int(x), -1, 1))
+	df_changwei[cols[1]] *= df_flag
+	changwei = stock.GuiYiHua(df_changwei[cols[1]].cumsum())
+	for i in range(len(df)):
+	    index = df.index[i]
+	    bSell = bool(df.iloc[i]['买卖标志']=='1')
+	    if index in bars.index:
+		#bars.ix[index]['positions'] = agl.where(bSell, -1, 1)
+		bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
+	trade_positions = np.array(bars['positions'])
+	ui.TradeResult_Boll(self.code, bars, trade_positions, \
+	    stock.GuiYiHua(df_zhijing['资产']), changwei)
+```
+	2) Tick级汇报函数
+	   暂未实现
+
+	3) 数据源
+	   现有的数据源来自于mysql数据库， 未来会创建一个pickle文件提交至网盘， 使用该pickle来作为回測数据源
+	   或者用户自行修改框架使用第三方数据源
+	
+	4) 执行
+	   用python直接执行策略py
+	   可看见输出的结果图
+	   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
+
+
 反馈
 ----
 本软件现处于测试期， 功能比较简单， bug也再所难免，希望使用了的同学能提供宝贵意见， 让作者有继续开发下去的动力
