@@ -44,7 +44,8 @@ A-share automated trading tool
 	3) 主要使用pandas库
 	4) 策略目录在python_strategy\strategy
 	   默认使用的策略文件为boll_pramid.py
-2. 策略入口, 见boll_pramid.py
+2. 策略入口, 见boll_pramid.py<br>
+	注意：系统安装或升级都会覆盖默认策略， 请自行使用新的文件， 最好是非安装目录， 删除时策略目录也会删除
 	1) 系统会遍历下载的股票， 同时调用Run
 	2) 锁定策略处理的股票， 填写AllowCode里的list
 
@@ -119,7 +120,7 @@ tc.Buy('300033', 60.1, 100)
 #tc.Buy(tc.ths, 60.1, 100)
 ```
 
-5. 回測
+5. 回測<br>
 	回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 因此有必要在回測系统里做一下测试
 	1) 实现一个结果报告函数
 ```python
@@ -154,6 +155,7 @@ tc.Buy('300033', 60.1, 100)
 	ui.TradeResult_Boll(self.code, bars, trade_positions, \
 	    stock.GuiYiHua(df_zhijing['资产']), changwei)
 ```
+
 	2) Tick级汇报函数
 	   暂未实现
 
