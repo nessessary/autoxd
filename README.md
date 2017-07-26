@@ -154,6 +154,8 @@ tc.Buy('300033', 60.1, 100)
 	ui.TradeResult_Boll(self.code, bars, trade_positions, \
 	    stock.GuiYiHua(df_zhijing['资产']), changwei)
 ```
+
+
 	1) 实现一个结果报告函数
 
 	2) Tick级汇报函数
