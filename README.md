@@ -98,7 +98,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 ```
 
 3. 行情
-	1) 现只获取日k线和分时线
+	1) 现只获取日k线, 5分钟线和分时线
 	2) 具体获取的股票行情见config.ini, 一般的只针对关注的股票获取行情并执行策略会快很多, 修改后下次启动后执行<br>
 	   修改listinfo_codes中的股票为你的自选股
 ```python
