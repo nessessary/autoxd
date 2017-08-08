@@ -1,6 +1,8 @@
 Autoxd
 ======
 
+<font color=red size=4>由于与预期不理想， 计划一周后关闭发布</font>
+
 A-share automated trading tool
 
 一个A股的自动化交易工具
