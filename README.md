@@ -1,7 +1,7 @@
 Autoxd
 ======
 
-<font color=red size=4>由于与预期不理想， 计划一周后关闭发布</font>
+<font color=red size=4>由于与预期不理想， 暂时关闭发布</font>
 
 A-share automated trading tool
 
@@ -24,7 +24,7 @@ A-share automated trading tool
 
 使用
 ----
-1. 下载安装文件 [网盘](http://pan.baidu.com/s/1cdBo8A)
+1. 下载安装文件 [网盘]
 2. 安装后运行， 需要的软硬件要求如下<br>
 	WIN7 8G内存 硬盘10G以上空间
 3. 一个典型的执行过程如下
