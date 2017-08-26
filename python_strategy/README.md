@@ -14,6 +14,7 @@
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
 
 <br>
+
 ```python
     def Report(self, start_day, end_day):
 	"""»Øœy±¨¸æ"""
