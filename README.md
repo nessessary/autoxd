@@ -39,7 +39,7 @@ A-share automated trading tool
 ----
 使用该系统前可以先进行策略的回测开发, 毕竟有一个好的策略才能进行自动化交易
 请迁出python_strategy目录， 先在该目录中跑一个回测， 执行boll_pramid.py将得到一个默认回测
-具体过程查询[回测文档] (https://github.com/nessessary/autoxd/python_strategy/readme.md)
+具体过程查询 [回测文档](https://github.com/nessessary/autoxd/blob/master/python_strategy/README.md)
 
 策略
 ----

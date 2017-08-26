@@ -1,21 +1,19 @@
 回测
 ------
-	
-	回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 因此有必要在回測系统里做一下测试
 
-	1) 实现一个结果报告函数
+回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 因此有必要在回測系统里做一下测试
 
-	2) Tick级汇报函数<br>
-	   暂未实现
+1. 数据源<br>
+   请到 [网盘](http://pan.baidu.com/s/1kVsr8aV) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, 下载后放置到<br>
+   python_strategy\datas目录中<br>
+   (现在的数据源仅仅是起一个demo的作用， 要使用全部数据源可以联系作者或者修改框架使用第三方数据源)
 
-	3) 数据源<br>
-	   请到 [网盘](http://pan.baidu.com/s/1kVsr8aV) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, 下载后放置到python_strategy\datas目录中
-	
-	4) 执行
-	   用python直接执行策略py<br>
-	   可看见输出的结果图<br>
-	   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
+2. 执行
+   用ide打开缺省策略boll_pramid.py并执行<br>
+   可看见输出的结果图<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
 
+<br>
 ```python
     def Report(self, start_day, end_day):
 	"""回測报告"""
