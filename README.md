@@ -25,7 +25,7 @@ A-share automated trading tool
 2. 安装后运行， 需要的软硬件要求如下<br>
 	WIN7 8G内存 硬盘10G以上空间
 3. 一个典型的执行过程如下
-	1) 填写资金账号， 成功后下次不用再输入
+	1) 填写资金账号， 成功后下次不用再输入, 帐号以加密形式存储在本地， 并不容易泄露
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_main.png)
 	2) 账号输入后， 系统即开始运行， 下载行情，并登录交易账号, 成功后类似下图
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_enter.png)
