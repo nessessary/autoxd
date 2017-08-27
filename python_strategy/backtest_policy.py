@@ -14,6 +14,8 @@ from dateutil.parser import parse
  
 class Backtest(live_policy.Live, account.BackTestingDelegate):
     """兼容在线的回测"""
+    def __init__(self):
+        pass
     def get_code(self):
         return self.code
     def set_code(self, code, day, tick):
