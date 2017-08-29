@@ -8,7 +8,10 @@
    python_strategy\datas目录中<br>
    (现在的数据源仅仅是起一个demo的作用， 要使用全部数据源可以联系作者或者修改框架使用第三方数据源)
 
-2. 执行
+2. 依赖包问题， 如果使用自己的anaconda， 需要32bit python2.7版本的， 其次需要的库为ta-lib, redis, charade等<br>
+   或者下载安装包， 里面带一份anaconda， 已经包含了所需要的库， 使用该目录即可
+
+3. 执行
    用ide打开缺省策略boll_pramid.py并执行<br>
    可看见输出的结果图<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
