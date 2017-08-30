@@ -34,6 +34,13 @@ A-share automated trading tool
 
 	4) 委托下单
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
+4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
+
+升级
+----
+本软件安装包比较大， 如果装过一次后，可以使用升级包来覆盖主文件，
+1. 查看[changlog](https://github.com/nessessary/autoxd/blob/master/changelog.txt) 看更新了什么
+2. [下载升级包](http://pan.baidu.com/s/1migK2RA)   把里面的文件覆盖至安装目录
 
 回测
 ----
