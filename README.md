@@ -21,7 +21,7 @@ A-share automated trading tool
 
 使用
 ----
-1. 下载安装文件 [网盘]
+1. 下载安装文件 [网盘](http://pan.baidu.com/s/1kUHK3Dd)
 2. 安装后运行， 需要的软硬件要求如下<br>
 	WIN7 8G内存 硬盘10G以上空间
 3. 一个典型的执行过程如下
@@ -36,6 +36,11 @@ A-share automated trading tool
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
 4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
 
+升级
+----
+本软件安装包比较大， 如果装过一次后，可以使用升级包来覆盖主文件，
+1. 查看[changlog](https://github.com/nessessary/autoxd/blob/master/changelog.txt) 看更新了什么
+2. [下载升级包](http://pan.baidu.com/s/1o83HxIq)   把里面的文件覆盖至安装目录
 
 回测
 ----
@@ -111,8 +116,9 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	   修改listinfo_codes中的股票为你的自选股
 ```python
 #取列表方式 0/1		取全部、取部分
+#测试版本只支持取部分, 且不超过20个个股
 listinfo_type=1
-listinfo_codes="002074|002108|300399|300384|300033|300059"
+listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
 ```
 
 4. 如何调用交易接口
