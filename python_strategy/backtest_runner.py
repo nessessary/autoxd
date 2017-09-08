@@ -121,7 +121,7 @@ def main(args):
     agl.tic()
     BackTestPolicy.Test()
     agl.toc()
-    print "end"
+print("end")
     
 if __name__ == "__main__":
     try:

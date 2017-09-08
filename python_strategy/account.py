@@ -255,9 +255,26 @@ class LocalAcount(AccountDelegate):
         shizhi = num*close
         print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
 
-
+    #尝试使用tick ui
+    def TickReport(self, df_five_hisdat, ShowStyle="all"):
+        """ShowStyle: str 显示风格 all|win
+        all=>显示全部	
+        win=>显示一部分, 也就是切割数据，保留后面的一部分
+        """
+        import ui
+        df = df_five_hisdat
+        df_trade = self.ChengJiao()
+        if ShowStyle == "win":
+            df = df[-50:]
+            df_trade = df_trade[df.index[0]:]
+            if len(df) % 10 == 0:
+                ui.AsynDrawKline.drawKline(df, df_trade)
+        else:
+            if len(df) % 50 == 0:
+                ui.AsynDrawKline.drawKline(df, df_trade)
 class mytest(unittest.TestCase):
     def test_simple(self):
+        import agl
         print(agl.getFunctionName())
         account = LocalAcount(BackTesting())
         code = '300033'

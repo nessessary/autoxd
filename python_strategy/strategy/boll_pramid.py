@@ -56,6 +56,14 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	codes = ['300033']	    #自己想交易的股票
 	return code in codes
     
+    def OnFirstRun(self):
+	"""回测调用函数， 在第一个bar时调用， 先建立底仓"""
+	code = self.data.get_code()
+	df_fenshi = self.data.get_fenshi(code)
+	#这里取不到开盘价， 用昨收盘代替
+	open_price = float(df_fenshi.iloc[-1]['p'])
+	#print o
+	self._getAccount()._buy(code, open_price, mydatas['lowerhold'][0], self.getCurTime())    
     def Run(self):
 	"""每个股票调用一次该函数, 调用后会释放， 因此不能使用简单的全局变量， 而需要使用redis来持续化
 	另外， 交易接口要慎用， 比如列表查询， 可保存至redis，
@@ -134,7 +142,8 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	Order_At_Boll()
 	
 	#tick report
-	self._log('call tick report')
+	if self.is_backtesting:
+	    self._getAccount().TickReport(df_five_hisdat, 'win')
 	return	
 
     #----------------------------------------------------------------------
@@ -163,13 +172,18 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 		    return False
 	    
 	#开放为实盘下单
-	return self._getAccount().Order(bSell, code, price, num)
+	if self.is_backtesting:
+	    #得到上一个交易价格， 确定当前价格与之前的价格有一个差距
+	    df_chengjiao = self._getAccount().ChengJiao()
+	    pre_price = df_chengjiao['成交价格'][-1]
+	    chajia = mydatas['chajia'][0]
+	    if abs(price-pre_price)/price > chajia:
+		return self._getAccount().Order(bSell, code, price, num)
 	return True
 
     def Report(self, start_day, end_day):
 	"""回測报告"""
 	self._getAccount().Report(end_day)
-	#return
 	#绘制图形
 	#end_day = help.MyDate.s_Dec(end_day, 1)
 	bars = stock.CreateFenshiPd(self.code, start_day, end_day)
@@ -196,10 +210,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	trade_positions = np.array(bars['positions'])
 	ui.TradeResult_Boll(self.code, bars, trade_positions, \
 	    stock.GuiYiHua(df_zhijing['资产']), changwei)
-	    
-	#未来直接使用python的绘图功能
-	#import os
-	#os.system('start http://localhost/training')
+
 	    
 def main(args):
     #agl.LOG('sdf中')

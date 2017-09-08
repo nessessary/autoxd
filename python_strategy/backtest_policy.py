@@ -114,9 +114,9 @@ def test_strategy(codes, strategy_name):
             """确定是交易日
             return: (d1, d2)"""
             if dtype == backtest_runner.BackTestPolicy.enum.hisdat_mode:
-                df = stock.getHisdatDataFrameFromRedis(code, start_day=d1)
+                df = stock.getHisdatDataFrameFromRedis(code, d1, d2)
             else:
-                df = stock.getFenshiDfUseRedis(code, d1, d2)
+                df = stock.getFenshiDfUseRedis(code, d1,d2)
             d2 = agl.datetime_to_date(df.index[-1])
             if agl.DateTimeCmp(d1, agl.datetime_to_date(df.index[0])) <0:
                 d1 =  agl.datetime_to_date(df.index[0])

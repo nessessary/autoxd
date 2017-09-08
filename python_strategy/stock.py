@@ -1182,6 +1182,7 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=False ):
     df = calc_fuquan_use_fenhong(df, df_fenhong)    
     return df
 def getFiveHisdatDf(code, start_day='', end_day=''):
+    """return: df col('ohlcu')"""
     return mysql.getFiveHisdat(code,start_day,end_day)
 def IsShangHai(code):
     """判断股票代码属于那个市场
@@ -2529,6 +2530,9 @@ SELL:=HHV(KMA,4)-KMA>THRESHOLD;
             codes.append(dapan_code)
         for code in pyprind.prog_bar(codes, title='all codes kline dump'):
             df = mysql.getHisdat(code)
+            #碰到新股没数据
+            if len(df) == 0:
+                continue
             one = ths.createThsOneCode(code)
             #复权计算
             df_fenhong = one.get_fenhong()

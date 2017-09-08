@@ -411,13 +411,13 @@ def DrawHist(pl, shs):
             #出击率
             if len(shs) != 0:
                 v = float(go_count)/ float(len(shs))
-                print("trade rato:%.2f%%"%(v*100))
+                #print("trade rato:%.2f%%"%(v*100))
             #出击后胜率
             if go_count>0:
                 v = float(len(shs[shs>0]))/float(go_count)
-                print("win rato: %.2f%%"%(v*100))
+                #print("win rato: %.2f%%"%(v*100))
         pl.show()
-        ShowHitCount(shs)
+        #ShowHitCount(shs)
 
 def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     """绘制策略的交易结果
@@ -481,6 +481,7 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     # Plot two charts to assess trades and equity curve
     pl.figure
     #fig = pl.figure()
+    pl.close()
     fig = pl.gcf()
     fig.patch.set_facecolor('white')     # Set the outer colour to white
     ax1 = fig.add_subplot(211,  ylabel='Price in RMB')
@@ -515,9 +516,10 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
 
     # Plot the equity curve in dollars
     ax2 = fig.add_subplot(212, ylabel='Portfolio value in RMB')
-    zhijin.plot(ax=ax2, lw=2.)
+    if len(zhijin)>0:
+        zhijin.plot(ax=ax2, lw=2.)
     legends = ['zhijing']
-    if changwei is not None:
+    if changwei is not None and len(changwei)>0:
         changwei.plot(ax=ax2)
         legends.append('changwei')
     ax2.legend(legends)
@@ -716,13 +718,14 @@ def weekday_candlestick(ohlc_data, ax, fmt='%b %d', freq=7, **kwargs):
 
 class AsynDrawKline(object):
     class enum:
-        trade_bSell = 'trade_bSell'
-        trade_price = 'trade_price'
+        trade_bSell = '买0卖1'
+        trade_price = '委托价格'
     @staticmethod
     def drawKline(df, df_trades=None):
         """画k线图, 异步模式
-        df : 日线或5分钟线
-        df_trades : 字段同上, 增加字段trade_bSell, trade_price, 见enum, 交易点
+        需要注意的是如果df比较大的话，那么速度是相当的慢, 一般5日线10天的数据较好
+        df : 日线或5分钟线, cols('ohlcv')
+        df_trades : 交易点, 需要包含字段cols('trade_bSell', ['trade_price']), 见enum, []意思为不是必须
         """
 
         def df_to_matplotformat(df):
@@ -754,7 +757,9 @@ class AsynDrawKline(object):
         #plt.xlabel("time")
         #plt.ylabel("price")
         #mpf.candlestick_ohlc(ax,quotes,width=.001,colorup='r',colordown='green')
-        weekday_candlestick(quotes, ax, fmt='%b %d %H:%M', freq=10, width=0.01, colorup='r',colordown='green')
+        #调整下面日期显示的密度
+        freq = len(quotes)/20
+        weekday_candlestick(quotes, ax, fmt='%b %d %H:%M', freq=freq, width=0.01, colorup='r',colordown='green')
         #plt.grid(True)    
 
         #画交易点
@@ -771,7 +776,7 @@ class AsynDrawKline(object):
                 a[:] = price
                 index = len(df[:index])
                 a[:index] =np.nan
-                bSell = row[AsynDrawKline.enum.trade_bSell]
+                bSell = int(row[AsynDrawKline.enum.trade_bSell])
                 clr = agl.where(bSell, 'g', 'r')
                 plt.plot(a, color=clr, linewidth=0.25)
                 plt.text(len(quotes),price, str(price), color=clr)   
@@ -782,6 +787,38 @@ class AsynDrawKline(object):
         plt.draw()
         plt.pause(0.1)    
 
+def draw3d(df=None, titles=None, datas=None):
+    """画3d"""
+    #该行在c运行时会报错
+    from mpl_toolkits.mplot3d.axes3d import Axes3D
+    
+    def genDf():
+        df = pd.DataFrame([])
+        for i in range(3):
+            n = agl.array_random(100)
+            df[i] = n
+        return df
+    if df is None:
+        df = genDf()
+    assert(len(df.columns)>=3)
+    X, Y, Z = np.array(df[df.columns[0]]), np.array(df[df.columns[1]]), np.array(df[df.columns[2]])
+    fig = plt.figure(figsize=(8,6))
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    p = ax.scatter(X, Y, Z)
+    
+    if datas is not None:
+        for i in range(len(datas)):
+            df = datas[i][0]
+            x, y, z = np.array(df[df.columns[0]]), np.array(df[df.columns[1]]), np.array(df[df.columns[2]])
+            c = str(datas[i][1])
+            ax.scatter(x,y,z, c=c)
+    
+    if titles is not None and len(titles)>=3:
+        ax.set_xlabel(titles[0])
+        ax.set_ylabel(titles[1])
+        ax.set_zlabel(titles[2])    
+            
+    plt.show()
 
 class MyTest(unittest.TestCase):
     def _test_DrawTs(self):
@@ -790,14 +827,14 @@ class MyTest(unittest.TestCase):
         fenshi = stock.getFenshiDfUseRedis(code, date[0],date[1])
         print(fenshi)
         DrawTs(pl, ts=fenshi['p'])
-    def test_ShowTradeResult(self):
+    def _test_ShowTradeResult(self):
         #testShowTradeResult()
         testTradeResult_Boll()
     def _test_AsynDrawKline(self):
         code = '300033'
-        start_day = '2017-3-1'
-        df = stock.getHisdatDataFrameFromRedis(code, start_day)
-        df = stock.getFiveHisdatDf(code, start_day='2017-7-20')
+        start_day = '2017-8-25'
+        #df = stock.getHisdatDataFrameFromRedis(code, start_day)
+        df = stock.getFiveHisdatDf(code, start_day=start_day)
         import account
         account = account.LocalAcount(account.BackTesting())
         #随机找三个交易点
@@ -812,7 +849,9 @@ class MyTest(unittest.TestCase):
             AsynDrawKline.drawKline(df[i*10:], df_trades)
 
         plt.ioff()
-        plt.show()  #最后停在画面处， 没有的话进程结束
+        #plt.show()  #最后停在画面处， 没有的话进程结束
+    def test_3d(self):
+        draw3d()
 
 if __name__ == "__main__":
     unittest.main()    

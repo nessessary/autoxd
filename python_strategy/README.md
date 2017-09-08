@@ -7,6 +7,9 @@
    请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, 下载后放置到<br>
    python_strategy\datas目录中<br>
    (现在的数据源仅仅是起一个demo的作用， 要使用全部数据源可以联系作者或者修改框架使用第三方数据源)
+   stock_createThs.searial为同花顺F10全部数据, 最后更新日期2017-9-6
+   自动加载， 使用见stock.py里的StockInfoThs
+   前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong
 
 2. 依赖包问题， 如果使用自己的anaconda， 需要32bit python2.7版本的， 其次需要的库为ta-lib, redis, charade等<br>
    或者下载安装包， 里面带一份anaconda， 已经包含了所需要的库， 使用该目录即可
@@ -15,6 +18,8 @@
    用ide打开缺省策略boll_pramid.py并执行<br>
    可看见输出的结果图<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
+   也支持中间结果显示TickReport
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)
 
 <br>
 
