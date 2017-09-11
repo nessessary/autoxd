@@ -138,7 +138,12 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 		num = int(user_datas['trade2'])
 		if self.order(0, code, price, num):
 		    self._log(agl.utf8_to_ascii('二档买入%s, %.2f, %d'%(code, price, num)))
-		
+	    #信号发生时语音播报, 并通知界面回显
+	    if price > boll_poss[1] or price < boll_poss[-2]:
+		codename = stock.GetCodeName(code)
+		s = '%s, %.2f'%(codename, price)
+		self.data.show(codename)
+		self.data.speak2(s)
 	Order_At_Boll()
 	
 	#tick report

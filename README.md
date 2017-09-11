@@ -35,6 +35,17 @@ A-share automated trading tool
 	4) 委托下单
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
 4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
+5. 半自动交易， 如果没有合适的策略， 那么可以采用半自动交易方式， 在策略中加入条件判断， 符合条件时进行语音播报同时通知界面显示
+	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_sign_speak.png)
+
+```python
+	    #信号发生时语音播报, 并通知界面回显
+	    if price > boll_poss[1] or price < boll_poss[-2]:
+		codename = stock.GetCodeName(code)
+		s = '%s, %.2f'%(codename, price)
+		self.data.show(codename)    #通知界面显示
+		self.data.speak2(s)	    #语音播报
+```
 
 升级
 ----
