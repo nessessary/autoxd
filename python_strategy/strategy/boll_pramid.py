@@ -142,8 +142,8 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	    if price > boll_poss[1] or price < boll_poss[-2]:
 		codename = stock.GetCodeName(code)
 		s = '%s, %.2f'%(codename, price)
-		self.data.show(codename)
-		self.data.speak2(s)
+		self.data.show(codename)    #通知界面显示
+		self.data.speak2(s)	    #语音播报
 	Order_At_Boll()
 	
 	#tick report

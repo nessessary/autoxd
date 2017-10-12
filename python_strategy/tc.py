@@ -15,34 +15,7 @@ import ctypes
 import ctypes.wintypes
 #import tushare as ts
 import math
-
-dsgf = '600694'
-slhp = '300384'
-zxga = '000839'
-tjjt = '600129'
-gxgk = '002074'
-tfgf = '600100'
-tbgf = '002124'
-yhkj = '300457'
-zddj = '603988'
-jnjj = '601313'
-jsgt = '002091'
-tes = '300229'
-fysk = '002270'
-dlkj = '603528'
-lmkj = '300369'
-rqgf = '300126'
-ths = '300033'
-zbkj = '002157'
-jtl = '300399'
-zqkj = '300315'
-klww = '300418'
-swkj = '300113'
-qqsp = '002557'
-djrj = '300378'
-kxxc = '600076'
-vnjk = '300253'
-dhwl = '603258'
+import stock_pinyin as pyjx
 
 def ComboArg(sArg=""):
     """用函数名和参数拼凑出字符串, 在模拟环境下，该函数不起作用"""
@@ -91,7 +64,7 @@ class TcAccount(account.AccountDelegate):
         sReturn = self.delegate.handleRotuer(s)
         #'132493|A5001586|'
         sId = ''
-        if sReturn != "超时":
+        if agl.ascii_to_utf8(sReturn) != "超时":
             sId = sReturn.split('|')[0]
 	    sSell = '卖出'
 	    if not bSell:
@@ -105,7 +78,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "StockList|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时" and len(sReturn)>0:
+        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
 	    #return sReturn
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:15]]
@@ -117,7 +90,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "ZhiJing|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时":
+        if agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
 	    df = df[[1,2,4,5,6]]
             df.columns = self.zhijing_columns.split('|')
@@ -128,7 +101,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "ChengJiao|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时" and len(sReturn)>0:
+        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:16]]
             df.columns = self.chengjiao_columns.split('|')
@@ -139,7 +112,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "HistoryChengJiao|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时":
+        if agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:16]]
             df.columns = self.chengjiao_columns.split('|')
@@ -159,7 +132,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "WeiTuo|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时" and len(sReturn)>0:
+        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:19]]
             df.columns = self.weituo_columns.split('|')
@@ -170,7 +143,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "CheDanList|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn != "超时":
+        if agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
             df.columns = self.chedanlist_columns.split('|')
             return df
@@ -368,6 +341,38 @@ class TradeCloseAnalyzer():
 		os.system('start http://localhost/training')
 		time.sleep(5)
 
+def get_stocklist_from_redis():
+    """临时函数， 因为策略basesign保存了列表， 因此可以直接取"""
+    key_df_stocklist = 'df_stocklist'
+    if 0: df = pd.DataFrame()
+    df = myredis.get_obj(key_df_stocklist)
+    from prettytable import PrettyTable
+    cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
+    cols = cols.split('|')
+    table = PrettyTable(cols)
+    for i,row in df.iterrows():
+        table.add_row(row[cols].tolist())
+    #table.sort_key("ferocity")
+    #table.reversesort = True
+    print table
+    #return df
+def get_weituo_from_redis():
+    """输出为成交的委托列表"""
+    key = 'df_weituo'
+    if 0: df = pd.DataFrame()
+    df = myredis.get_obj(key)
+    if df is not None:
+	from prettytable import PrettyTable
+	cols = '证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明'
+	cols = cols.split('|')
+	df = df[df['状态说明'] != '已成']
+	df = df[df['买卖标志'] != '配售申购']
+	table = PrettyTable(cols)
+	for i,row in df.iterrows():
+	    table.add_row(row[cols].tolist())
+	#table.sort_key("ferocity")
+	#table.reversesort = True
+	print table    
 class mytest(unittest.TestCase):
     def _test_str_to_df(self):
         df = TcAccount()._str_to_df('0|500.13|500.13||9100.00|13004.13|||{}')
@@ -377,6 +382,8 @@ class mytest(unittest.TestCase):
     def _test_TradeCloseAnalyzer(self):
 	analyzer = TradeCloseAnalyzer()
 	analyzer.Report()
+    def test_get_stocklist_from_redis(self):
+	get_stocklist_from_redis()
 
 def main(args):
     #Buy("300126", 10.01, 100)
