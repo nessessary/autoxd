@@ -9,13 +9,12 @@ import os
 import numpy as np
 import pandas as pd
 import sys,unittest
-import live_policy,agl,stock,account,myredis,mysql,myenum
+import live_policy,agl,stock,account,myredis,myenum
 import win32con, win32gui
 import ctypes
 import ctypes.wintypes
 #import tushare as ts
 import math
-import stock_pinyin as pyjx
 
 def ComboArg(sArg=""):
     """用函数名和参数拼凑出字符串, 在模拟环境下，该函数不起作用"""
@@ -313,33 +312,6 @@ def sxf(code, num, price):
 	sxf = 5
     return sxf
 
-class TradeCloseAnalyzer():
-    """当日收盘对交易的分析"""
-    def _ReadData(self):
-	"""读收盘表和资金表"""
-	db = mysql.Tc()
-	self.df_zhijing = db.load(db.enum.zhijin)
-	df_chengjiao = db.load(db.enum.chenjiao)
-	df_chengjiao.index = df_chengjiao['t']
-	last_day = max(df_chengjiao.index)
-	last_day = str(last_day).split(' ')[0]
-	self.df_chengjiao = df_chengjiao.ix[last_day]
-    def Report(self):
-	import time, dateutil, datetime
-	self._ReadData()
-	for code,group in self.df_chengjiao.groupby('stock_code'):
-	    if code in myenum.allow_traded_codes:
-		print code, stock.GetCodeName(code)
-		df = self.df_chengjiao[self.df_chengjiao['stock_code']==code]
-		df = df.loc[:, ['price','num','is_sell','stock_code','t']]
-		df.columns = ['price','num','flag','code','d']	#匹配web接口里使用的字段
-		print df
-		df['d'] = df.index.astype(str)
-		df['d'] = df['d'].map(lambda x: str(dateutil.parser.parse(x) + \
-			                            datetime.timedelta(minutes=5)))
-		myredis.set_obj('backtest_trade', df)
-		os.system('start http://localhost/training')
-		time.sleep(5)
 
 def get_stocklist_from_redis():
     """临时函数， 因为策略basesign保存了列表， 因此可以直接取"""
