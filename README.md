@@ -129,7 +129,6 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	   修改listinfo_codes中的股票为你的自选股
 ```python
 #取列表方式 0/1		取全部、取部分
-#测试版本只支持取部分, 且不超过20个个股
 listinfo_type=1
 listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
 ```
