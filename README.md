@@ -139,13 +139,14 @@ listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
 	2) 上面的例子可以看见使用了股票列表查询account.StockList(), 和买入account.Order(0, code, cur_price, 100)
 	   全部的交易接口见tc.py
 	3) 使用命令行方式调用接口
-	   在ipython中
+	   在ide中, 推荐wingide, 在其shell窗口输入
 ```python
-import tc
+import tc, stock_pinyin as jx
 tc.Buy('300033', 60.1, 100)
 #用拼音简写传参
-import stock_pinyin as jx
 tc.Buy(jx.THS, 60.1, 100)
+#碰到简写冲突的情况, ide里的自动完成提示会出现[a,a#杰瑞股份,b, b#晶瑞股份], 选择相应的a,b,代表冲突的代码
+tc.Buy(jx.JRGF.a, 15, 100)
 ```
 
 
