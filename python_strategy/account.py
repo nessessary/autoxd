@@ -4,15 +4,14 @@
 # found in the LICENSE file.
 # QQ: 1764462457
 
-# Released under the GPL 该软件遵循GPL协议
-# account.py - 本地模拟A股卷商资金账户
-# Copyright (c) 2016 Wang Kang QQ:1764462457
 import numpy as np
 import pandas as pd
-import sys,time,warnings,unittest,json,datetime,dateutil
+import time,warnings,unittest,datetime,dateutil
 from abc import ABCMeta, abstractmethod
 
-"""本地账户 v1.0 2016-5-15"""
+"""本地模拟A股卷商资金账户 v1.0 2016-5-15
+v1.1	2017-10-30
+"""
 
 class AccountDelegate(object):
     """交易接口, v1.0 包括七个接口"""
@@ -46,7 +45,7 @@ def ShouShu(num):
     num = int(num /100.0 )*100
     return num
 def sxf():
-    """手续费, 万3的一般推算"""
+    """手续费, 万3的一般推算, 双向收取"""
     return 0.0016
 #状态说明，包含 已成，已撤， 未成
 class LocalAcount(AccountDelegate):
@@ -89,7 +88,9 @@ class LocalAcount(AccountDelegate):
         row['成交日期'] = date.split(' ')[0]
         row['成交时间'] = date.split(' ')[1]
         row['证券代码'] = code
-        row['买0卖1'] = row['买卖标志'] = str(bSell)
+        row['买0卖1'] = str(bSell)
+        row['买卖标志'] = bSell and '证券卖出' or '证券买入'
+        #row['买卖标志'] = str(bSell)
         row['委托价格'] = row['成交价格'] = price
         row['委托数量'] = row['成交数量'] = num
         row['成交金额'] = float("%.2f"%(num*price))
@@ -99,15 +100,14 @@ class LocalAcount(AccountDelegate):
     def _updateStockChengBen(self, code, price, num, bSell):
         """更新买入成本"""
         #更新平均成本
-        org_num = self.df_stock['库存数量'][self.df_stock['证券代码'] == code]
-        org_price = self.df_stock['买入均价'][self.df_stock['证券代码'] == code]
-        if not bSell:
-            #买
-            new_price = (org_num*org_price+num*price)/(org_num+num)
-        else:
-            #卖
-            new_price = (org_num*org_price-num*price)/(org_num-num)
+        org_num = int(self.df_stock['库存数量'][self.df_stock['证券代码'] == code].tolist()[0])
+        org_price = float(self.df_stock['买入均价'][self.df_stock['证券代码'] == code].tolist()[0])
+        num *= bSell and -1 or 1
+        new_price = (org_num*org_price+num*price)/(org_num+num)
         self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
+        #需要加上手续费作为成本
+        new_price = (org_num*org_price+price*num - price*abs(num)*sxf())/(org_num+num)
+        self.df_stock['参考成本价'][self.df_stock['证券代码'] == code] = new_price
         self.df_stock['当前价'][self.df_stock['证券代码'] == code] = price
     def _insertZhiJing(self,code, price, num, bSell, date):
         """添加资金记录, 余额|可用|参考市值|资产|盈亏
@@ -117,6 +117,7 @@ class LocalAcount(AccountDelegate):
         if bSell:
             self.money += m*(1-sxf())
         else:
+            self.money -= m*sxf()
             self.money -= m
         row = self.df_zhijing.iloc[-1].tolist()
         row[1] = self.money
@@ -211,10 +212,7 @@ class LocalAcount(AccountDelegate):
         raise NotImplementedError("Implement Interface")
 
     def Report(self, end_day, is_detail=False):
-        if sys.version > '3':
-            print('python 3 can not execute')
-            return 
-        import stock,myredis,mysql,agl
+        import stock,agl
         #成交记录
         df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','证券代码']]
         #print df
@@ -224,11 +222,6 @@ class LocalAcount(AccountDelegate):
         df['d'] = df.index.astype(str)
         df['d'] = df['d'].map(lambda x: str(dateutil.parser.parse(x) + \
                                             datetime.timedelta(minutes=5)))
-        myredis.set_obj('backtest_trade', df)
-        #原有的php需要使用json， 现在使用django， 可以废弃
-        #f = open('E:/Apache/Apache/htdocs/stock/trade_training/trade.json','w')
-        #json.dump(np.array(df).tolist(),f)
-        #f.close()
         if is_detail:	
             agl.print_df(df)
 
@@ -265,9 +258,9 @@ class LocalAcount(AccountDelegate):
         df = df_five_hisdat
         df_trade = self.ChengJiao()
         if ShowStyle == "win":
-            df = df[-50:]
-            df_trade = df_trade[df.index[0]:]
-            if len(df) % 10 == 0:
+            if len(df) % 20 == 0:
+                df = df[-50:]
+                df_trade = df_trade[df.index[0]:]
                 ui.AsynDrawKline.drawKline(df, df_trade)
         else:
             if len(df) % 50 == 0:
@@ -289,7 +282,7 @@ class mytest(unittest.TestCase):
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
         account.Report('2016-5-12')
         print(account.ZhiJing())
-    def test_multi(self):
+    def _test_multi(self):
         account = LocalAcount(BackTesting())
         code = '300033'
         account._buy(code, 70.3, 3000, '2016-5-10 9:33:00')
@@ -304,7 +297,7 @@ class mytest(unittest.TestCase):
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
         account.Report('2016-5-12')
         return account
-    def test_call(self):
+    def _test_call(self):
         """调用"""
         account = LocalAcount(BackTesting())
         code = '300033'
@@ -327,9 +320,6 @@ class mytest(unittest.TestCase):
         df.index.name = 't'
         df['trade_id'] = df['trade_id'].map(lambda x: np.random.randint(0,100000) )
         db.save(df, tbl_name=mysql.Tc.enum.chenjiao)
-def main(args):
-    unittest.main()
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    main(args)
+    unittest.main()

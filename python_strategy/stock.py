@@ -5,7 +5,7 @@
 # QQ: 1764462457
 
 import os
-import mysql
+#import mysql
 import help,agl
 import time
 import datetime, dateutil

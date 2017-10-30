@@ -11,8 +11,9 @@ import os
 """在线策略入口"""
 import numpy as np
 import sys
-import help,agl,enum,stock
+import agl,stock,help,ui
 import backtest_policy
+import pylab as pl
 
 class BackTestPolicy:
     """回测入口"""
@@ -53,13 +54,13 @@ class BackTestPolicy:
             for policy in self.policys:
                 if 0: policy = qjjy.Strategy(data)
                 #policy.get().account.Report()
-                policy.Report(start_day, end_day)
+                #policy.Report(start_day, end_day)
+                self._Report(policy, start_day, end_day)
         #except Exception as e:
             #print str(e)
     def _IsKaiPan(self, code, day):
         """判断当前天是否开盘"""
-        kline = stock.Kline(code,day,day)
-        return len(kline.hisdats)>0
+        return day in self.panel_hisdat[code].index
     def _OnFirstRun(self, start_day):
         """允许策略在开始前有一个事件"""
         ts = range(570,690) + range(779, 900+1)
@@ -83,9 +84,9 @@ class BackTestPolicy:
             if not self._IsKaiPan(code, day):
                 continue
             for strategy in self.policys:
-                df = self.dict_fenshi[code].ix[day] #以时间为索引
-                #fenshi_length = len(df) #只迭代当天的
                 if self.mode == self.enum.tick_mode:
+                    df = self.dict_fenshi[code].ix[day] #以时间为索引
+                    #fenshi_length = len(df) #只迭代当天的
                     #分时遍历, 按分钟走
                     for t in ts:
                         strategy.data.set_code(code, day, t)
@@ -110,6 +111,40 @@ class BackTestPolicy:
             self._TravlTick(day)
             if start_day.Next() > end_day.GetDate():
                 break
+    def _Report(self, policy, start_day, end_day):
+        policy._getAccount().Report(end_day, True)
+        #绘制图形
+        #end_day = help.MyDate.s_Dec(end_day, 1)
+        #bars = stock.CreateFenshiPd(self.code, start_day, end_day)
+        bars = self.dict_fenshi[self.codes[0]]
+        if len(bars) == 0:
+            return
+        bars = bars.resample('1min').mean()
+        bars['positions'] = 0
+        bars['c'] = bars['p']
+        bars = bars.dropna()
+        df = policy._getAccount().ChengJiao()
+        df_zhijing = policy._getAccount().ZhiJing()
+        df_zhijing = df_zhijing[bars.index[0]:]
+        df_changwei = policy._getAccount().ChengJiao()
+        cols = ['买卖标志','委托数量']
+        df_flag = df_changwei[cols[0]].map(lambda x: x == '证券卖出' and 1 or -1)
+        df_changwei[cols[1]] *= df_flag
+        changwei = stock.GuiYiHua(df_changwei[cols[1]].cumsum())
+        for i in range(len(df)):
+            index = df.index[i]
+            bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
+            if index in bars.index:
+                #bars.ix[index]['positions'] = agl.where(bSell, -1, 1)
+                bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
+        trade_positions = np.array(bars['positions'])
+        #同步资金到bar
+        df_zhijing['changwei'] = changwei
+        bars = bars.join(df_zhijing)
+        bars = bars.fillna(method='pad')
+        
+        ui.TradeResult_Boll(pl, bars, trade_positions, \
+                            stock.GuiYiHua(bars['资产']), stock.GuiYiHua(bars['changwei']))
     def SetStockCodes(self, codes):
         """对这些codes进行回测"""
         self.codes = codes
@@ -121,7 +156,7 @@ def main(args):
     agl.tic()
     BackTestPolicy.Test()
     agl.toc()
-print("end")
+    print("end")
     
 if __name__ == "__main__":
     try:

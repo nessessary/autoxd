@@ -120,6 +120,23 @@ def clear():
         r.delete(key)
 def getKeys():
     return createRedis().keys()
+
+def ForceGetObj(k,v):
+    """如果没有该值， 那么存储"""
+    v1 = get_obj(k)
+    if v1 is None:
+        v1 = v
+        set_obj(k, v)
+    return v1
+
+def ForceGetObj2(k,v):
+    """如果没有该值， 那么存储"""
+    v1 = get_obj(k)
+    if v1 is None:
+        v1 = v
+        set_obj(k, v)
+    return v1
+
 def main(args):
     #test_save()
     #test_read()

@@ -14,7 +14,7 @@ import stock,os
 from abc import ABCMeta, abstractmethod
 import datetime
 import help,agl
-import mysql
+#import mysql
 import random
 import copy
 import myenum

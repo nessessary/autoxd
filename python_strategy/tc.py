@@ -312,27 +312,46 @@ def sxf(code, num, price):
 	sxf = 5
     return sxf
 
-
-def get_stocklist_from_redis():
+def get_zhijing_from_redis(is_have_return=False):
+    """获取资金列表"""
+    key_df_stocklist = 'df_zhijing'
+    if 0: df = pd.DataFrame()
+    df = myredis.get_obj(key_df_stocklist)
+    if is_have_return:
+	return df
+    if df is not None:
+	from prettytable import PrettyTable
+	cols = '余额|可用|参考市值|资产'
+	cols = cols.split('|')
+	table = PrettyTable(cols)
+	for i,row in df.iterrows():
+	    table.add_row(row[cols].tolist())
+	print table    
+def get_stocklist_from_redis(is_have_return=False):
     """临时函数， 因为策略basesign保存了列表， 因此可以直接取"""
     key_df_stocklist = 'df_stocklist'
     if 0: df = pd.DataFrame()
     df = myredis.get_obj(key_df_stocklist)
-    from prettytable import PrettyTable
-    cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
-    cols = cols.split('|')
-    table = PrettyTable(cols)
-    for i,row in df.iterrows():
-        table.add_row(row[cols].tolist())
-    #table.sort_key("ferocity")
-    #table.reversesort = True
-    print table
+    if is_have_return:
+	return df
+    if df is not None:
+	from prettytable import PrettyTable
+	cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
+	cols = cols.split('|')
+	table = PrettyTable(cols)
+	for i,row in df.iterrows():
+	    table.add_row(row[cols].tolist())
+	#table.sort_key("ferocity")
+	#table.reversesort = True
+	print table
     #return df
-def get_weituo_from_redis():
+def get_weituo_from_redis(is_have_return=False):
     """输出为成交的委托列表"""
     key = 'df_weituo'
     if 0: df = pd.DataFrame()
     df = myredis.get_obj(key)
+    if is_have_return:
+	return df
     if df is not None:
 	from prettytable import PrettyTable
 	cols = '证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明'
@@ -345,6 +364,24 @@ def get_weituo_from_redis():
 	#table.sort_key("ferocity")
 	#table.reversesort = True
 	print table    
+def get_chengjiao_from_redis(is_have_return=False):
+    """输出为成交的委托列表"""
+    key = 'df_chengjiao'
+    if 0: df = pd.DataFrame()
+    df = myredis.get_obj(key)
+    if is_have_return:
+	return df
+    if df is not None:
+	from prettytable import PrettyTable
+	cols = '成交时间|证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号'
+	cols = cols.split('|')
+
+	table = PrettyTable(cols)
+	for i,row in df.iterrows():
+	    table.add_row(row[cols].tolist())
+	#table.sort_key("ferocity")
+	#table.reversesort = True
+	print table    	
 class mytest(unittest.TestCase):
     def _test_str_to_df(self):
         df = TcAccount()._str_to_df('0|500.13|500.13||9100.00|13004.13|||{}')
@@ -357,6 +394,14 @@ class mytest(unittest.TestCase):
     def test_get_stocklist_from_redis(self):
 	get_stocklist_from_redis()
 
+def query_code_chengben(code, df_stocklist):
+    """查询股票参考成本价"""
+    col = '参考成本价'
+    df = df_stocklist[df_stocklist['证券代码']==code]
+    if len(df)>0:
+	chengben = float(df[col].tolist()[0])
+	return chengben
+    return None
 def main(args):
     #Buy("300126", 10.01, 100)
     #Sell("300033", 53, 100)

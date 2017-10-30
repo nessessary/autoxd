@@ -321,10 +321,11 @@ def DrawClosesAndVolumes(pl, closes, volumes, zz=None, avg=None, trade_index=Non
     pl.close()
 def DrawDvsAndZZ(pl, dvs, zz, closes=None):
     """dvs和zz画在一张图里; dvs : 也可以是closes, """
+    dvs = np.array(dvs)
     pl.figure
     if closes == None:
         pl.plot(dvs)
-        DrawZZ(pl, zz, c='r')
+        pl.plot(zz[:,0], zz[:,1], 'r')
     else:
         pl.subplot(211)
         pl.plot(closes)
@@ -332,7 +333,7 @@ def DrawDvsAndZZ(pl, dvs, zz, closes=None):
         pl.subplot(212)
         pl.grid()
         pl.plot(dvs)
-        DrawZZ(pl, zz, c='r')
+        pl.plot(zz[:,0], zz[:,1], 'r')
     pl.show()
     pl.close()
 def ShowZZ(pl, zz, title=''):
@@ -492,10 +493,12 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     indexs = np.arange(len(bars))
     bars.index = indexs
     signals.index = indexs
-    #if zhijin is not None:
-        #zhijin.index = indexs
-    #if changwei is not None:
-        #changwei.index = indexs
+    
+    if len(bars) == len(zhijin):
+        if zhijin is not None:
+            zhijin.index = indexs
+        if changwei is not None:
+            changwei.index = indexs
 
     # Plot the AAPL closing price overlaid with the moving averages
     bars['c'].plot(ax=ax1, color='r', lw=2.)
@@ -516,10 +519,10 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
 
     # Plot the equity curve in dollars
     ax2 = fig.add_subplot(212, ylabel='Portfolio value in RMB')
-    if len(zhijin)>0:
+    if zhijin is not None and len(zhijin)>1:
         zhijin.plot(ax=ax2, lw=2.)
     legends = ['zhijing']
-    if changwei is not None and len(changwei)>0:
+    if changwei is not None and len(changwei)>1:
         changwei.plot(ax=ax2)
         legends.append('changwei')
     ax2.legend(legends)
@@ -527,10 +530,11 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     #剔除非交易时间
     #freq = 300
     ax1.set_xticks(indexs[::freq])
-    #ax2.set_xticks(indexs[::freq])
     date_ticks = date_ticks.map(lambda x : agl.datetime_to_date(x))
     ax1.set_xticklabels(date_ticks[::freq], rotation=45, ha='right')
-    #ax2.set_xticklabels(date_ticks[::freq], rotation=45, ha='right')
+    if len(bars) == len(zhijin):
+        ax2.set_xticks(indexs[::freq])
+        ax2.set_xticklabels(date_ticks[::freq], rotation=45, ha='right')
 
     # Plot the figure
     #fig.show()    
@@ -557,16 +561,16 @@ def testShowTradeResult():
     returns = portfolio.backtest_portfolio()
     ShowTradeResult(pl, bars, signals, returns, 2)
 
-def TradeResult_Boll(code, bars, trade_positions, zhijin,changwei):
-    import backtest
-
+def TradeResult_Boll(pl, bars, trade_positions, zhijin,changwei):
+    """显示策略结果
+    bars: df 包含有  c字段即可
+    trade_positions: np.darray or df 交易信号
+    zhijin: df index同bars
+    changwei: df index同bars
+    """
 
     signals = pd.DataFrame(index=bars.index)
     signals['signal'] = 0.0
-    #signals['short_ma'] = stock.MA(closes=np.array(bars['c']), day=5)
-    #signals['long_ma'] = stock.MA(closes=np.array(bars['c']), day=20)
-    #signals['0'] = signals['short_ma']
-    #signals['1'] = signals['long_ma']
     signals['signal'] = np.zeros(len(bars['c']))
     if agl.IsNone(trade_positions):
         signals['positions'] = signals['signal'].diff()  
@@ -590,7 +594,7 @@ def testTradeResult_Boll():
     zhijin[100] = 1010000
     zhijin[200] = 980000
 
-    TradeResult_Boll(code, bars, None, zhijin, None)
+    TradeResult_Boll(pl, bars, None, zhijin, None)
 def ShowCode(pl, code):
     closes = stock.Guider(code).getCloses()
     DrawTs(pl, closes)

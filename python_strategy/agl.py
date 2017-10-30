@@ -80,6 +80,12 @@ def DateTimeCmp(dt1, dt2):
     """dt1,dt2: str
     return: bool"""
     return dateutil.parser.parse(dt1) == dateutil.parser.parse(dt2)
+def DateDec(day1, day2):
+    """日期相减
+    day1, day2: str
+    return :  int 日期数
+    """
+    return (dateutil.parser.parse(day1) - dateutil.parser.parse(day2)).days
 #----------------------------------------------------------------------
 def max2(a):
     """
@@ -134,6 +140,12 @@ def GetSortedArrayIndexs(a, num=-1):
         b.append(a[i][0])
     return b
 
+def array_reverse(a):
+    """数组倒序"""
+    return np.fliplr([a])[0]
+def array_random(size):
+    """产生随机数组, 默认范围在[-1, 1]"""
+    return 2*np.random.random_sample((size,))-1
 def array_transpose(a):
     """一维数组转置 [1,2,3]=[1],[2],[3]"""
     if 0: a = np.ndarray
@@ -310,6 +322,8 @@ def unicode_to_utf8(s):
     if isinstance(s, unicode):
         return s.encode('utf8')
     return s
+def utf8_to_unicode(s):
+    return s.decode('utf8')
 def convert_html(html):
     """html下载的文本中含有gb2312的中文编码， 英文是ascii， 如果先行过滤的话，soup转换为unicode后
     find函数发现不了元素， 因此只能后期再过滤
@@ -594,6 +608,30 @@ def count_char():
         if c=='|':
             count += 1
     print(count)
+    
+def PostTask(fn, t, reset=False):
+    """每隔t秒执行一次fn
+    主要是防止交易接口被短期内多次调用， 造成系统异常
+    fn : callback function
+    t : 秒
+    reset: 重置时间, 立刻执行
+    """
+    key = 'posttask_'+fn.func_name
+    cur_t = curTime()
+    if reset:
+        myredis.delkey(key)
+    pre_t = myredis.get_obj(key)
+    if pre_t == None:
+        pre_t = cur_t - datetime.timedelta(seconds=t+1)
+
+    if cur_t - pre_t > datetime.timedelta(seconds=t):
+        fn()
+        myredis.set_obj(key, cur_t)
+class TimeDelta:
+    @staticmethod
+    def FromMinutes(minutes):
+        """return: seconds"""
+        return minutes*60
 def MoveFile(src, dst):
     shutil.move(src, dst)
 def TestMoveFile():
@@ -711,6 +749,16 @@ def is_utf8(s):
     return charade.detect(s)['encoding'] == 'utf-8'
 def is_unicode(s):
     return isinstance(s, unicode)
+
+def df_filter(df, fn):
+    for index, row in df.iterrows():
+        fn(row)
+def df_concat(df1, l):
+    """添加list到df1中
+    df1: pd.DataFrame
+    l : list
+    """
+    return pd.concat([df1, pd.DataFrame(l).T])
 def df_remove_col(df, cols):
     """df删除列 return: df"""
     return df.drop(cols, axis=1)
@@ -749,6 +797,9 @@ def print_df(df):
         start_index = i
         i += 50
         print(df.iloc[start_index:i])
+def print_c(ary):
+    for x in ary:
+        print(x)
 def zip_file(src, dest):
     """把src压缩到dest, 暂时只支持一个文件"""
     f = zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED)
@@ -794,6 +845,8 @@ def df_get_pre_date(df, date):
     return datetime_to_date(d)
 def where(con, a, b):
     """条件选择， con条件， 同c的con ? a : b"""
+    if con is None:
+        return b
     if con:
         return a
     return b

@@ -95,21 +95,35 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
 def main(args):
     print "end"
 
-def test_strategy(codes, strategy_name):	
+def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0, start_day='', end_day=''):	
+    """strategy_name: str 通过策略名称来构造策略
+    cbfn_setparams: callback function 回调函数 fn(strategy) 用该函数来重新设置参数
+    day_num: 当前天或者数据集的最后一天向前推的天数， 同时会修正为数据集有效的第一天
+    mode : enum/int tick/hisdat
+    """
     import backtest_runner
+    if mode == 0:
+        mode = backtest_runner.BackTestPolicy.enum.tick_mode
     for code in codes:
         print code, stock.GetCodeName(code)
-        p = backtest_runner.BackTestPolicy(backtest_runner.BackTestPolicy.enum.tick_mode)
+        p = backtest_runner.BackTestPolicy(mode)
         p.SetStockCodes([code])
         backtesting = Backtest()
         account = backtesting.createAccount(account_type=None, username=None, pwd=None)
         #p.Regist(Strategy_basesign(backtesting, is_backtesting=True))
         strategy = strategy_name(backtesting, is_backtesting=True)
-        strategy.trade_num = 600
+        #设置策略参数
+        if cbfn_setparams is not None:
+            cbfn_setparams(strategy)
+        print(strategy.getParams())
         p.Regist(strategy)
         #p.Regist(Strategy_Trade(backtesting, is_backtesting=True))
         cur_day = agl.CurDay() 
+        if end_day != '':
+            cur_day = end_day
         d1, d2 = help.MyDate.s_Dec(cur_day, -20),cur_day
+        if start_day != '':
+            d1 = start_day
         def getTradeDay(d1, d2, dtype=backtest_runner.BackTestPolicy.enum.hisdat_mode):
             """确定是交易日
             return: (d1, d2)"""
@@ -126,8 +140,13 @@ def test_strategy(codes, strategy_name):
                     #return d1,d2
                 #else:
                     #d1 = help.MyDate.s_Dec(d1, 1)
-        d1,d2 = getTradeDay(d1,d2, backtest_runner.BackTestPolicy.enum.tick_mode)		
+        d1,d2 = getTradeDay(d1,d2, mode)	
+        if start_day == '':
+            #再次修正为已有数据的20天
+            d1 = help.MyDate.s_Dec(d2, -day_num)
+        d1,d2 = getTradeDay(d1,d2, mode)	
         print d1, d2
+        
         p.Run(d1, d2)    
 
 if __name__ == "__main__":

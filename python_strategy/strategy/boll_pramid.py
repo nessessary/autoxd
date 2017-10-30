@@ -30,23 +30,6 @@ def pre_trade_jisu(closes, t, adx, w, boll):
 	return True
     return False
 
-def PostTask(fn, t, reset=False):
-    """每隔t秒执行一次fn
-    主要是防止交易接口被短期内多次调用， 造成系统异常
-    """
-    key = 'posttask_'+fn.func_name
-    cur_t = agl.curTime()
-    if reset:
-	myredis.delkey(key)
-    pre_t = myredis.get_obj(key)
-    if pre_t == None:
-	pre_t = cur_t - datetime.timedelta(seconds=t+1)
-    
-    if cur_t - pre_t > datetime.timedelta(seconds=t):
-	fn()
-	myredis.set_obj(key, cur_t)
-
-
 class Strategy_Boll_Pre(qjjy.Strategy):
     """为了实现预埋单"""
     def AllowCode(self, code):
@@ -55,6 +38,13 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	return code == mydatas['symbol'][0]
 	codes = ['300033']	    #自己想交易的股票
 	return code in codes
+    def getParams(self):
+	"""输出主要参数"""
+	d = {}
+	return d
+    def setParams(self, *args, **kwargs):
+	"""设置策略参数"""
+	pass
     
     def OnFirstRun(self):
 	"""回测调用函数， 在第一个bar时调用， 先建立底仓"""
@@ -79,7 +69,8 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 		self._log(df.iloc[0])
 	    except:
 		pass
-	PostTask(run_stocklist,	100)	#每100秒执行一次
+	agl.PostTask(run_stocklist,	100)	#每100秒执行一次
+	
 	
 	#以下为交易测试
         code = self.data.get_code()	#当前策略处理的股票
@@ -139,7 +130,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 		if self.order(0, code, price, num):
 		    self._log(agl.utf8_to_ascii('二档买入%s, %.2f, %d'%(code, price, num)))
 	    #信号发生时语音播报, 并通知界面回显
-	    if price > boll_poss[1] or price < boll_poss[-2]:
+	    if not self.is_backtesting and (price > boll_poss[1] or price < boll_poss[-2]):
 		codename = stock.GetCodeName(code)
 		s = '%s, %.2f'%(codename, price)
 		self.data.show(codename)    #通知界面显示
@@ -158,7 +149,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	return tc.TcAccount(self.data)  
 
     def order(self, bSell, code, price, num):
-	"""bSell: 不能使用boolean
+	"""bSell: int 不能使用boolean
 	return True 下单， 
 	return False 但同一区域已经下单的， 放弃下单"""
 	assert(not isinstance(bSell, bool))
@@ -192,6 +183,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	#绘制图形
 	#end_day = help.MyDate.s_Dec(end_day, 1)
 	bars = stock.CreateFenshiPd(self.code, start_day, end_day)
+	bars = self
 	if len(bars) == 0:
 	    return
 	bars = bars.resample('1min').mean()
