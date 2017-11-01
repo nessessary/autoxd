@@ -92,7 +92,7 @@ class BackTestPolicy:
                         strategy.data.set_code(code, day, t)
                         strategy.Run()
                 if self.mode == self.enum.hisdat_mode:
-                    strategy.data.set_code(code, day, 900)
+                    strategy.data.set_code(code, day, 900-1)
                     strategy.Run()
     def _TravlDay(self, start_day, end_day):
         """遍历天， 开始时间， 结束时间"""
@@ -125,12 +125,13 @@ class BackTestPolicy:
         bars = bars.dropna()
         df = policy._getAccount().ChengJiao()
         df_zhijing = policy._getAccount().ZhiJing()
+        init_money = df_zhijing.iloc[0]['资产']
         df_zhijing = df_zhijing[bars.index[0]:]
         df_changwei = policy._getAccount().ChengJiao()
         cols = ['买卖标志','委托数量']
-        df_flag = df_changwei[cols[0]].map(lambda x: x == '证券卖出' and 1 or -1)
+        df_flag = df_changwei[cols[0]].map(lambda x: x == '证券卖出' and -1 or 1)
         df_changwei[cols[1]] *= df_flag
-        changwei = stock.GuiYiHua(df_changwei[cols[1]].cumsum())
+        changwei = df_changwei[cols[1]].cumsum()
         for i in range(len(df)):
             index = df.index[i]
             bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
@@ -142,9 +143,12 @@ class BackTestPolicy:
         df_zhijing['changwei'] = changwei
         bars = bars.join(df_zhijing)
         bars = bars.fillna(method='pad')
-        
+        #同步价格的动态总资产
+        bars['资产'] = bars['可用']+bars['changwei']*bars['p']
+        zhican = (bars['资产']-init_money)/init_money*100
         ui.TradeResult_Boll(pl, bars, trade_positions, \
-                            stock.GuiYiHua(bars['资产']), stock.GuiYiHua(bars['changwei']))
+                            stock.GuiYiHua(zhican),\
+                            stock.GuiYiHua(bars['changwei']))
     def SetStockCodes(self, codes):
         """对这些codes进行回测"""
         self.codes = codes

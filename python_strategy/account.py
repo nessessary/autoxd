@@ -103,10 +103,16 @@ class LocalAcount(AccountDelegate):
         org_num = int(self.df_stock['库存数量'][self.df_stock['证券代码'] == code].tolist()[0])
         org_price = float(self.df_stock['买入均价'][self.df_stock['证券代码'] == code].tolist()[0])
         num *= bSell and -1 or 1
-        new_price = (org_num*org_price+num*price)/(org_num+num)
+        if org_num + num > 0:
+            new_price = (org_num*org_price+num*price)/(org_num+num)
+        else:
+            new_price = 0
         self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
         #需要加上手续费作为成本
-        new_price = (org_num*org_price+price*num - price*abs(num)*sxf())/(org_num+num)
+        if org_num+num > 0:
+            new_price = (org_num*org_price+price*num - price*abs(num)*sxf())/(org_num+num)
+        else:
+            new_price = 0
         self.df_stock['参考成本价'][self.df_stock['证券代码'] == code] = new_price
         self.df_stock['当前价'][self.df_stock['证券代码'] == code] = price
     def _insertZhiJing(self,code, price, num, bSell, date):

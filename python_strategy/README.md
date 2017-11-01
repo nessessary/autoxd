@@ -21,5 +21,6 @@
    中间结果显示TickReport<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)
    可看见输出的结果图<br>
+   资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
    输出窗口可以看见交易明细
