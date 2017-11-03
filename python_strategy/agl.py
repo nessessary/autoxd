@@ -721,8 +721,9 @@ def LOG(msg):
 def datetime_to_date(d):
     """return: str"""
     s = str(d)
-    assert(s.find(':')>0)
-    return s.split(' ')[0]
+    if s.find(':')>0:
+        return s.split(' ')[0]
+    return s
 def getCallerName():
     """返回函数调用者的文件名及完全函数名, 在并行进程中调用者堆栈会不一样"""
     import traceback
@@ -800,6 +801,11 @@ def print_df(df):
 def print_c(ary):
     for x in ary:
         print(x)
+def print_u(s):
+    try:
+        print utf8_to_unicode(s)
+    except:
+        print s
 def zip_file(src, dest):
     """把src压缩到dest, 暂时只支持一个文件"""
     f = zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED)
@@ -890,7 +896,8 @@ def IntToQianFenHaoStr(num):
     return "{:,}".format(num)
 
 def ClustList(n_clusters, X):
-    """对一维数组进行聚类, return: list [int,]"""
+    """对一维数组进行聚类, 
+    return: list [int,] 从小到大排序"""
     if len(X)<= n_clusters:
         return X
     from sklearn.cluster import KMeans

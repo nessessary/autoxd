@@ -116,12 +116,16 @@ class BackTestPolicy:
         #绘制图形
         #end_day = help.MyDate.s_Dec(end_day, 1)
         #bars = stock.CreateFenshiPd(self.code, start_day, end_day)
-        bars = self.dict_fenshi[self.codes[0]]
-        if len(bars) == 0:
-            return
-        bars = bars.resample('1min').mean()
+        if self.mode == 0:
+            bars = self.dict_fenshi[self.codes[0]]
+            if len(bars) == 0:
+                return
+            bars = bars.resample('1min').mean()
+            bars['c'] = bars['p']
+        else:
+            #日线
+            bars = self.panel_hisdat[self.codes[0]]
         bars['positions'] = 0
-        bars['c'] = bars['p']
         bars = bars.dropna()
         df = policy._getAccount().ChengJiao()
         df_zhijing = policy._getAccount().ZhiJing()
@@ -132,6 +136,8 @@ class BackTestPolicy:
         df_flag = df_changwei[cols[0]].map(lambda x: x == '证券卖出' and -1 or 1)
         df_changwei[cols[1]] *= df_flag
         changwei = df_changwei[cols[1]].cumsum()
+        if self.mode == 1:
+            df.index = df.index.map(lambda x: agl.datetime_to_date(x))
         for i in range(len(df)):
             index = df.index[i]
             bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
@@ -140,12 +146,16 @@ class BackTestPolicy:
                 bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
         trade_positions = np.array(bars['positions'])
         #同步资金到bar
+        df_zhijing.is_copy = False
         df_zhijing['changwei'] = changwei
+        if self.mode == 1:
+            df_zhijing.index = df_zhijing.index.map(lambda x: agl.datetime_to_date(x))
         bars = bars.join(df_zhijing)
         bars = bars.fillna(method='pad')
         #同步价格的动态总资产
-        bars['资产'] = bars['可用']+bars['changwei']*bars['p']
+        bars['资产'] = bars['可用']+bars['changwei']*bars['c']
         zhican = (bars['资产']-init_money)/init_money*100
+        zhican = zhican.fillna(0)
         ui.TradeResult_Boll(pl, bars, trade_positions, \
                             stock.GuiYiHua(zhican),\
                             stock.GuiYiHua(bars['changwei']))

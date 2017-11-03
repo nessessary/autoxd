@@ -105,13 +105,16 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     for code in codes:
-        print code, stock.GetCodeName(code)
+        try:
+            print code, agl.utf8_to_unicode(stock.GetCodeName(code))
+        except:
+            print code, stock.GetCodeName(code)
         p = backtest_runner.BackTestPolicy(mode)
         p.SetStockCodes([code])
         backtesting = Backtest()
         account = backtesting.createAccount(account_type=None, username=None, pwd=None)
         #p.Regist(Strategy_basesign(backtesting, is_backtesting=True))
-        strategy = strategy_name(backtesting, is_backtesting=True)
+        strategy = strategy_name(backtesting, is_backtesting=True, mode=mode)
         #设置策略参数
         if cbfn_setparams is not None:
             cbfn_setparams(strategy)

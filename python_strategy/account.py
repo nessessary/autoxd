@@ -240,7 +240,10 @@ class LocalAcount(AccountDelegate):
             num = self.df_stock.iloc[0]['库存数量']
             shizhi += float(close)*int(num)
         print(self.df_zhijing.tail(n=1))
-        print('市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
+        try:
+            print(u'市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
+        except:
+            print('市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
         #如果持股不动，现在的资金
         #取第一次交易后的可用资金
         if len(self.df_zhijing)>1:
@@ -252,7 +255,10 @@ class LocalAcount(AccountDelegate):
         if len(self.df_ChengJiao)>0:
             num = self.df_ChengJiao.iloc[0]['成交数量']
         shizhi = num*close
-        print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
+        try:
+            print(u'如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
+        except:
+            print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
 
     #尝试使用tick ui
     def TickReport(self, df_five_hisdat, ShowStyle="all"):

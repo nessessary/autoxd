@@ -72,3 +72,9 @@ class boll_type:
 class FenshiBetaTinPaiException(Exception):
     """分时日期区间与板块日期区间不匹配, 主要是因为个股停牌引起"""
     pass
+
+
+#回测模式
+#见backtest_runner.BackTestPolicy.enum.tick_mode
+tick_mode = 0
+hisdat_mode = 1

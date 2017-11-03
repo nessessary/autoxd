@@ -233,7 +233,6 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
     date: 基准日
     end_day: 
     ltgbs: list 流通股本
-    cur_code: 当前股票的代码
     return: pd.Series 指数 name=zhishu """
     #cur_day = agl.CurDay()
     df = pd.DataFrame(index = pd.period_range(date, end_day).to_timestamp())
@@ -241,6 +240,8 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
     for i, code in enumerate(codes):
         #print 'calc_bankuai_zhishu ', code
         df_hisdat = myredis.get_obj(code)
+        if df_hisdat is None:
+            continue
         df_hisdat = df_hisdat.ix[date:end_day]
         if len(df_hisdat) == 0:
             continue
@@ -1197,7 +1198,11 @@ def GetCodeName(code):
     try:
         key = 'df_codenametbl'
         df = myredis.get_obj(key)
-        if agl.IsNone(df):
+        is_recreate = False
+        if df is not None:
+            if len(df[df['code'] == code]) == 0:
+                is_recreate = True
+        if agl.IsNone(df) or is_recreate:
             StockInfoThs.genCodeNameTbl()
             df = myredis.get_obj(key)
         return df[df['code'] == code]['name'].tolist()[0]
@@ -3529,6 +3534,9 @@ def SYL(price, mgsy):
     if mgsy == 0:
         return -0.01
     return price / mgsy
+def PE(shizhi, jll):
+    """shizhi: 市值(亿), jll: 净利润(亿)"""
+    return float(shizhi)/float(jll)
 def StockToMatlabCsv():
     guider = Guider("600779")
     closes = guider.GetCloses()
