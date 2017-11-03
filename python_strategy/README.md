@@ -17,19 +17,21 @@
    或者下载安装包， 里面带一份anaconda， 已经包含了所需要的库， 使用该目录即可
 
 3. 执行
-   回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交, 分时执行时间比较长<br>
-   分时的例子<br>
+   回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
+   分时执行时间比较长，成交为实际的时间<br>
+   1> 分时的例子<br>
    用ide打开缺省策略boll_pramid.py并执行<br>
    或者用命令行<br>
    python boll_pramid.py<br>
+
    中间结果显示TickReport<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)<br>
    可看见输出的结果图<br>
    资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    输出窗口可以看见交易明细<br>
 
    <br>
-   日线的例子<br>
+   2>日线的例子<br>
    boll_fenchang.py<br>
 

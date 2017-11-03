@@ -19,6 +19,12 @@ A-share automated trading system
 2. 交易接口， 暂时只支持中信建投证券, 基于通达信， 可与通达信同时开启， 互不干扰
 3. 由python实现的策略， 通过编写策略从而实现自动化交易
 
+回测
+----
+使用该系统前可以先进行策略的回测开发, 毕竟有一个好的策略才能进行自动化交易
+请迁出python_strategy目录， 先在该目录中跑一个回测， 执行boll_pramid.py将得到一个默认回测
+具体过程查询 [回测文档](https://github.com/nessessary/autoxd/blob/master/python_strategy/README.md)
+
 使用
 ----
 1. 下载安装文件 [网盘](http://pan.baidu.com/s/1kUHK3Dd)
@@ -53,11 +59,6 @@ A-share automated trading system
 1. 查看[changlog](https://github.com/nessessary/autoxd/blob/master/changelog.txt) 看更新了什么
 2. [下载升级包](http://pan.baidu.com/s/1o83HxIq)   把里面的文件覆盖至安装目录
 
-回测
-----
-使用该系统前可以先进行策略的回测开发, 毕竟有一个好的策略才能进行自动化交易
-请迁出python_strategy目录， 先在该目录中跑一个回测， 执行boll_pramid.py将得到一个默认回测
-具体过程查询 [回测文档](https://github.com/nessessary/autoxd/blob/master/python_strategy/README.md)
 
 策略
 ----
