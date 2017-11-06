@@ -33,6 +33,7 @@
 
    <br>
    2>日线的例子<br>
-   boll_fenchang.py<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
+   boll_fenchang.py<br>
+
 
