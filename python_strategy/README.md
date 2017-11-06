@@ -30,10 +30,10 @@
    资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    输出窗口可以看见交易明细<br>
-
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
    <br>
    2>日线的例子<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
+
    boll_fenchang.py<br>
 
 
