@@ -129,14 +129,17 @@ def ForceGetObj(k,v):
         set_obj(k, v)
     return v1
 
-def ForceGetObj2(k,v):
-    """如果没有该值， 那么存储"""
-    v1 = get_obj(k)
-    if v1 is None:
-        v1 = v
-        set_obj(k, v)
-    return v1
-
+def createRedisVal(key, v):
+    ForceGetObj(key, v)
+    return Val(key)
+class Val(object):
+    def __init__(self, key):
+        self.key = key
+    def get(self):
+        return get_obj(self.key)
+    def set(self, v):
+        set_obj(self.key, v)
+        
 def main(args):
     #test_save()
     #test_read()

@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod
 
 """本地模拟A股卷商资金账户 v1.0 2016-5-15
 v1.1	2017-10-30
+v1.2    2017-11-5   添加股票列表的盈亏比率计算
 """
 
 class AccountDelegate(object):
@@ -50,7 +51,7 @@ def sxf():
 #状态说明，包含 已成，已撤， 未成
 class LocalAcount(AccountDelegate):
     """本地账户， 支持T+1, 无持续化"""
-    stocklist_columns = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)|在途买入|在途卖出|股东代码'
+    stocklist_columns = '证券代码|证券名称|证券数量|库存数量|可卖数量|买入数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)|在途买入|在途卖出|股东代码'
     zhijing_columns = '余额|可用|参考市值|资产|盈亏'
     chengjiao_columns = "成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"
     def __init__(self, backtester, money=1000000, date='2000-1-1 9:30:00'):
@@ -80,6 +81,8 @@ class LocalAcount(AccountDelegate):
             for i in range(len(self.df_stock)):
                 self.df_stock.set_value(i,'证券数量', self.df_stock.iloc[i]['库存数量'])
                 self.df_stock.set_value(i,'可卖数量', self.df_stock.iloc[i]['证券数量'])
+                if int(self.df_stock.iloc[i]['库存数量'])==0:
+                    self.df_stock.set_value(i,'买入数量', 0)
     def _insertChengJiaoRecorde(self, code, price, num, date, bSell):
         #成交记录
         row = {}
@@ -102,18 +105,22 @@ class LocalAcount(AccountDelegate):
         #更新平均成本
         org_num = int(self.df_stock['库存数量'][self.df_stock['证券代码'] == code].tolist()[0])
         org_price = float(self.df_stock['买入均价'][self.df_stock['证券代码'] == code].tolist()[0])
+        buy_num = int(self.df_stock['买入数量'][self.df_stock['证券代码']==code].loc[0])
+        buy_avg_price = float(self.df_stock['买入均价'][self.df_stock['证券代码']==code].loc[0])
         num *= bSell and -1 or 1
-        if org_num + num > 0:
-            new_price = (org_num*org_price+num*price)/(org_num+num)
-        else:
-            new_price = 0
-        self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
+        if int(bSell) == 0:
+            new_price = (buy_num*buy_avg_price+price*num)/(buy_num+num)
+            self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
         #需要加上手续费作为成本
         if org_num+num > 0:
             new_price = (org_num*org_price+price*num - price*abs(num)*sxf())/(org_num+num)
+            yinkui_ratio = float('%.2f'%((price - new_price)/new_price*100))
         else:
             new_price = 0
+            yinkui_ratio = 0
         self.df_stock['参考成本价'][self.df_stock['证券代码'] == code] = new_price
+        self.df_stock['参考盈亏成本价'][self.df_stock['证券代码'] == code] = new_price
+        self.df_stock['盈亏比例(%)'][self.df_stock['证券代码'] == code] = yinkui_ratio
         self.df_stock['当前价'][self.df_stock['证券代码'] == code] = price
     def _insertZhiJing(self,code, price, num, bSell, date):
         """添加资金记录, 余额|可用|参考市值|资产|盈亏
@@ -152,8 +159,10 @@ class LocalAcount(AccountDelegate):
         for col in '证券数量|库存数量'.split('|'):
             row[col] = num
         row['可卖数量'] = 0
-        for col in '买入均价|当前价'.split('|'):
+        row['买入数量'] = num
+        for col in '买入均价|当前价|参考成本价|参考盈亏成本价'.split('|'):
             row[col] = price
+        row['盈亏比例(%)'] = 0
         if (self.df_stock['证券代码'] == code).any():
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")	
@@ -161,7 +170,9 @@ class LocalAcount(AccountDelegate):
                 #更新股票列表
                 #self.df_stock['证券数量'][self.df_stock['证券代码'] == code] += num
                 self.df_stock['库存数量'][self.df_stock['证券代码'] == code] += num
+                self.df_stock['买入数量'][self.df_stock['证券代码'] == code] += num
         else:
+            #第一次买入
             self.df_stock.loc[len(self.df_stock)] = row
         self._insertZhiJing(code, price, num, bSell, date)
     def _sell(self, code, price, num, date):
@@ -279,6 +290,7 @@ class LocalAcount(AccountDelegate):
                 ui.AsynDrawKline.drawKline(df, df_trade)
 class mytest(unittest.TestCase):
     def test_simple(self):
+        """T+1测试"""
         import agl
         print(agl.getFunctionName())
         account = LocalAcount(BackTesting())
@@ -294,6 +306,21 @@ class mytest(unittest.TestCase):
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
         account.Report('2016-5-12')
         print(account.ZhiJing())
+    def test_buy_avg_price(self):
+        code = '300033'
+        account = LocalAcount(BackTesting())
+        account._buy(code, 50, 1000, '2017-9-9 9:30:00')
+        account._buy(code, 51, 500, '2017-9-12 9:30:00')
+        account._buy(code, 53.4, 2000, '2017-9-15 9:30:00')
+        account._sell(code, 50, 1000, '2017-9-19 9:30:00')
+        account._buy(code, 49, 2000, '2017-9-20 10:00:00')
+        df = account.StockList()
+        self.assertEqual((50*1000+51*500+53.4*2000+49*2000)/(1000+500+2000+2000),
+                         float(df[df['证券代码'] == code]['买入均价'].loc[0]))
+        account._sell(code, 55, 10000, '2017-9-22 10:00:00')
+        account._buy(code, 50, 500, '2017-9-22 14:00:00')
+        df = account.StockList()
+        print df
     def _test_multi(self):
         account = LocalAcount(BackTesting())
         code = '300033'

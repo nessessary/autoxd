@@ -798,6 +798,12 @@ def print_df(df):
         start_index = i
         i += 50
         print(df.iloc[start_index:i])
+def print_prettey_df(df):
+    from prettytable import PrettyTable
+    table = PrettyTable(df.columns.tolist())
+    for i,row in df.iterrows():
+	table.add_row(row.tolist())
+    print table       
 def print_c(ary):
     for x in ary:
         print(x)

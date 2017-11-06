@@ -177,37 +177,6 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 		return self._getAccount().Order(bSell, code, price, num)
 	return True
 
-    def Report(self, start_day, end_day):
-	"""回測报告"""
-	self._getAccount().Report(end_day)
-	#绘制图形
-	#end_day = help.MyDate.s_Dec(end_day, 1)
-	bars = stock.CreateFenshiPd(self.code, start_day, end_day)
-	bars = self
-	if len(bars) == 0:
-	    return
-	bars = bars.resample('1min').mean()
-	bars['positions'] = 0
-	bars['c'] = bars['p']
-	bars = bars.dropna()
-	df = self._getAccount().ChengJiao()
-	df_zhijing = self._getAccount().ZhiJing()
-	df_zhijing = df_zhijing[bars.index[0]:]
-	df_changwei = self._getAccount().ChengJiao()
-	cols = ['买卖标志','委托数量']
-	df_flag = df_changwei[cols[0]].map(lambda x: agl.where(int(x), -1, 1))
-	df_changwei[cols[1]] *= df_flag
-	changwei = stock.GuiYiHua(df_changwei[cols[1]].cumsum())
-	for i in range(len(df)):
-	    index = df.index[i]
-	    bSell = bool(df.iloc[i]['买卖标志']=='1')
-	    if index in bars.index:
-		#bars.ix[index]['positions'] = agl.where(bSell, -1, 1)
-		bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
-	trade_positions = np.array(bars['positions'])
-	ui.TradeResult_Boll(self.code, bars, trade_positions, \
-	    stock.GuiYiHua(df_zhijing['资产']), changwei)
-
 	    
 def main(args):
     #agl.LOG('sdf中')

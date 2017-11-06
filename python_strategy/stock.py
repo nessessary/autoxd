@@ -3336,6 +3336,10 @@ def TDX_BOLL(closes):
     upper = mid + 2*vart3
     lower = mid - 2*vart3
     return upper, mid, lower
+def TDX_BOLL2(closes):
+    upper, mid, lower = TDX_BOLL(closes)
+    w = abs(upper-lower)/mid*100
+    return upper, mid, lower,w
 #波动率指标
 def ATR(highs, lows, closes):
     """真实波幅"""
