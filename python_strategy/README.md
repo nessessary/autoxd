@@ -5,10 +5,10 @@
 这个回测框架主要关注具体的交易细节， 适合T+0操作
 
 1. 数据源<br>
-   请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, 下载后放置到<br>
-   python_strategy\datas目录中<br>
+   请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, <br>
+   下载该目录放置到python_strategy\datas目录中<br>
    要使用全部数据源可以联系作者或者修改框架使用第三方数据源, 具体见stock.DataSources<br>
-   stock_createThs.searial为同花顺F10全部数据, 可不下, 最后更新日期2017-9-6<br>
+   stock_createThs.searial为同花顺F10全部数据, 最后更新日期2017-9-6<br>
    自动加载， 使用见stock.py里的StockInfoThs<br>
    前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
 

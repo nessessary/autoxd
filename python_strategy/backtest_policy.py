@@ -136,13 +136,16 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
         def getTradeDay(d1, d2, dtype=backtest_runner.BackTestPolicy.enum.hisdat_mode):
             """确定是交易日
             return: (d1, d2)"""
-            if dtype == backtest_runner.BackTestPolicy.enum.hisdat_mode:
-                df = stock.getHisdatDataFrameFromRedis(code, d1, d2)
-            else:
-                df = stock.getFenshiDfUseRedis(code, d1,d2)
-            d2 = agl.datetime_to_date(df.index[-1])
-            if agl.DateTimeCmp(d1, agl.datetime_to_date(df.index[0])) <0:
-                d1 =  agl.datetime_to_date(df.index[0])
+            try:
+                if dtype == backtest_runner.BackTestPolicy.enum.hisdat_mode:
+                    df = stock.getHisdatDataFrameFromRedis(code, d1, d2)
+                else:
+                    df = stock.getFenshiDfUseRedis(code, d1,d2)
+                d2 = agl.datetime_to_date(df.index[-1])
+                if agl.DateTimeCmp(d1, agl.datetime_to_date(df.index[0])) <0:
+                    d1 =  agl.datetime_to_date(df.index[0])
+            except:
+                pass
             return d1, d2
             #for i in range(10):
                 #if d1 in df.index:
