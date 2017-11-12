@@ -138,6 +138,7 @@ class BackTestPolicy:
         changwei = df_changwei[cols[1]].cumsum()
         if self.mode == 1:
             df.index = df.index.map(lambda x: agl.datetime_to_date(x))
+        bars.is_copy = False
         for i in range(len(df)):
             index = df.index[i]
             bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
@@ -156,9 +157,11 @@ class BackTestPolicy:
         bars['资产'] = bars['可用']+bars['changwei']*bars['c']
         zhican = (bars['资产']-init_money)/init_money*100
         zhican = zhican.fillna(0)
-        ui.TradeResult_Boll(pl, bars, trade_positions, \
+        title = '%s %s'%(self.codes[0], stock.GetCodeName(self.codes[0]).decode('utf8'))
+        ui.TradeResult_Boll(agl.where(policy.pl, policy.pl, pl), bars, trade_positions, \
                             stock.GuiYiHua(zhican),\
-                            stock.GuiYiHua(bars['changwei']))
+                            stock.GuiYiHua(bars['changwei']),
+                            title=title)
     def SetStockCodes(self, codes):
         """对这些codes进行回测"""
         self.codes = codes

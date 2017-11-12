@@ -297,13 +297,18 @@ class mytest(unittest.TestCase):
 	code = '300087'
 	p = LiveLocalRunner()
 	p.ExePolicy(code)
-    def testLoadDll(self):
+    def _testLoadDll(self):
 	"""测试加载python_invoke.dll, 测试里面的speak函数"""
 	live_dll = live_policy.Live()
 	live_dll.speak2("蓝图")
+    def test_Speak(self):
+	"""测试语音, 去控制面板里的语音选择默认语音"""
+	live_dll = live_policy.Live()
+	live_dll.speak2('测试语音, 去控制面板里的语音选择默认语音')
     
 def main(args):
-    LiveLocalRunner().RunTask()
+    #LiveLocalRunner().RunTask()
+    unittest.main()
     print "end"
     
 if __name__ == "__main__":

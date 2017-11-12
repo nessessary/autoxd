@@ -357,6 +357,7 @@ def get_weituo_from_redis(is_have_return=False):
 	cols = '证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明'
 	cols = cols.split('|')
 	df = df[df['状态说明'] != '已成']
+	df = df[df['状态说明'] != '已撤']
 	df = df[df['买卖标志'] != '配售申购']
 	table = PrettyTable(cols)
 	for i,row in df.iterrows():
@@ -375,7 +376,8 @@ def get_chengjiao_from_redis(is_have_return=False):
 	from prettytable import PrettyTable
 	cols = '成交时间|证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号'
 	cols = cols.split('|')
-
+	df['成交金额'] = df['成交金额'].astype(float)
+	df = df[df['成交金额']>0]
 	table = PrettyTable(cols)
 	for i,row in df.iterrows():
 	    table.add_row(row[cols].tolist())
@@ -407,7 +409,6 @@ def main(args):
     #Sell("300033", 53, 100)
     #Sell(rqgf, 10.18,1000)
     #print hex(FindMainWindow())
-    #print "end"
     unittest.main()
 
     

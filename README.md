@@ -123,6 +123,10 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	#PostTask(buy_at_price_once, 60*60*3)	
 	return	
 ```
+	3)策略加载， 见live_policy_runner.py
+```python
+	p.Regist(boll_pramid.Strategy_Boll_Pre(live_policy.Live()))
+```
 
 3. 行情
 	1) 现只获取日k线, 5分钟线和分时线
@@ -136,7 +140,7 @@ listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
 
 4. 如何调用交易接口
 	1) 正确输入账号进入系统后， 交易账号即会登录， 且保持在线， 注意， 本系统使用的是通信协议登录方式，不影响其他软件，
-	   也就是一个机器上可以多个软件同时登陆
+	   也就是可以和通达信软件同时开启， 不影响其功能， 在autoxd下单后，在通达信刷新可以看见
 	2) 上面的例子可以看见使用了股票列表查询account.StockList(), 和买入account.Order(0, code, cur_price, 100)
 	   全部的交易接口见tc.py
 	3) 使用命令行方式调用接口

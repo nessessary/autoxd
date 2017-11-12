@@ -22,17 +22,24 @@ import numpy as np
 import pandas as pd
 import sys, traceback, time
 import live_policy, agl, pd_help, stock,help
-import backtest_policy, backtest_runner, simulator, myenum, ui
-
+import backtest_policy
+import backtest_runner
+import myenum, ui
 
 class Strategy:
     def __init__(self, data, is_backtesting=False, mode=0):
+	"""data: 运行时接口
+	is_backtesting:bool 是否是回测
+	mode: 回测使用, 允许模式， tick或hisdat
+	"""
+	self.pl	= None	#for publish
         self.data = data
 	self.is_backtesting = is_backtesting
 	self.mode = mode
         if 0:self.data = live_policy.Live()
 	#使用系统初始化的交易账户, 不使用该句将不能调用交易账号
 	self._setAccount(live_policy.enum.account_tc,'tdx', '')
+	self._recordClassMember()
     def _setAccount(self, account_type, user, pwd):
 	#注意， 现在只能支持一个账户
 	if self.data != None:
@@ -52,11 +59,23 @@ class Strategy:
 	    return self.data.tick
 	return agl.getCurTime()
     def getParams(self):
-	"""输出主要参数"""
-	return []
+	"""输出主要参数, 由框架打印出来"""
+	self._recordClassMember()
+	return self.class_member
     def setParams(self, *args, **kwargs):
-	"""设置策略参数"""
-	print('去派生类里实现')    
+	"""设置策略参数, 由派生类实现"""
+	pass
+    def _recordClassMember(self):
+	"""记录类成员"""
+	#纪录类成员
+	class_member = {}
+	if not hasattr(self, 'class_member'):
+	    self.class_member = {}
+	for i,j in vars(self).items():
+	    if i not in self.class_member.keys():
+		class_member[str(i)] = j
+	self.class_member = class_member
+	
     def Run(self):
         code = self.data.get_code()
 	#agl.LOG(code)
@@ -325,9 +344,9 @@ def BackTesting():
     p.Run('2014-11-1','2014-12-10')
 def main(args):
     #Strategy(live_policy.Live()).Run()
-    #BackTesting()
+    BackTesting()
     #Qjjy_accout.Test()
-    print "end"
+    #print "end"
     
 if __name__ == "__main__":
     try:

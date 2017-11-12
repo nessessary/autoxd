@@ -38,14 +38,6 @@ class Strategy_Boll_Pre(qjjy.Strategy):
 	return code == mydatas['symbol'][0]
 	codes = ['300033']	    #自己想交易的股票
 	return code in codes
-    def getParams(self):
-	"""输出主要参数"""
-	d = {}
-	return d
-    def setParams(self, *args, **kwargs):
-	"""设置策略参数"""
-	pass
-    
     def OnFirstRun(self):
 	"""回测调用函数， 在第一个bar时调用， 先建立底仓"""
 	code = self.data.get_code()

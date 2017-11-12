@@ -7,8 +7,7 @@
 1. 数据源<br>
    请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, 下载后放置到<br>
    python_strategy\datas目录中<br>
-	stock_getFenshiPanl.searial, stock_getFiveMinHisdatPanl.searial, stock_getHisdatPanl.searial
-   (现在的数据源仅仅是起一个demo的作用， 要使用全部数据源可以联系作者或者修改框架使用第三方数据源, 具体见stock.DataSources)<br>
+   要使用全部数据源可以联系作者或者修改框架使用第三方数据源, 具体见stock.DataSources<br>
    stock_createThs.searial为同花顺F10全部数据, 可不下, 最后更新日期2017-9-6<br>
    自动加载， 使用见stock.py里的StockInfoThs<br>
    前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
@@ -33,7 +32,24 @@
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
    <br>
    2>日线的例子<br>
-
+   支持并行<br>
    boll_fenchang.py<br>
 
+4. 发布
+   见boll_fencang.py
+   发布输出内容到web页面
+```python
+    #设置策略参数
+    def setParams(s):
+	s.setParams(trade_num = 300, 
+                    #pl=publish.Publish()	#发布方式
+                    )
+    if codes == '':
+	codes = [u'300033']
+    #执行策略
+    backtest_policy.test_strategy(codes, BollFenCangKline, setParams, day_num=20, mode=myenum.hisdat_mode, 
+                                  start_day='2016-10-20', end_day='2017-10-1'
+                                  )    
 
+```
+	

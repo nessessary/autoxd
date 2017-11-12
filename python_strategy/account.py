@@ -211,11 +211,11 @@ class LocalAcount(AccountDelegate):
         else:
             return self._buy(code, price, num,date)
     def StockList(self):
-        """return : df"""
+        """return : df 证券代码|证券名称|证券数量|库存数量|可卖数量|买入数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)|在途买入|在途卖出|股东代码"""
         return self.df_stock
     def ZhiJing(self):
         """每次交易后对资金表加一条记录
-        return: df 未处理余额"""
+        return: df 余额|可用|参考市值|资产|盈亏"""
         return self.df_zhijing
     def ChengJiao(self):
         """return: df"""
@@ -231,10 +231,8 @@ class LocalAcount(AccountDelegate):
     def Report(self, end_day, is_detail=False):
         import stock,agl
         #成交记录
-        df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','证券代码']]
-        #print df
-        #输出交易记录到json，供iChat访问
-        df.columns = ['price','num','flag','code']
+        df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','买0卖1','证券代码']]
+        df.columns = ['price','num','flag','flag2','code']
 
         df['d'] = df.index.astype(str)
         df['d'] = df['d'].map(lambda x: str(dateutil.parser.parse(x) + \
@@ -251,10 +249,7 @@ class LocalAcount(AccountDelegate):
             num = self.df_stock.iloc[0]['库存数量']
             shizhi += float(close)*int(num)
         print(self.df_zhijing.tail(n=1))
-        try:
-            print(u'市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
-        except:
-            print('市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
+        agl.Print('市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
         #如果持股不动，现在的资金
         #取第一次交易后的可用资金
         if len(self.df_zhijing)>1:
@@ -266,10 +261,7 @@ class LocalAcount(AccountDelegate):
         if len(self.df_ChengJiao)>0:
             num = self.df_ChengJiao.iloc[0]['成交数量']
         shizhi = num*close
-        try:
-            print(u'如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
-        except:
-            print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
+        agl.Print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
 
     #尝试使用tick ui
     def TickReport(self, df_five_hisdat, ShowStyle="all"):
@@ -288,8 +280,24 @@ class LocalAcount(AccountDelegate):
         else:
             if len(df) % 50 == 0:
                 ui.AsynDrawKline.drawKline(df, df_trade)
+
+class AccountMgr(object):
+    def __init__(self, account, price, code):
+        if 0:self.account = ac.LocalAcount
+        self.account = account
+        self.price = price
+        self.code = code
+    def total_money(self):
+        df_zhijing = self.account.ZhiJing()
+        df_stock = self.account.StockList()
+        num = agl.where(len(df_stock)>0, float(df_stock.iloc[-1]['库存数量']), 0)
+        return float(df_zhijing.iloc[-1]['可用']) + num*self.price
+    def init_money(self):
+        df_zhijing = self.account.ZhiJing()
+        return float(df_zhijing.iloc[0]['资产'])
+
 class mytest(unittest.TestCase):
-    def test_simple(self):
+    def _test_simple(self):
         """T+1测试"""
         import agl
         print(agl.getFunctionName())
@@ -307,6 +315,10 @@ class mytest(unittest.TestCase):
         account.Report('2016-5-12')
         print(account.ZhiJing())
     def test_buy_avg_price(self):
+        from pypublish import publish
+        pl = publish.Publish()
+        #import os, psutil
+        #print psutil.Process(os.getpid()).cmdline()
         code = '300033'
         account = LocalAcount(BackTesting())
         account._buy(code, 50, 1000, '2017-9-9 9:30:00')

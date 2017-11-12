@@ -81,7 +81,7 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
     def IsWeituo(self, code, num, price):
         """对于模拟分时买入的判断， """
         order = self.account.getLastWeiTuo(code)
-        if order.num == num and agl.PriceEq(order.price, price):
+        if order.num == num and agl.Eq(order.price, price):
             return True
         return False
     def getLastWeituo(self, code):
@@ -95,6 +95,13 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
 def main(args):
     print "end"
 
+def MultiProcessRun(cpu, args, fn_name, mod):
+    """多进程执行, 并行
+    """
+    from MultiSubProcess import MultiSubProcess
+    multi = MultiSubProcess.MultiSubProcess()
+    multi.Map(cpu, mod, fn_name, args)
+    multi.Run()	  
 def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0, start_day='', end_day=''):	
     """strategy_name: str 通过策略名称来构造策略
     cbfn_setparams: callback function 回调函数 fn(strategy) 用该函数来重新设置参数
@@ -105,10 +112,7 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     for code in codes:
-        try:
-            print code, agl.utf8_to_unicode(stock.GetCodeName(code))
-        except:
-            print code, stock.GetCodeName(code)
+        agl.Print( code, stock.GetCodeName(code))
         p = backtest_runner.BackTestPolicy(mode)
         p.SetStockCodes([code])
         backtesting = Backtest()
@@ -118,6 +122,8 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
         #设置策略参数
         if cbfn_setparams is not None:
             cbfn_setparams(strategy)
+        else:
+            strategy.setParams()
         print(strategy.getParams())
         p.Regist(strategy)
         #p.Regist(Strategy_Trade(backtesting, is_backtesting=True))

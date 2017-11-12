@@ -5,7 +5,10 @@
 # QQ: 1764462457
 
 import os
-#import mysql
+try:
+    import mysql
+except:
+    pass
 import help,agl
 import time
 import datetime, dateutil
@@ -61,12 +64,14 @@ def getKlineLastDay():
     t = mysql.createStockDb().ExecSql(sql)
     return str(t[0][0])
 def getHisdatDataFrameFromRedis(code, start_day='', end_day=''):
-    """得到日线df从redis, 如果是板块那么返回的是pd.Series return: df ohlc"""
+    """得到日线df从redis, 如果是板块那么返回的是pd.Series 
+    return: df ohlc"""
     df = myredis.get_obj(code)
     if agl.IsNone(df):
         #to call DumpToRedis
         msg = '%s, getHisdatDataFrameFromRedis no relust, %s, %s'%(code, start_day, end_day)
-        agl.LOG(msg)
+        #agl.LOG(msg)
+        return pd.DataFrame([])
     if start_day != '' and end_day != '':
         df = df.ix[start_day:end_day]
     elif start_day != '':
@@ -104,11 +109,13 @@ class FenshiCodeCache:
             if key.find(FenshiBankuaiCache.keyhead)==0:
                 myredis.delkey(key)	
 def getFenshiDfUseRedis(code, start_day, end_day, rule='1min'):
+    """数据更新跑fenshi_redis.py"""
     df_fenshi = FenshiCodeCache(code).getBankuaiFenshiZhishu()
     if df_fenshi is None:
         df_fenshi = CreateFenshiPd(code, start_day, end_day)
         if len(df_fenshi)>0:
-            df_fenshi = df_fenshi.resample(rule).mean()
+            if rule == '1min':
+                df_fenshi = df_fenshi.resample(rule).mean()
     return df_fenshi    
 
 
@@ -315,32 +322,43 @@ class mytest(unittest.TestCase):
         #print get_codes(myenum.randn,100)
         #for bankuai in createThs().getBankuais():
             #print bankuai
+        codes = get_codes()
         print(get_codes())
+        print(len(codes))
+        print(len(mysql.get_codes()))
     def _test_adx(self):
         code = '300033'
         df_five_hisdat = mysql.getFiveHisdat(code, start_day='2017-6-14')
         #df_five_hisdat = pd.read_csv('../test.csv')
         df_five_hisdat = df_five_hisdat.sort_index()
-        agl.print_df(df_five_hisdat)
+        #agl.print_df(df_five_hisdat)
         highs, lows, closes = df_five_hisdat['h'], df_five_hisdat['l'], df_five_hisdat['c']
         adx = ADX(highs, lows, closes)
         #ui.DrawTs(pl, ts=closes,high=adx)
         print(adx[-1])
         adx = TDX_ADX(highs, lows, closes)
         print(adx[-1], len(adx))
+        print(adx[-5:])
         #经观测， 基本一致
         #ui.DrawTs(pl, ts=closes[-100:],high=adx[-100:])
-    def _test_boll(self):
-        code = '000043'
-        df_five_hisdat = getFiveHisdatDf(code,'2016-1-1')
-        closes = df_five_hisdat['c']
-        print(closes)
-        upper, middle, lower = BOLL(df_five_hisdat['c'])
-        print(upper[-1], lower[-1])
-        ui.DrawTs(pl, ts=closes, high=upper, low=lower)
+    def test_boll(self):
+        code = '300113'
+        df_five_hisdat = getFiveHisdatDf(code,'2017-5-1')
+        #print(closes)
+        #upper, middle, lower = BOLL(df_five_hisdat['c'])
+        #print(upper[-1], lower[-1])
         upper, middle, lower = TDX_BOLL(df_five_hisdat['c'])
-        print(upper[-1], lower[-1])
-        ui.DrawTs(pl, ts=closes, high=upper, low=lower)
+        print upper[-10:]
+        print middle[-10:]
+        print lower[-10:]
+        #df_five_hisdat['upper'] = upper
+        #df_five_hisdat['lower'] = lower
+        #df_five_hisdat['mid'] = middle
+        #df = df_five_hisdat[['upper', 'c', 'mid', 'lower']]
+        #df.plot()
+        #pl.show()
+        upper, middle, lower, boll_w = TDX_BOLL2(df_five_hisdat['c'])
+        print boll_w
     def _test_livedata(self):
         code = '300033'
         #print LiveData().getFiveMinHisdat('000043')
@@ -377,8 +395,12 @@ class mytest(unittest.TestCase):
         df = getHisdatDf(code, start_day, end_day, True)
         #df = FenshiEx(code, start_day, end_day, True).df
         print(df)
-    def test_bankuai_analyze(self):
+    def _test_bankuai_analyze(self):
         StockInfoThs.Test()
+    def _test_GetCodeName(self):
+        print GetCodeName('603444')
+    def _test_get_ths_codes(self):
+        print getTHS_custom_codes()
 def IsKaiPan():
     """确定当前是处于开盘时间 return: bool"""
     t = ['9:31:00','11:30:00','13:00:00', '15:03:00']	#后面的3分钟让策略执行一些收盘工作
@@ -2630,14 +2652,15 @@ class DataSources:
         return panel
     @staticmethod
     def getFenshiPanl(codes, days):
-        """索引使用datetime, 如果是一天的，那么day1=day2"""
+        """索引使用datetime, 如果是一天的，那么day1=day2
+        return: dict"""
         def gen():
             start_day , end_day = days
             d = {}
             for code in codes:
                 fenshi = FenshiEx(code, start_day, end_day, is_fuquan=True)
                 if len(fenshi.df) == 0:
-                    return d
+                    assert(False)
                 fenshi.df = fenshi.df[fenshi.df['p']>0.01]
                 d[code] = fenshi.df
             return d
@@ -2647,6 +2670,7 @@ class DataSources:
         return d
     @staticmethod
     def getFiveMinHisdatPanl(codes, days):
+        """return: dict"""
         def gen():
             start_day , end_day = days
             d = {}
@@ -2658,13 +2682,28 @@ class DataSources:
         if d is None:
             d = gen()
         return d
+    @staticmethod
+    def getCodes():
+        """return: list"""
+        def gen():
+            return [u'300059',u'300229',u'600630',u'002466', u'300033']
+        d = agl.SerialMgr.serialAuto(gen)
+        if d is None:
+            d = gen()
+        return d
+            
     @staticmethod   
     def Test():
         agl.tic()
-        codes = simulator.ISimulator.getGupiaos(enum.rand10)
-        days = ('2014-1-1', '2014-5-5')
+        codes = DataSources.getCodes()
+        days = ('2016-1-1', '2017-11-5')
+        DataSources.getHisdatPanl(codes, days)
         print( DataSources.getHisdatPanl(codes, days).ix[codes[0]].head(2))
-        #print agl.SerialMgr.serialAuto(DataSources.getHisdatPanl, codes, ('2014-1-1', '2014-5-5') )
+        days = ('2017-5-15', '2017-11-5')
+        DataSources.getFiveMinHisdatPanl(codes, days)
+        print(DataSources.getFiveMinHisdatPanl(codes, days)[codes[0]].head(2))
+        days = ('2017-8-1', '2017-9-20')
+        DataSources.getFenshiPanl(codes, days)
         print( DataSources.getFenshiPanl(codes, days)[codes[0]].head(2))
         agl.toc()
 
@@ -3465,6 +3504,67 @@ def FENSHI_BIAS(df):
     df = FENSHI_MA(df)
     df['bias'] = (df['p'] - df['avg'])*100 / df['avg']
     return df
+
+def ZigZag(closes, percent=1):
+    """计算zz线
+    return: np.ndarray"""
+    #如果是有负值的向量， 需要先偏移到正值再计算
+    m = min(closes)
+    if m<0:
+        closes += abs(m)+0
+
+    direction = 0;
+    zz = []
+    zz.append([0, closes[0]])
+
+    j = 0 
+    max_val = max(closes)
+    for i in range(1, len(closes)):
+        relClose = (closes[i] - zz[j][1]) / max_val * 100
+        if (abs(relClose)>=percent) and (direction==0):
+            j += 1
+            zz.append([i, closes[i]])
+            direction = help.sign(relClose)
+
+        if (closes[i]>=zz[j][1]) and (direction==1):
+            zz[j][0] = i
+            zz[j][1] = closes[i]
+
+        if (relClose < -percent) and (direction==1):
+            direction = -1
+            j=j+1
+            zz.append([i,closes[i]])
+
+        if (closes[i] < zz[j][1]) and (direction == -1):
+            zz[j][0] = i
+            zz[j][1] = closes[i]
+
+        if relClose >= percent and direction==-1:
+            direction = 1
+            j += 1
+            zz.append([i, closes[i]])
+
+    #如果最后一个没有保存， 那么记上	
+    if agl.array_last(zz)[0] != len(closes) -1:
+        j += 1
+        i = len(closes) -1
+        zz.append([i, closes[i]])
+
+    #负值还原
+    zz = np.array(zz)
+    if m < 0:
+        zz[:,1] -= abs(m) +0
+        closes -= abs(m)+0
+
+    return zz   
+def analyzeZZ(zz):
+    """只取最后两段
+    return: np.darray [[direction0, y0],[direction1, y1]] 方向1为上涨， -1为下跌, 价格差比, 前一个价格作为基准
+    """
+    zz = zz[-3:]
+    y0 = (zz[1,1]-zz[0, 1])/zz[0,1]
+    y1 = (zz[2,1]-zz[1,1])/zz[1,1]
+    return (y0, y1)    
 #----------------------------------------------------------------------
 def Unittest_Kline():
     """"""
@@ -3906,7 +4006,7 @@ def main():
     #test_summary_bankuai_zhangfu()
     #test_beta()
     #test_calc_bankuai_zhishu()
-    #DataSources.Test()
+    DataSources.Test()
     #test_get_yjyb()
     #memcache_load()
     #print Guider.getAllKlineDf()
@@ -3920,7 +4020,7 @@ def main():
     #StockInfoThs.genCodeNameTbl()
     #print GetCodeName('300059')
 
-    unittest.main()
+    #unittest.main()
 if __name__ == "__main__":
     main()
     print('end')

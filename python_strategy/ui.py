@@ -420,6 +420,14 @@ def DrawHist(pl, shs):
         pl.show()
         #ShowHitCount(shs)
 
+def barh(pl, x, h, title=''):
+    pl.figure
+    if title != '':
+        pl.title(title)
+    pl.barh(x, h, height=0.1)
+    pl.show()
+    pl.close()
+    
 def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     """绘制策略的交易结果
     注意，bars不能有nan，否则画不出箭头
@@ -469,7 +477,7 @@ def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     pl.show()
     pl.close()
 
-def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0, freq=300):
+def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0, freq=300, title=''):
     """绘制策略的交易结果, 交易剔除了非交易时间， 资金未剔除， 因此两者的xtick看起来是不一致的
     注意，bars不能有nan，否则画不出箭头
     bars: pd.DateFrame 日线等数据集 index为时间 收盘为['c']
@@ -486,6 +494,8 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     fig = pl.gcf()
     fig.patch.set_facecolor('white')     # Set the outer colour to white
     ax1 = fig.add_subplot(211,  ylabel='Price in RMB')
+    if title != '':
+        pl.title(title, fontproperties=getFont())
 
     #思路， 把时间转整数，显示时再把整数转时间字符串
     # 为了去除非交易时间， 把index 转换为整数
@@ -561,12 +571,13 @@ def testShowTradeResult():
     returns = portfolio.backtest_portfolio()
     ShowTradeResult(pl, bars, signals, returns, 2)
 
-def TradeResult_Boll(pl, bars, trade_positions, zhijin,changwei):
+def TradeResult_Boll(pl, bars, trade_positions, zhijin,changwei, title=''):
     """显示策略结果
     bars: df 包含有  c字段即可
     trade_positions: np.darray or df 交易信号
     zhijin: df index同bars
     changwei: df index同bars
+    title: str 中文需要使用decode(utf8)
     """
 
     signals = pd.DataFrame(index=bars.index)
@@ -579,7 +590,7 @@ def TradeResult_Boll(pl, bars, trade_positions, zhijin,changwei):
         signals['positions'][20] = -1
     else:
         signals['positions'] = trade_positions
-    ShowTradeResult2(pl, bars, signals, zhijin,changwei , 0)
+    ShowTradeResult2(pl, bars, signals, zhijin,changwei , 0, title=title)
 def testTradeResult_Boll():
     code = '002074'
     bars = stock.CreateFenshiPd(code, '2017-7-22','2017-8-4')
@@ -594,7 +605,7 @@ def testTradeResult_Boll():
     zhijin[100] = 1010000
     zhijin[200] = 980000
 
-    TradeResult_Boll(pl, bars, None, zhijin, None)
+    TradeResult_Boll(pl, bars, None, zhijin, None, stock.GetCodeName(code).decode('utf8'))
 def ShowCode(pl, code):
     closes = stock.Guider(code).getCloses()
     DrawTs(pl, closes)
@@ -831,7 +842,18 @@ class MyTest(unittest.TestCase):
         fenshi = stock.getFenshiDfUseRedis(code, date[0],date[1])
         print(fenshi)
         DrawTs(pl, ts=fenshi['p'])
-    def _test_ShowTradeResult(self):
+    def _test_DrawZZ(self):
+        code = '300033'
+        df_five_hisdat = stock.getFiveHisdatDf(code)
+        closes = df_five_hisdat['c'][-500:]
+        zz = stock.ZigZag(closes,percent=1)
+        DrawDvsAndZZ(pl, closes, zz)
+        #df = stock.getHisdatDataFrameFromRedis(code)
+        #closes = df['c']
+        #zz = stock.ZigZag(closes,percent=1)
+        #DrawDvsAndZZ(pl, closes, zz)
+        
+    def test_ShowTradeResult(self):
         #testShowTradeResult()
         testTradeResult_Boll()
     def _test_AsynDrawKline(self):
@@ -854,7 +876,7 @@ class MyTest(unittest.TestCase):
 
         plt.ioff()
         #plt.show()  #最后停在画面处， 没有的话进程结束
-    def test_3d(self):
+    def _test_3d(self):
         draw3d()
 
 if __name__ == "__main__":

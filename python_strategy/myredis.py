@@ -114,6 +114,14 @@ def isexist(key):
 def delkey(key):
     r = createRedis()
     r.delete(key)
+def delKeys(k):
+    """删除包含关键字的key
+    k: str 关键字"""
+    r = createRedis()
+    for key in r.keys():
+        if key.find(k)>=0:
+            r.delete(key)
+    
 def clear():
     r = createRedis()
     for key in r.keys():
@@ -125,8 +133,11 @@ def ForceGetObj(k,v):
     """如果没有该值， 那么存储"""
     v1 = get_obj(k)
     if v1 is None:
-        v1 = v
-        set_obj(k, v)
+        if agl.is_function(v):
+            v1 = v()            
+        else:
+            v1 = v
+        set_obj(k, v1)
     return v1
 
 def createRedisVal(key, v):

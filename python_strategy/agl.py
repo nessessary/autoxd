@@ -294,6 +294,23 @@ def archiveZip(filename, dirSrc):
             f.write(os.path.join(dirpath,filename))  
     f.close()  	    
 
+def Print(a1, a2='', a3='', a4='', a5='', a6='', a7=''):
+    vals = [a1, a2, a3, a4, a5, a6, a7]
+    s = ''
+    for val in vals:
+	if val != '':
+	    if isinstance(val, str):
+		val = val.decode('utf-8')
+	    if isinstance(val, unicode):
+		val = val.encode('gb2312')
+		#val = val.decode("utf-8")
+	    if isinstance(val, float):
+		val = round(val, 4)
+	    s += str(val)
+	    s += " "
+    s += ''
+    print(s)
+    
 def ReadFile(fname):
     """return: str"""
     f = open(fname, 'r')
@@ -390,7 +407,7 @@ def DateEq(d1,d2):
     if isinstance(d2, str):
         d2 = dateutil.parser.parse(d2)
     return d1 == d2
-def PriceEq(price1, price2):
+def Eq(price1, price2):
     delta = int(price2*0.1)*0.01+0.01
     return abs(price1 - price2) <= delta
 class SerialMgr:
@@ -750,7 +767,8 @@ def is_utf8(s):
     return charade.detect(s)['encoding'] == 'utf-8'
 def is_unicode(s):
     return isinstance(s, unicode)
-
+def is_function(fn):
+    return hasattr(fn, '__call__')
 def df_filter(df, fn):
     for index, row in df.iterrows():
         fn(row)
