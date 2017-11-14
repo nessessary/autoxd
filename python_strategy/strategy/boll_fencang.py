@@ -5,7 +5,7 @@
 import numpy as np
 import pandas as pd
 import boll_pramid
-import backtest_policy, stock, myenum, agl, account as ac, help, myredis
+import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so
 import os
 agl.tic()
 
@@ -14,18 +14,17 @@ agl.tic()
 class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
     """基于日线的boll分仓, 基本指标使用日线Boll以及日线Four"""
     def setParams(self, *args, **kwargs):
-	self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
-	self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())
-	myredis.delKeys('BollFenCangKline')
 	self.base_num =	10000		#第一次买卖的数量    
 	self.base_num_ratio = 0.1	#总资金的10%作为初始建仓, 与上一个变量两者可选， 注释该行使用绝对数量
 	self.base_ratio	= 0.05		#盈亏区间的比率
 	self.rhombus_mid_ratio = 0.3	#仓位形态菱形的下部占比
-	self.four = [-0.3, 0.3]		#第一次买卖的技术指标阀值
+	self.four = [-0.5, 0.5]		#第一次买卖的技术指标阀值
 	for k, v in kwargs.iteritems():
 	    setattr(self, k, v)
     def OnFirstRun(self):
-	pass
+	self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
+	self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())
+	myredis.delKeys('BollFenCangKline')
     def Run(self):
 	account = self._getAccount()
 	code = self.data.get_code()
@@ -33,10 +32,10 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 	closes = hisdat['c'].dropna()
 	four = stock.FOUR(closes)
 	four = four[-1]
-	#up, mid, low ,boll_w= stock.TDX_BOLL2(closes)
-	#adx = stock.TDX_ADX(hisdat['h'], hisdat['l'], closes)
-	#print self.getCurTime(), four
+	boll_up, boll_mid, boll_low ,boll_w= stock.TDX_BOLL2(closes)
+	adx = stock.TDX_ADX(hisdat['h'], hisdat['l'], closes)
 	price = hisdat.iloc[-1]['c']
+	#print self.getCurTime(), four, price, boll_low[-1], boll_w[-1]
 	#if four>0.1:
 	    #self._getAccount().Order(1, code, price, 1000)
 	
@@ -47,7 +46,11 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 	#当成本亏base_ratio%时加倍买入
 	df_stock_list = account.StockList()
 	df_stock_list = df_stock_list[df_stock_list['证券代码'] == code]
-	if four<self.four[0] and len(df_stock_list) == 0:  #第一次买
+	#第一次买
+	if so.assemble(four<self.four[0] ,len(df_stock_list) == 0 ,
+	               #price<boll_low[-1] ,
+	               #boll_w[-1]>2
+	               ):  
 	    if hasattr(self, 'base_num_ratio'):
 		total_money = ac.AccountMgr(self._getAccount(), price, code).init_money()
 		self.base_num = ac.ShouShu(total_money*self.base_num_ratio/price)
@@ -102,32 +105,21 @@ def Run(codes='', task_id=0):
     def setParams(s):
 	if 0: s = Strategy_Boll
 	s.setParams(trade_num = 300, 
-                    #pl=publish.Publish()
+                    pl=publish.Publish()
                     )
     if codes == '':
-	codes = [u'300033']
+	codes = ['300033']
     #现在的5分钟线在2017-5-15之后才有
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams, day_num=20, mode=myenum.hisdat_mode, 
                                   start_day='2016-10-20', end_day='2017-10-1'
                                   )    
 
   
-def getYinKui(myAccount, code):
-    """获取股票资金帐户的盈亏
-    return: float 盈亏百分比"""
-    if 0: myAccount = account.LocalAcount
-    df_stock_list = myAccount.StockList()
-    df_stock_list = df_stock_list[df_stock_list['证券代码'] == code]
-    if len(df_stock_list) > 0:
-	yinkui = df_stock_list['参考盈亏成本价'].tolist()[0]
-	return float(yinkui)
-    return 0
 def calcYinKui(price, chengben):
     return (price - chengben)/chengben
-
 if __name__ == "__main__":
     is_multi = 0
-    #is_multi = 1
+    is_multi = 1
     if not is_multi:
 	Run()
     else:

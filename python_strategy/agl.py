@@ -935,6 +935,13 @@ def ClustList(n_clusters, X):
     l.sort()
     return l
 
+def MD5(s):
+    import hashlib   
+    
+    m2 = hashlib.md5()   
+    m2.update(s)   
+    return m2.hexdigest()       
+
 def main(args):
     #TestMoveFile()
 

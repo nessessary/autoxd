@@ -1,4 +1,9 @@
 #-*- coding:utf-8 -*-
+# Copyright (c) Kang Wang. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+# QQ: 1764462457
+
 import numpy as np
 import pylab as pl
 import sys,os,psutil
@@ -8,7 +13,6 @@ import sys,os,psutil
 plot生成png，绑定到html中
 2014-3-7 耗时4小时
 """
-__author__ = "wang--kang@sohu.com"
 
 def publishinfo():
     return sys._getframe(2).f_code.co_filename, sys._getframe(2).f_code.co_name, sys._getframe(2).f_lineno
@@ -55,7 +59,8 @@ class Publish:
         if not os.path.isdir("html"):
             os.mkdir("html")
         #重定向输出
-        self.logfile = open("log.txt", "w")
+        self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
+        self.logfile = open(self.redirect_fname, "w")
         self.oldstdout = sys.stdout
         sys.stdout = self.logfile
         
@@ -76,7 +81,7 @@ class Publish:
         
         self.logfile.close()
         sys.stdout = self.oldstdout
-        f = open("log.txt", "r")
+        f = open(self.redirect_fname, "r")
         output = f.read()
         f.close()
         
@@ -90,13 +95,14 @@ class Publish:
         self.t_html = self.t_html.replace('utf-8', self.encode)
         
         #写入html
-        f = open(self.path+self.name+'.html','w')
+        fname = self.path+self.name+str(os.getpid())+'.html'
+        f = open(fname,'w')
         f.write(self.t_html)
         f.close()
         
         #打开html
         if self.is_run_shell:
-            command = 'start ' + self.path+self.name+'.html'
+            command = 'start ' + fname
             os.system(command)
         
     
@@ -186,8 +192,11 @@ class Publish:
         self.t_html = self.t_html.replace('<%img%>', img_html)
     
     def AddOutput(self, output):
-        #if self.encode != 'utf-8':
-            #output = output.decode('utf-8').encode('gb2312')
+        try:
+            if self.encode != 'utf-8':
+                output = output.decode('utf-8').encode('gb2312')
+        except:
+            pass
         self.t_html = self.t_html.replace('<%output%>', output)
         import datetime
         year = datetime.datetime.now().year

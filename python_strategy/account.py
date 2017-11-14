@@ -283,7 +283,7 @@ class LocalAcount(AccountDelegate):
 
 class AccountMgr(object):
     def __init__(self, account, price, code):
-        if 0:self.account = ac.LocalAcount
+        if 0:self.account = LocalAcount
         self.account = account
         self.price = price
         self.code = code
@@ -295,6 +295,14 @@ class AccountMgr(object):
     def init_money(self):
         df_zhijing = self.account.ZhiJing()
         return float(df_zhijing.iloc[0]['资产'])
+    def yin_kui(self):
+        df_stock_list = self.account.StockList()
+        df_stock_list = df_stock_list[df_stock_list['证券代码'] == self.code]
+        if len(df_stock_list) > 0:
+            yinkui = df_stock_list['参考盈亏成本价'].tolist()[0]
+            return float(yinkui)
+        return 0
+        
 
 class mytest(unittest.TestCase):
     def _test_simple(self):

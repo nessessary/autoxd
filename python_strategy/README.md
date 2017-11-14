@@ -13,7 +13,7 @@
    前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
 
 2. 依赖包问题， 如果使用自己的anaconda， 需要32bit python2.7版本的， 其次需要的库为ta-lib, redis, charade等<br>
-   或者下载安装包， 里面带一份anaconda， 已经包含了所需要的库， 使用该目录即可
+   或者下载安装包， 里面带一份anaconda， 已经包含了所需要的库， 使用该目录即可，以下只在windows下测试通过，linux可能有问题<br>
 
 3. 执行
    回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
