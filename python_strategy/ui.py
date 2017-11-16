@@ -692,12 +692,12 @@ def drawBeta(pl, df, title):
     pl.title(title, fontproperties=getFont())
     pl.show()
     pl.close()     
-def drawBoll(pl, closes, up, mid, down):
+def drawBoll(pl, closes, boll_up, boll_mid, boll_low):
     pl.figure
     pl.plot(closes)
-    pl.plot(up)
-    pl.plot(mid)
-    pl.plot(down)
+    pl.plot(boll_up)
+    pl.plot(boll_mid)
+    pl.plot(boll_low)
     pl.show()
     pl.close()
 

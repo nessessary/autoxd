@@ -36,28 +36,31 @@ def get_codes(flag=myenum.all, n=100):
     flag : enum.all 等枚举 , enum.exclude_cyb 排除创业板, enum.rand10 随机选10个
     n : enum.rand时使用
     return: list """
-    try:
-        #从本地csv读取
-        fname = 'datas/tdx_codes.csv'
-        df = pd.read_csv(fname, dtype=str, header=None)
-        codes = df[0].tolist()
-        #codes = LiveData().getCodes()
-    except:
+    key = myredis.enum.KEY_CODES    #更新ths F10时删除
+    val = myredis.createRedisVal(key, [])
+    codes = val.get()
+    if len(codes) == 0:
         #从ths中取
         ths = createThs()
         codes = ths.getDf(0)['code'].tolist()
-    if len(codes)>0:
-        #默认去除大盘的代码
-        dapans = ['399001', '999999','399005','399002','399006','510050']
-        codes = [unicode(code) for code in codes if code not in dapans]
-        codes = filter(lambda x: x[:2] != '88', codes)
-        if flag == myenum.randn:
-            codes = np.array(codes)
-            from sklearn.utils import shuffle
-            codes = shuffle(codes)
-            return list(codes[:n])
-        return codes	    
+        if len(codes)>0:
+            #默认去除大盘的代码
+            dapans = ['399001', '999999','399005','399002','399006','510050']
+            codes = [unicode(code) for code in codes if code not in dapans]
+            #codes = filter(lambda x: x[:2] != '88', codes)
+            val.set(codes)
+    if flag == myenum.randn:
+        from sklearn.utils import shuffle
+        codes = shuffle(codes)
+        return list(codes[:n])
+    return codes
 
+def get_bankuais():
+    """获取同花顺的全部板块名称列表 return: list"""
+    key = myredis.enum.KEY_BANKUAIS
+    val = myredis.createRedisVal(key, lambda : list(createThs().getBankuais()))
+    return val.get()
+    
 def getKlineLastDay():
     """得到日线库中的最后一天, return: str day"""
     sql = 'select max(kline.kline_time) from kline'
@@ -341,7 +344,7 @@ class mytest(unittest.TestCase):
         print(adx[-5:])
         #经观测， 基本一致
         #ui.DrawTs(pl, ts=closes[-100:],high=adx[-100:])
-    def test_boll(self):
+    def _test_boll(self):
         code = '300113'
         df_five_hisdat = getFiveHisdatDf(code,'2017-5-1')
         #print(closes)
@@ -364,7 +367,9 @@ class mytest(unittest.TestCase):
         #print LiveData().getFiveMinHisdat('000043')
         print(LiveData().getFenshi(code))
     def _test_ths(self):
+        agl.tic()
         ths = createThs()
+        agl.toc()
         code1 = '002074'
         code1 = '600981'
         code1 = '600120'
@@ -395,8 +400,13 @@ class mytest(unittest.TestCase):
         df = getHisdatDf(code, start_day, end_day, True)
         #df = FenshiEx(code, start_day, end_day, True).df
         print(df)
+    def test_Bankuais(self):
+        #myredis.delkey(myredis.enum.KEY_BANKUAIS)
+        for bankuai in get_bankuais():
+            print bankuai
+        print filter(lambda x: x.find('360')>=0, get_bankuais())
     def _test_bankuai_analyze(self):
-        StockInfoThs.Test()
+        StockInfoThs.Test_Bankuai_Zhishu()
     def _test_GetCodeName(self):
         print GetCodeName('603444')
     def _test_get_ths_codes(self):
@@ -878,6 +888,8 @@ class StockInfoThs:
         #if len(df_hy) == 0:
         df_hy = df[df['概念强弱排名'].map(re_hy)]
         # df_hy[['code','name','市盈率动态', 'four','流通A股']]
+        if len(df_hy) == 0:
+            return np.nan, df_hy
         return np.average(np.array(df_hy['市盈率动态'], dtype=float)), df_hy
     @staticmethod
     def genCodeNameTbl():
@@ -885,9 +897,7 @@ class StockInfoThs:
         ths = createThs()
         df = ths.getDf(0)
         df = df[['code', 'name']]
-        n = 'df_codenametbl'
-        myredis.set_obj(n, df)
-        return myredis.get_obj(n)
+        return df
     class ThsOneCode:
         def __init__(self, d, price=0):
             self.d = d
@@ -1170,9 +1180,6 @@ class StockInfoThs:
         result = client.get('some_key')
         print(result)
     @staticmethod
-    def Test():
-        StockInfoThs.Test_Bankuai_Zhishu()
-    @staticmethod
     def Test_Bankuai_Zhishu():
         """由一个股票计算出其所属全部板块的指数, 并显示当前板块涨幅分布"""
         #个股与板块相关性beta的判断,  下面是两个个股的相关性排序，从结果看基本准确
@@ -1217,19 +1224,18 @@ def GetCodeName(code):
     """从redis中取出名称 return: str"""
     if code=='510050':
         return '50ETF'
-    try:
-        key = 'df_codenametbl'
+    key = myredis.enum.KEY_CODENAME
+    if key not in myredis.getKeys():
+        df = StockInfoThs.genCodeNameTbl()
+        myredis.set_obj(key, df)
+    else:
         df = myredis.get_obj(key)
-        is_recreate = False
-        if df is not None:
-            if len(df[df['code'] == code]) == 0:
-                is_recreate = True
-        if agl.IsNone(df) or is_recreate:
-            StockInfoThs.genCodeNameTbl()
-            df = myredis.get_obj(key)
+    assert(len(df)>0)
+    assert(df is not None)
+    try:
         return df[df['code'] == code]['name'].tolist()[0]
     except:
-        return "新股"
+        return '新股'
 def load_ths_custom_codes():
     '先用ths导出自选股到桌面 获取自选股列表 return: list'
     fname = 'C:/Users/Administrator/Desktop/table.txt'
@@ -1243,6 +1249,13 @@ def load_ths_custom_codes():
                     codes.append(code)
         f.close()	
     return codes
+def getTHS_custom_codes():
+    s = '510050'
+    for code in load_ths_custom_codes():
+        s += '|'
+        s += code
+    return s
+    
 ########################################################################
 class Hisdat:
     """"""
@@ -3349,11 +3362,13 @@ def BOLL(closes, matype=MA_Type.EMA):
     closes = np.array(closes)
     return talib.BBANDS(closes, timeperiod=20, matype=matype)
 def TDX_BOLL(closes):
-    """np.ndarray
+    """最新版的TDX和该版本有轻微的差别， 但差别不大
+    closes: np.ndarray
     return: upper, middle, lower
 通达信的系统BOLL-M
     {参数 N: 2  250  20 }
     MID:=MA(C,N);
+    #MID:=SMA(C,N,1);
     VART1:=POW((C-MID),2);
     VART2:=MA(VART1,N);
     VART3:=SQRT(VART2);
@@ -3364,6 +3379,7 @@ def TDX_BOLL(closes):
     LB:REF(LOWER,1),COLORFF00FF;    
     """    
     closes = np.array(closes)
+    assert(len(closes)>=20)
     n = 20
     mid = talib.MA(closes, n)
     vart1 = np.zeros(len(closes))
@@ -3934,6 +3950,8 @@ class TdxBlock:
         #print tb.getBankuaiCodes(u'有色')
         #print tb.getBankuaiCodes('880227')
 
+
+        
 def ZhengFu(v1, v2):
     """v1, 昨收盘
     v2, 今收盘"""
@@ -3966,6 +3984,7 @@ def test_hisdat_redis():
     start_day = help.MyDate.s_Dec(end_day, -15)    
     for code in codes:
         getHisdatDataFrameFromRedis(code, start_day, end_day)
+        
 #----------------------------------------------------------------------
 def main():
     """"""
@@ -4006,7 +4025,7 @@ def main():
     #test_summary_bankuai_zhangfu()
     #test_beta()
     #test_calc_bankuai_zhishu()
-    DataSources.Test()
+    #DataSources.Test()
     #test_get_yjyb()
     #memcache_load()
     #print Guider.getAllKlineDf()
@@ -4020,7 +4039,7 @@ def main():
     #StockInfoThs.genCodeNameTbl()
     #print GetCodeName('300059')
 
-    #unittest.main()
+    unittest.main()
 if __name__ == "__main__":
     main()
     print('end')

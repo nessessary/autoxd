@@ -95,12 +95,16 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
 def main(args):
     print "end"
 
-def MultiProcessRun(cpu, args, fn_name, mod):
+def MultiProcessRun(cpu, codes, fn_name, mod):
     """多进程执行, 并行
+    cpu : CPU 数量
+    codes : list 股票代码
+    fn_name : 执行函数
+    mod : 调用者__file__
     """
     from MultiSubProcess import MultiSubProcess
     multi = MultiSubProcess.MultiSubProcess()
-    multi.Map(cpu, mod, fn_name, args)
+    multi.Map(cpu, mod, fn_name, codes)
     multi.Run()	  
 def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0, start_day='', end_day=''):	
     """strategy_name: str 通过策略名称来构造策略
@@ -141,6 +145,9 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
                     df = stock.getHisdatDataFrameFromRedis(code, d1, d2)
                 else:
                     df = stock.getFenshiDfUseRedis(code, d1,d2)
+                if len(df) == 0:
+                    #在指定日期内没有数据，应该是新股或次新股
+                    return d2,d2
                 d2 = agl.datetime_to_date(df.index[-1])
                 if agl.DateTimeCmp(d1, agl.datetime_to_date(df.index[0])) <0:
                     d1 =  agl.datetime_to_date(df.index[0])
@@ -157,9 +164,12 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
             #再次修正为已有数据的20天
             d1 = help.MyDate.s_Dec(d2, -day_num)
         d1,d2 = getTradeDay(d1,d2, mode)	
-        print d1, d2
         
-        p.Run(d1, d2)    
+        if d1 != d2:        
+            print d1, d2
+            p.Run(d1, d2)    
+        else:
+            print '没有数据'
 
 if __name__ == "__main__":
     try:

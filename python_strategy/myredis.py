@@ -140,6 +140,7 @@ def ForceGetObj(k,v):
         set_obj(k, v1)
     return v1
 
+
 def createRedisVal(key, v):
     ForceGetObj(key, v)
     return Val(key)
@@ -150,6 +151,13 @@ class Val(object):
         return get_obj(self.key)
     def set(self, v):
         set_obj(self.key, v)
+
+#记录一些公用的key
+class enum:
+    KEY_CODES = 'stock.Codes'
+    KEY_THS = 'stock.ths'
+    KEY_CODENAME = 'stock.codename'
+    KEY_BANKUAIS = 'stock.bankuais'
         
 def main(args):
     #test_save()

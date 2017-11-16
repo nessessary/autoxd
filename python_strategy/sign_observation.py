@@ -9,7 +9,7 @@ is_allow = True
 key_prefix = 'so._getFunctionArgs.'
 
 def init():
-    print 'init'
+    #print 'init'
     myredis.delKeys(key_prefix)
 init()
 def assemble(*args, **kwargs):

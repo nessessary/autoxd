@@ -49,6 +49,7 @@ class BackTestPolicy:
             list_closes = []
             for code in self.codes:
                 df = self.panel_hisdat[code]
+                assert(len(df)>0)
                 list_closes.append((code, df.ix[-1]['c']))
             #输出账号结果
             for policy in self.policys:
@@ -114,6 +115,8 @@ class BackTestPolicy:
     def _Report(self, policy, start_day, end_day):
         policy._getAccount().Report(end_day, True)
         #绘制图形
+        if hasattr(policy, 'Report'):
+            policy.Report()
         #end_day = help.MyDate.s_Dec(end_day, 1)
         #bars = stock.CreateFenshiPd(self.code, start_day, end_day)
         if self.mode == 0:
