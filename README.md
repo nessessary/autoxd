@@ -1,8 +1,8 @@
 回测框架
 ------
 
-回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 当回测成功后， 有中信建投帐户可转入[实盘执行]
-(https://github.com/nessessary/autoxd/blob/master/autoxd_README.md)
+回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 当回测成功后， 有中信建投帐户可转入
+[实盘执行](https://github.com/nessessary/autoxd/blob/master/autoxd_README.md)
 这个回测框架主要关注具体的交易细节， 适合T+0操作
 
 1. 数据源<br>
@@ -30,16 +30,17 @@
    资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    输出窗口可以看见交易明细<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
    <br>
    2>日线的例子<br>
    支持并行<br>
    boll_fenchang.py<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
 4. 发布
    见boll_fencang.py
-   发布输出内容到web页面, [例子](http://autoxd.applinzi.com/html/boll_fencang_setParams6100.html)
+   发布输出内容到web页面, 
+   [例子](http://autoxd.applinzi.com/html/boll_fencang_setParams6100.html)
 ```python
     #设置策略参数
     def setParams(s):
