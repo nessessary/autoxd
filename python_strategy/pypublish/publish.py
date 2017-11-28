@@ -21,9 +21,9 @@ def IsPublish(pl):
     return isinstance(pl, Publish)
         
 class Publish:
-    def __init__(self, encode='utf-8', explicit=False, is_run_shell=True):
-        """info: 由pushlishinfo获取的元组
-        encode: 废弃, 最后页面的编码格式, 该变量内部自行调整
+    def __init__(self, explicit=False, is_run_shell=True):
+        """编码默认为utf8
+        info: 由pushlishinfo获取的元组
         explicit: 弹出页面是否使用显式调用
         is_run_shell: bool 是否跑生成后的start
         """
@@ -37,15 +37,6 @@ class Publish:
         
         self.source_startrow = info[2] - 1
 
-        #判断是调试器加载还是直接执行
-        #df的中文显示乱码， 因此需要调整
-        cmdlines = psutil.Process(os.getpid()).cmdline()
-        if len(cmdlines)>2 and cmdlines[2].find('wingdb')>0:
-            encode = 'utf-8'
-        else:
-            encode = 'gbk'
-
-        self.encode=encode
         self.explicit = explicit
         #获取模板html
         self.t_html = ''
@@ -92,7 +83,6 @@ class Publish:
         #source = np.array(f.readlines())
         #f.close()
         #self.AddSource( source[self.source_startrow:info[2]])
-        self.t_html = self.t_html.replace('utf-8', self.encode)
         
         #写入html
         fname = self.path+self.name+str(os.getpid())+'.html'
@@ -192,11 +182,6 @@ class Publish:
         self.t_html = self.t_html.replace('<%img%>', img_html)
     
     def AddOutput(self, output):
-        try:
-            if self.encode != 'utf-8':
-                output = output.decode('utf-8').encode('gb2312')
-        except:
-            pass
         self.t_html = self.t_html.replace('<%output%>', output)
         import datetime
         year = datetime.datetime.now().year

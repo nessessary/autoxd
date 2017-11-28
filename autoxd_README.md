@@ -1,9 +1,7 @@
 Autoxd
 ======
 
-A-share automated trading system
-
-一个A股的自动化交易框架
+A股实盘自动化交易客户端软件
 
 概述
 ----

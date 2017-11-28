@@ -33,11 +33,15 @@ class BackTestPolicy:
             hisdat_start_day = help.MyDate.s_Dec(start_day, -100)
             self.panel_hisdat = stock.DataSources.getHisdatPanl(self.codes, 
                                                                 (hisdat_start_day, end_day))
-            fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
-            fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
-            self.dict_fenshi = stock.DataSources.getFenshiPanl(self.codes, fenshi_days)
-            self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(\
-                self.codes, fenshi_days)   
+            if self.mode == BackTestPolicy.enum.tick_mode:
+                fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
+                fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
+                self.dict_fenshi = stock.DataSources.getFenshiPanl(self.codes, fenshi_days)
+                self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(\
+                    self.codes, fenshi_days)   
+            else:
+                self.dict_fenshi = None
+                self.panel_fiveminHisdat = None
             for policy in self.policys:
                 policy.data.set_datasource(self.panel_hisdat, self.dict_fenshi, \
                                            self.panel_fiveminHisdat)
@@ -165,6 +169,12 @@ class BackTestPolicy:
                             stock.GuiYiHua(zhican),\
                             stock.GuiYiHua(bars['changwei']),
                             title=title)
+        
+        if policy.pl is not None:
+            if policy.pl.explicit:
+                #有成交才发布
+                if len(df)>0:
+                    policy.pl.publish()
     def SetStockCodes(self, codes):
         """对这些codes进行回测"""
         self.codes = codes

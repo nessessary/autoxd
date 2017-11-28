@@ -116,7 +116,7 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     for code in codes:
-        agl.Print( code, stock.GetCodeName(code))
+        print code, stock.GetCodeName(code)
         p = backtest_runner.BackTestPolicy(mode)
         p.SetStockCodes([code])
         backtesting = Backtest()

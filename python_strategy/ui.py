@@ -22,6 +22,16 @@ import agl
 #x = [1,2,3,4,5,6]
 #y = [10,20,3,20,39,4]
 
+#动态设置中文字体
+import matplotlib as mpl
+class FontStyle:
+    KAITI = 'KaiTi'
+    YAHEI = 'Microsoft YaHei'
+    FANGSONG = 'FangSong'
+    HEITI = 'SimHei'
+mpl.rcParams['font.sans-serif'] = [FontStyle.YAHEI]
+mpl.rcParams['font.serif'] = [FontStyle.YAHEI]
+
 #plt.plot(x,y)
 #plt.show()
 def getFont():
@@ -425,6 +435,11 @@ def barh(pl, x, h, title=''):
     if title != '':
         pl.title(title)
     pl.barh(x, h, height=0.1)
+    pl.show()
+    pl.close()
+def bar(pl, x, y):
+    pl.figure
+    pl.bar(x,y)
     pl.show()
     pl.close()
     

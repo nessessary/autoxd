@@ -36,19 +36,21 @@ def get_codes(flag=myenum.all, n=100):
     flag : enum.all 等枚举 , enum.exclude_cyb 排除创业板, enum.rand10 随机选10个
     n : enum.rand时使用
     return: list """
-    key = myredis.enum.KEY_CODES    #更新ths F10时删除
-    val = myredis.createRedisVal(key, [])
-    codes = val.get()
-    if len(codes) == 0:
-        #从ths中取
-        ths = createThs()
-        codes = ths.getDf(0)['code'].tolist()
+    def readTDXlist():
+        #从本地csv读取
+        fname = 'datas/tdx_codes.csv'
+        df = pd.read_csv(fname, dtype=str, header=None)
+        codes = df[0].tolist()    
         if len(codes)>0:
             #默认去除大盘的代码
             dapans = ['399001', '999999','399005','399002','399006','510050']
             codes = [unicode(code) for code in codes if code not in dapans]
             #codes = filter(lambda x: x[:2] != '88', codes)
-            val.set(codes)
+        return codes
+    key = myredis.enum.KEY_CODES    #更新ths F10时删除
+    #这里不能使用从THS来读， 当重新拉取时， 会引起递归
+    val = myredis.createRedisVal(key, readTDXlist)
+    codes = val.get()
     if flag == myenum.randn:
         from sklearn.utils import shuffle
         codes = shuffle(codes)
@@ -60,7 +62,41 @@ def get_bankuais():
     key = myredis.enum.KEY_BANKUAIS
     val = myredis.createRedisVal(key, lambda : list(createThs().getBankuais()))
     return val.get()
-    
+
+def get_bankuai_codes(bankuai):
+    """从板块名获取该板块的股票代码
+    bankuai: str 板块名称 包括行业及概念
+    return: list"""
+    key = myredis.enum.KEY_THS_GAIYAO
+    val = myredis.createRedisVal(key, lambda: createThs().getDf(0))
+    codes = []
+    names = ['所属行业', '涉及概念','概念强弱排名']
+    df = val.get()
+    for i in range(len(df)):
+        r = df.iloc[i]
+        code = r['code']
+        bankuai_cur = ''
+        for name in names:
+            if name in df.columns:
+                bankuai_cur += str(r[name])
+        if bankuai_cur.find(bankuai) >= 0:
+            codes.append(code)
+    return codes
+
+def get_bankuai_avg_syl(bankuai, method='avg'):
+    """获取板块平均市盈率
+    method: str avg|low|all 平均市盈率|低位聚类|列表
+    return: float"""
+    key = myredis.enum.KEY_BANKUAI_AVG_SYL
+    val = myredis.createRedisVal(key, lambda: createThs().getPjSylTable())
+    df = val.get()
+    df = df[df['行业及概念'] == bankuai]
+    if method == 'all':
+        return df
+    if method == "avg":
+        return float(df.iloc[0]['平均市盈率'])
+    return df.iloc[0]['低位聚类市盈率']
+
 def getKlineLastDay():
     """得到日线库中的最后一天, return: str day"""
     sql = 'select max(kline.kline_time) from kline'
@@ -325,6 +361,7 @@ class mytest(unittest.TestCase):
         #print get_codes(myenum.randn,100)
         #for bankuai in createThs().getBankuais():
             #print bankuai
+        myredis.delkey(myredis.enum.KEY_CODES)
         codes = get_codes()
         print(get_codes())
         print(len(codes))
@@ -381,6 +418,9 @@ class mytest(unittest.TestCase):
         print(df)
         print(df['2011-1-1':])
         print(code.get_syl())
+        
+        ths = THS()
+        print ths.df_jll
     def _test_account(self):
         print('test account T+1')
         acount = Account(1000000)
@@ -402,9 +442,18 @@ class mytest(unittest.TestCase):
         print(df)
     def test_Bankuais(self):
         #myredis.delkey(myredis.enum.KEY_BANKUAIS)
-        for bankuai in get_bankuais():
-            print bankuai
-        print filter(lambda x: x.find('360')>=0, get_bankuais())
+        agl.print_ary(get_bankuais())
+        bankuais = filter(lambda x: x.find('360')>=0, get_bankuais())
+        agl.print_ary(bankuais)
+        print get_bankuai_codes(bankuais[0])
+        print get_bankuai_codes('航母')
+        #板块评价市盈率
+        bankuai = '人工智能'
+        print get_bankuai_avg_syl(bankuai)
+        
+        df = THS().df_jll
+        df = df[df['code']=='300033']
+        print df
     def _test_bankuai_analyze(self):
         StockInfoThs.Test_Bankuai_Zhishu()
     def _test_GetCodeName(self):
@@ -710,7 +759,7 @@ class StockInfoThs:
             """求行业平均市盈率, 不统计超过1000的市盈率
             df: 数据源， 概要表
             bankuai: 板块
-            return: list [平均市盈率, 第一个聚类, kmeans_2,percent1,  percent2, total_num]"""
+            return: list [平均市盈率, 第一个聚类, kmeans_2,percent1聚类1占比,  percent2, total_num]"""
             codes = self.getBankuaiCodes(bankuai)	    
             df_hy = df[df['code'].map(lambda x: x in codes)]
             df_hy = df_hy['市盈率动态']
@@ -750,9 +799,13 @@ class StockInfoThs:
         df.columns = ['平均市盈率','低位聚类市盈率','percent1', 'kmean2','percent2', '数量','行业及概念']
         #agl.print_df(df)
         self.d['平均市盈率'] = df
+    def getTableName(self):
+        return grabThsWebStockInfo.GrabThsWeb.table_names
     def getDf(self, table_id):
-        """取一个表 return: df"""
-        df = self.d[StockInfoThs._getGrabThsTableNames()[table_id]]
+        """取一个表 
+        table_id: int 见grabThsWebStockInfo.GrabThsWeb.table_names
+        return: df"""
+        df = self.d[grabThsWebStockInfo.GrabThsWeb.table_names[table_id]]
         return df
     def getYcTable(self):
         """return : df 盈利预测"""
@@ -782,7 +835,7 @@ class StockInfoThs:
         return table_names
     def getCodeDict(self, code):
         d = {}
-        for i,k in enumerate(StockInfoThs._getGrabThsTableNames()):
+        for i,k in enumerate(grabThsWebStockInfo.GrabThsWeb.table_names):
             d[k] = self.getDf_Code(i, code)
         return d
     def getBankuais(self):
@@ -904,8 +957,10 @@ class StockInfoThs:
             self.price = price
         if 0: getDf = pd.DataFrame
         def getDf(self, table_id):
-            """取一个表 return: df"""
-            df = self.d[StockInfoThs._getGrabThsTableNames()[table_id]]
+            """取一个表 
+            table_id: grabThsWebStockInfo.GrabThsWeb.table_names
+            return: df"""
+            df = self.d[grabThsWebStockInfo.GrabThsWeb.table_names[table_id]]
             return df	
         def get_name(self):
             """return: str 股票名称"""
@@ -1204,13 +1259,33 @@ class StockInfoThs:
         print( d)
         d = StockInfoThs.ThsOneCode(d)
         print( d.get_mgsy(), d.get_zgb(), SYL(getHisdatDf(code)['c'][-1], d.get_mgsy()))
+        
+g_ths_single_table = None        
+class THS(object):
+    """使用redis保存分项表"""
+    def __init__(self):
+        self.df_gaiyao = myredis.createRedisVal(myredis.enum.KEY_THS_GAIYAO, lambda: createThs().getDf(0)).get()
+        #按报告期, 报告期合并了之前季度的数据
+        self.df_jll = myredis.createRedisVal(myredis.enum.KEY_JLL, lambda: createThs().getDf(-4)).get()
+        self.df_year = myredis.createRedisVal(myredis.enum.KEY_YEAR, lambda: createThs().getDf(-3)).get()
+    @staticmethod
+    def getInstance():
+        global g_ths_single_table
+        if g_ths_single_table is None:
+            g_ths_single_table = THS()
+        return g_ths_single_table
+        
+
 def getHisdatDf(code, start_day='',end_day='',is_fuquan=False ):
     """从数据库获取日线, 复权 return: df"""
     df = mysql.getHisdat(code, start_day, end_day)
-    one = createThs().createThsOneCode(code)
-    df_fenhong = one.get_fenhong()
-    df = calc_fuquan_use_fenhong(df, df_fenhong)    
+    if is_fuquan:
+        one = createThs().createThsOneCode(code)
+        df_fenhong = one.get_fenhong()
+        df = calc_fuquan_use_fenhong(df, df_fenhong)    
     return df
+def getHisdatDfRedis(code):
+    return myredis.createRedisVal(myredis.enum.KEY_HISDAT_NO_FUQUAN+code, lambda :getHisdatDf(code)).get()
 def getFiveHisdatDf(code, start_day='', end_day=''):
     """return: df col('ohlcu')"""
     return mysql.getFiveHisdat(code,start_day,end_day)
@@ -3393,7 +3468,11 @@ def TDX_BOLL(closes):
     return upper, mid, lower
 def TDX_BOLL2(closes):
     upper, mid, lower = TDX_BOLL(closes)
-    w = abs(upper-lower)/mid*100
+    df = pd.DataFrame(upper, columns=['upper'])
+    df['mid'] = mid
+    df['lower'] = lower
+    df = df.fillna(value=0)
+    w = abs(df['upper']-df['lower'])/df['mid']*100
     return upper, mid, lower,w
 #波动率指标
 def ATR(highs, lows, closes):
@@ -3649,6 +3728,8 @@ def unittest_dump():
     pl.show()
 def SYL(price, mgsy):
     """mgsy = 全年利润/总股本"""
+    price = float(price)
+    mgsy = float(mgsy)
     if price < 0:
         price = 0.01
     if mgsy == 0:

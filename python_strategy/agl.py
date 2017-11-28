@@ -18,6 +18,7 @@ else:
 from PIL import Image
 import time, datetime,dateutil
 import pandas as pd
+from sklearn.utils import shuffle
 import traceback
 
 def getFunctionName():
@@ -25,6 +26,16 @@ def getFunctionName():
     stack = traceback.extract_stack()
     (filename, line, procname, text) = stack[-2]
     return procname    
+def getModuleName(f_path):
+    """得到模块名称
+    f_path : str __file__
+    return: str 文件名称
+    """
+    module_name = os.path.basename(f_path)
+    module_name = module_name.replace('.py', '')
+    return module_name
+def getFunctionDoc():
+    pass
 def tic():
     """开始计时"""
     globals()['tt'] = time.clock()
@@ -86,6 +97,15 @@ def DateDec(day1, day2):
     return :  int 日期数
     """
     return (dateutil.parser.parse(day1) - dateutil.parser.parse(day2)).days
+def DateYearAdd(d, n):
+    """对日期进行年的加减
+    d : str date
+    n : int 可以是负值
+    return: str
+    """
+    d = dateutil.parser.parse(d)
+    return d
+    
 #----------------------------------------------------------------------
 def max2(a):
     """
@@ -156,6 +176,8 @@ def array_transpose(a):
         return a
     else:#列转行
         return a.T
+def array_shuffle(ary):
+    return shuffle(ary)    
 def Unittest_array_transpose():
     a = np.array([1,2,3])
     print(array_transpose(a))
@@ -763,6 +785,18 @@ def getCallerName():
 def IsNone(val):
     """判断值是否为None return: bool"""
     return isinstance(val, type(None))
+_DEBUG = False
+def startDebug():
+    global _DEBUG
+    _DEBUG = True
+def IsDebug():
+    if _DEBUG:
+	return _DEBUG
+    import psutil
+    cmdlines = psutil.Process(os.getpid()).cmdline()
+    if len(cmdlines)>2 and cmdlines[2].find('wingdb')>0:
+	return True
+    return False
 def is_utf8(s):
     return charade.detect(s)['encoding'] == 'utf-8'
 def is_unicode(s):
@@ -822,7 +856,8 @@ def print_prettey_df(df):
     for i,row in df.iterrows():
 	table.add_row(row.tolist())
     print table       
-def print_c(ary):
+def print_ary(ary):
+    """打印数组元素内容"""
     for x in ary:
         print(x)
 def print_u(s):
@@ -941,6 +976,11 @@ def MD5(s):
     m2 = hashlib.md5()   
     m2.update(s)   
     return m2.hexdigest()       
+
+class Marco:
+    """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
+    #调试状态使用单进程
+    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\timport backtest_policy\n\tbacktest_policy.MultiProcessRun(5, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
 def main(args):
     #TestMoveFile()
