@@ -61,9 +61,9 @@ A股实盘自动化交易客户端软件
 策略
 ----
 1. Python环境
-	1) 安装文件附了一份Anaconda2
-	2) 包含Redis一份， 如果本地安装了将不生效
-	3) 主要使用pandas库
+	1) 安装文件附了一份Anaconda2(python27,32位), 安装为绿色版，不影响之前安装的Anaconda
+	2) 包含Redis一份， 如果本地安装了将不安装
+	3) 主要使用pandas库, 回测较慢但编写方便
 	4) 策略目录在python_strategy\strategy
 	   默认使用的策略文件为boll_pramid.py
 2. 策略入口, 见boll_pramid.py<br>
