@@ -218,7 +218,7 @@ class LocalAcount(AccountDelegate):
         return: df 余额|可用|参考市值|资产|盈亏"""
         return self.df_zhijing
     def ChengJiao(self):
-        """return: df"""
+        """return: df 成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"""
         return self.df_ChengJiao
     def WeiTuoList(self):
         """return: df"""
@@ -260,6 +260,8 @@ class LocalAcount(AccountDelegate):
         num = 0
         if len(self.df_ChengJiao)>0:
             num = self.df_ChengJiao.iloc[0]['成交数量']
+            code = self.df_ChengJiao.iloc[0]['证券代码']
+            close = stock.getHisdatDataFrameFromRedis(code,'',end_day).iloc[-1]['c']
         shizhi = num*close
         print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
 
@@ -287,13 +289,53 @@ class AccountMgr(object):
         self.account = account
         self.price = price
         self.code = code
+    def getCurCanWei(self):
+        """得到当前仓位"""
+        df = self.account.StockList()
+        if len(df) == 0:
+            return 0
+        df = df[df['证券代码'] == self.code]
+        if len(df) == 0:
+            return 0
+        return int(df.iloc[-1]['库存数量'])
+    def last_chengjiao_price(self, index=-1):
+        """上一个成交的价位"""
+        df_chengjiao = self.account.ChengJiao()
+        if len(df_chengjiao) == 0:
+            return np.nan
+        if index == -2 and len(df_chengjiao)<2:
+            return np.nan
+        return float(df_chengjiao.iloc[index]['成交价格'])
+    def last_chengjiao_num(self, index=-1):
+        df_chengjiao = self.account.ChengJiao()
+        if len(df_chengjiao) == 0:
+            return np.nan
+        if index == -2 and len(df_chengjiao)<2:
+            return np.nan
+        return int(df_chengjiao.iloc[index]['成交数量'])
+
+    def get_BuyAvgPrice(self):
+        """获取买入均价"""
+        df = self.account.StockList()
+        df = df[df['证券代码'] == self.code]
+        if len(df) == 0:
+            return np.nan
+        return float(df.iloc[0]['买入均价'])
+    def can_use_money(self):
+        df_zhijing = self.account.ZhiJing()
+        return float(df_zhijing.iloc[-1]['可用'])
     def total_money(self):
+        import agl
         df_zhijing = self.account.ZhiJing()
         df_stock = self.account.StockList()
+        if len(df_stock) == 0:
+            return self.can_use_money()
         num = agl.where(len(df_stock)>0, float(df_stock.iloc[-1]['库存数量']), 0)
         return float(df_zhijing.iloc[-1]['可用']) + num*self.price
     def init_money(self):
         df_zhijing = self.account.ZhiJing()
+        if len(df_zhijing) == 0:
+            return 100000
         return float(df_zhijing.iloc[0]['资产'])
     def yin_kui(self):
         df_stock_list = self.account.StockList()
@@ -302,7 +344,23 @@ class AccountMgr(object):
             yinkui = df_stock_list['参考盈亏成本价'].tolist()[0]
             return float(yinkui)
         return 0
-        
+    def getInitCanWei(self):
+        """得到初始仓位"""
+        df = self.account.ChengJiao()
+        if len(df)==0:
+            return 0
+        return int(df.iloc[0]['成交数量'])
+    def queryTradeCount(self, bSell):
+        """查询同一交易方向的连续发生次数
+        return: int"""
+        df = self.account.ChengJiao()
+        count = 0
+        for i in range(len(df)-1, -1, -1):
+            if int(df.iloc[i]['买0卖1']) == int(bSell):
+                count += 1
+            else:
+                break
+        return count
 
 class mytest(unittest.TestCase):
     def _test_simple(self):
@@ -340,7 +398,9 @@ class mytest(unittest.TestCase):
         account._sell(code, 55, 10000, '2017-9-22 10:00:00')
         account._buy(code, 50, 500, '2017-9-22 14:00:00')
         df = account.StockList()
-        print df
+        print(df)
+        mgr = AccountMgr(account, None, code)
+        print(mgr.queryTradeCount(0))
     def _test_multi(self):
         account = LocalAcount(BackTesting())
         code = '300033'

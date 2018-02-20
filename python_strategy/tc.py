@@ -63,7 +63,7 @@ class TcAccount(account.AccountDelegate):
         sReturn = self.delegate.handleRotuer(s)
         #'132493|A5001586|'
         sId = ''
-        if agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时":
             sId = sReturn.split('|')[0]
 	    sSell = '卖出'
 	    if not bSell:
@@ -77,7 +77,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "StockList|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
 	    #return sReturn
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:15]]
@@ -89,29 +89,29 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "ZhiJing|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and sReturn != '':
             df = self._str_to_df(sReturn)
 	    df = df[[1,2,4,5,6]]
             df.columns = self.zhijing_columns.split('|')
             return df
         return pd.DataFrame([])
     def ChengJiao(self):
-        """return: df 成交日期|成交时间|证券代码|证券名称|1为卖出0为买入|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"""
+        """return: df 成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"""
         #s = ComboArg()
         s = "ChengJiao|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:16]]
             df.columns = self.chengjiao_columns.split('|')
             return df
         return pd.DataFrame([])
     def HistoryChengJiao(self):
-        """return: df 成交日期|成交时间|证券代码|证券名称|1为卖出0为买入|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"""
+        """return: df 成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"""
         #s = ComboArg()
         s = "HistoryChengJiao|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:16]]
             df.columns = self.chengjiao_columns.split('|')
@@ -120,7 +120,7 @@ class TcAccount(account.AccountDelegate):
     def HistoryWeiTuo(self):
 	s = "HistoryWeiTuo|"
 	sReturn = self.delegate.handleRotuer(s)
-	if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
+	if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
 	    df = self._str_to_df(sReturn)
 	    df.columns = self.weituo_columns.split('|')
 	    df['委托日期'] = df['撤单标志']
@@ -131,7 +131,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "WeiTuo|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:19]]
             df.columns = self.weituo_columns.split('|')
@@ -142,7 +142,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "CheDanList|"
         sReturn = self.delegate.handleRotuer(s)
-        if agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
             df.columns = self.chedanlist_columns.split('|')
             return df
@@ -245,6 +245,14 @@ def Sell(code, price, num):
     #price = AdjustPrice(bSell, code, price)
     #print price
     SendOrder(bSell, code, price, num)    
+def CheDan(code):
+    """撤单, 如果该股票有多个单， 全部撤销"""
+    #先查委托列表
+    df_weituo = get_weituo_from_redis(True)
+    df_weituo = df_weituo[df_weituo['证券代码'] == code]
+    for weituo_id in df_weituo['委托编号']:
+	SendCheDan(code, weituo_id)
+    
 #def AdjustPrice(bSell, code, price):
     #"""为了市价成交， 调整为对应二档"""
     ##取五档买卖
@@ -293,6 +301,24 @@ def SendOrder(bSell, code, price, num):
     print s
     SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))
     myredis.set_obj('TCAccountCache_dirty', True)
+def Notify(s):
+    hwnd = FindMainWindow()
+    cds = COPYDATASTRUCT()
+    cds.dwData = 0
+    cds.cbData = ctypes.sizeof(ctypes.create_string_buffer(s))
+    cds.lpData = ctypes.c_char_p(s)
+    SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))
+    
+def SendCheDan(code, weituo_id):
+    #用wm_copydata
+    hwnd = FindMainWindow()
+    cds = COPYDATASTRUCT()
+    cds.dwData = 0
+    s = "CheDan|"+str(code)+"|"+str(weituo_id)+"|"
+    cds.cbData = ctypes.sizeof(ctypes.create_string_buffer(s))
+    cds.lpData = ctypes.c_char_p(s)
+    print s
+    SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))    
 def ShouShu(num):
     """"""
     num = int(num /100.0 )*100
@@ -319,7 +345,7 @@ def get_zhijing_from_redis(is_have_return=False):
     df = myredis.get_obj(key_df_stocklist)
     if is_have_return:
 	return df
-    if df is not None:
+    if df is not None and len(df)>0:
 	from prettytable import PrettyTable
 	cols = '余额|可用|参考市值|资产'
 	cols = cols.split('|')
@@ -334,9 +360,9 @@ def get_stocklist_from_redis(is_have_return=False):
     df = myredis.get_obj(key_df_stocklist)
     if is_have_return:
 	return df
-    if df is not None:
+    if df is not None and len(df)>0:
 	from prettytable import PrettyTable
-	cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
+	cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
 	cols = cols.split('|')
 	table = PrettyTable(cols)
 	for i,row in df.iterrows():
@@ -344,6 +370,7 @@ def get_stocklist_from_redis(is_have_return=False):
 	#table.sort_key("ferocity")
 	#table.reversesort = True
 	print table
+    get_zhijing_from_redis(False)
     #return df
 def get_weituo_from_redis(is_have_return=False):
     """输出为成交的委托列表"""
@@ -352,7 +379,7 @@ def get_weituo_from_redis(is_have_return=False):
     df = myredis.get_obj(key)
     if is_have_return:
 	return df
-    if df is not None:
+    if df is not None and len(df)>0:
 	from prettytable import PrettyTable
 	cols = '证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明'
 	cols = cols.split('|')
@@ -372,7 +399,7 @@ def get_chengjiao_from_redis(is_have_return=False):
     df = myredis.get_obj(key)
     if is_have_return:
 	return df
-    if df is not None:
+    if df is not None and len(df)>0:
 	from prettytable import PrettyTable
 	cols = '成交时间|证券代码|证券名称|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号'
 	cols = cols.split('|')
@@ -384,6 +411,8 @@ def get_chengjiao_from_redis(is_have_return=False):
 	#table.sort_key("ferocity")
 	#table.reversesort = True
 	print table    	
+
+    
 class mytest(unittest.TestCase):
     def _test_str_to_df(self):
         df = TcAccount()._str_to_df('0|500.13|500.13||9100.00|13004.13|||{}')
@@ -394,7 +423,10 @@ class mytest(unittest.TestCase):
 	analyzer = TradeCloseAnalyzer()
 	analyzer.Report()
     def test_get_stocklist_from_redis(self):
-	get_stocklist_from_redis()
+	#get_stocklist_from_redis()
+	get_chengjiao_from_redis(is_have_return=False)
+    def _test_chedan(self):
+	CheDan('300367')
 
 def query_code_chengben(code, df_stocklist):
     """查询股票参考成本价"""

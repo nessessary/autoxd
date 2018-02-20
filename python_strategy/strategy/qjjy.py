@@ -8,6 +8,7 @@
 import os
 def AddPath():
     from sys import path
+    #mysourcepath = os.getenv('AUTOXD_PYTHON')
     mysourcepath = os.path.abspath('..')
     if not mysourcepath in path:
         path.append(mysourcepath)    
@@ -25,6 +26,7 @@ import live_policy, agl, pd_help, stock,help
 import backtest_policy
 import backtest_runner
 import myenum, ui
+from pypublish.publish import *
 
 class Strategy:
     def __init__(self, data, is_backtesting=False, mode=0):

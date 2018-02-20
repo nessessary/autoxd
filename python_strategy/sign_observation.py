@@ -1,17 +1,18 @@
-#coding:utf8
+#-*- coding:utf-8 -*-
 
 """观察信号组合"""
 import traceback
 import numpy as np
 import pandas as pd
 import myredis,agl
-is_allow = True
+is_allow = False
 key_prefix = 'so._getFunctionArgs.'
 
 def init():
     #print 'init'
     myredis.delKeys(key_prefix)
-init()
+if is_allow:    
+    init()
 def assemble(*args, **kwargs):
     """组合信号, 分析信号触发次数, 并显示参数表达式
     args: tuple boll
@@ -19,13 +20,14 @@ def assemble(*args, **kwargs):
     """
     #需要获取参数的文中状态输入， 比如four<-0.3, 需要获取表达式
     #打开调用者文件， 获取调用处行号， 手工获取参数
-    s_trace = traceback.extract_stack()
-    if len(s_trace)>=2 and is_allow:
-        #print s_trace[-2]
-        fname,line,mod,fn_name = s_trace[-2]
-        fn_name = s_trace[-1][-2]
-        args_text = _getFunctionArgs(fname, line, fn_name)
-        #print args_text
+    if is_allow:
+        s_trace = traceback.extract_stack()
+        if len(s_trace)>=2:
+            #print s_trace[-2]
+            fname,line,mod,fn_name = s_trace[-2]
+            fn_name = s_trace[-1][-2]
+            args_text = _getFunctionArgs(fname, line, fn_name)
+            #print args_text
     #print args
     args = np.array(args)
     return args.all()

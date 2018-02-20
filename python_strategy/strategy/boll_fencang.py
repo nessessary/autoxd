@@ -3,14 +3,16 @@
 """boll分仓, 择时策略"""
 
 import numpy as np
-import pandas as pd
+import pandas as pd, pylab as pl
 import boll_pramid
-import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
-import os
+import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui,jbm, stock_pinyin as jx
+import os,warnings
+
 agl.tic()
 
 #ths = stock.createThs()
-	
+g_ths = stock.THS()	
+
 class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
     """基于日线的boll分仓, 基本指标使用日线Boll以及日线Four"""
     def setParams(self, *args, **kwargs):
@@ -19,20 +21,33 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 	self.base_ratio	= 0.05		#盈亏区间的比率
 	self.base_pramid_ratio = 3	#底部增仓比率
 	self.base_rhombus_mid_ratio = 0.3	#仓位形态菱形的下部占比, 当资金不够时， 尽量保留一些资金
-	self.base_four = [-0.5, -0.1]		#第一次买卖的技术指标阀值
+	self.base_four = [-0.5, 0.3]		#第一次买卖的技术指标阀值
 	for k, v in kwargs.iteritems():
 	    setattr(self, k, v)
     def OnFirstRun(self):
 	self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
 	self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())
 	myredis.delKeys('BollFenCangKline')
+	#只需要计算一次的数值
+	df_jll = g_ths.df_jll
+	code = self.data.get_code()
+	with warnings.catch_warnings():
+	    warnings.simplefilter("ignore")	
+	    self.df_jll = df_jll[df_jll['code'] == code]
     def Run(self):
 	account = self._getAccount()
 	code = self.data.get_code()
 	hisdat = self.data.get_hisdat(code)
+	hisdat = hisdat.dropna()
 	closes = hisdat['c'].dropna()
 	if len(closes)<60:
 	    return
+	
+	#基本面计算
+	date = agl.datetime_to_date(self.getCurTime())
+	history_quarter_syl = jbm.calc_history_syl(self.df_jll, hisdat, 'quarter')
+	syl = history_quarter_syl.ix[:date].iloc[-1]
+	self.jbm = history_quarter_syl
 	
 	#计算技术指标
 	four = stock.FOUR(closes)
@@ -55,7 +70,8 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 	if so.assemble(four<self.base_four[0] ,len(df_stock_list) == 0 ,
 	               adx[-1] > 60,
 	               #price<boll_low[-1] ,
-	               #boll_w[-1]>2
+	               #boll_w[-1]>2,
+	               #syl < 50,
 	               ):  
 	    if hasattr(self, 'base_num_ratio'):
 		total_money = ac.AccountMgr(self._getAccount(), price, code).init_money()
@@ -107,18 +123,27 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 	#
     def Report(self):
 	"""报告技术指标"""
+	if not hasattr(self, 'tech'):
+	    return
 	closes, four, boll_up, boll_mid, boll_low ,boll_w, adx = self.tech
 	assert(len(closes) == len(four))
+	cur_pl = agl.where(self.pl, self.pl, pl)
+	if hasattr(self, 'jbm'):
+	    syl = self.jbm
+	    df = pd.DataFrame(syl)    
+	    df.columns = ['市盈率']
+	    df.plot()
+	    cur_pl.show()
+	    cur_pl.close()
 	df = pd.DataFrame(closes)
 	df['boll_w'] = boll_w
 	df = stock.GuiYiHua(df)
 	df['four'] = four
-	df[df.columns[0]] = (df[df.columns[0]]-1)*2
+	#df[df.columns[0]] = (df[df.columns[0]]-1)*2
 	df.plot()
-	self.pl.show()
+	cur_pl.show()
+	cur_pl.close()
 	#ui.DrawClosesAndVolumes(self.pl, closes, four)
-
-	
 
 #测试策略， 为了并行计算， 需要使用这种格式的函数定义		    
 def Run(codes='', task_id=0):
@@ -127,26 +152,58 @@ def Run(codes='', task_id=0):
     def setParams(s):
 	if 0: s = Strategy_Boll
 	s.setParams(trade_num = 300, 
-                    pl=publish.Publish()
+                    pl=publish.Publish(explicit=True),
+	            base_four=[-0.6,0.1]
                     )
     if codes == '':
 	codes = ['300033']
     #现在的5分钟线在2017-5-15之后才有
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams, day_num=20, mode=myenum.hisdat_mode, 
-                                  start_day='2016-10-20', end_day='2017-10-1'
+                                  start_day='2016-10-20', end_day='2017-8-20'
                                   )    
 
-  
+def SelectCodes():
+    df_year = stock.THS().df_year
+    df_year = df_year.ix['2010':'2016']
+    #历史平均市盈率小于25且净利润逐年上升
+    codes = stock.get_codes()
+    codes = jbm.find_avg_syl(codes, df_year, 25)
+    df_year = df_year[df_year['code'].map(lambda x: x in codes)]
+    codes = jbm.find_jll_increase(df_year)
+    #codes = agl.array_shuffle(codes)
+    #max_row = min(len(codes)-1, 5)
+    return codes
+
+def Select_code2():
+    """选择某些固定板块"""
+    bankuais = ['人工智能','人脸识别', '新能源汽车', '锂电池', '无人驾驶']
+    codes = []
+    for bankuai in bankuais:
+	codes += stock.get_bankuai_codes(bankuai)
+    codes = np.unique(np.array(codes))
+    return list(codes)
+    
 def calcYinKui(price, chengben):
     return (price - chengben)/chengben
-if __name__ == "__main__":
-    is_multi = 0
-    #is_multi = 1
-    if not is_multi:
-	Run()
-    else:
+
+import unittest
+class mytest(unittest.TestCase):
+    def test_strategy(self):
 	codes = stock.DataSources.getCodes()
 	cpu_num = 5
-	#codes = stock.get_codes(myenum.randn, cpu_num*1)
-	backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
-    agl.toc()
+	codes = stock.get_codes(myenum.randn, cpu_num*1)
+	agl.startDebug()
+	if agl.IsDebug():
+	    codes = [codes[0]]
+	    codes = [jx.XYCZ]
+	    codes = [jx.LTGF.b]
+	    codes = [jx.THS]
+	#key = agl.getModuleName(__file__)+'.selectcodes'
+	#myredis.delkey(key)
+	#codes = myredis.createRedisVal(key, lambda : SelectCodes()).get()
+	#codes = myredis.createRedisVal(key, lambda: select_code2()).get()
+	#backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
+	exec agl.Marco.IMPLEMENT_MULTI_PROCESS
+
+if __name__ == "__main__":
+    unittest.main()

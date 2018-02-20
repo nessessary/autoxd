@@ -4,44 +4,14 @@
 # found in the LICENSE file.
 # QQ: 1764462457
 
-#把主目录放到路径中， 这样可以支持不同目录中的库
 import os
 import numpy as np
 import pandas as pd
-import sys, agl
-import redis, StringIO, cStringIO
-if sys.version > '3':
-    import _pickle as cPickle
-else:
-    import cPickle
+import sys
+import redis, pickle
 
-code = '600100'
-def test_save():
-    import stock
-    r = redis.Redis(host='localhost', port=6379, db=0) 
-    ths = stock.createThs()
-    #df = stock.Guider(code).ToDataFrame()
-    f = cStringIO.StringIO()
-    cPickle.dump(ths, f)
-    #df.to_csv(f)
-    s = f.getvalue()
-    f.close()
-    print(len(s))
-    r.set('ths', s)
-def test_read():
-    r = redis.Redis(host='localhost', port=6379, db=0) 
-    s = r.get('ths')
-    #print len(s)
-    f = cStringIO.StringIO(s)
-    #f = open('1.txt', 'w')
-    #f.write(s)
-    #f.close()
-    #f = open('1.txt', 'r')
-    #print f.getvalue()
-    #df = pd.read_csv(f)
-    df = cPickle.load(f)
-    print(type(df))
-    f.close()
+"""保存对象至redis"""
+
 g_redis = 0
 def createRedis():
     global g_redis
@@ -52,58 +22,24 @@ def gen_keyname(fn):
     """根据函数堆栈来确定函数名称, 当使用内嵌函数时， 模块为父函数的名称
     return: str 模块名.函数名"""
     return fn.__module__ + '.' + fn.__name__
-def get(fn, *args, **kwargs):
-    """通过redis来cache数据
-    fn: 函数, 返回要存储的数据
-    return: data fn返回的值"""
-    key = gen_keyname(fn)
-    r = createRedis()
-    #r.flushall()
-    if key not in r.keys():
-        o = fn(*args, **kwargs)
-        #对象序列化为字符串
-        f = cStringIO.StringIO()
-        cPickle.dump(o, f)
-        s = f.getvalue()
-        f.close()        
-        r.set(key, s)
-    s = r.get(key)
-    f = cStringIO.StringIO(s)
-    o = cPickle.load(f)
-    f.close()
-    return o
-def set(fn, *args, **kwargs):
-    """保存键值, 对象太大的还是会出现异常"""
-    key = gen_keyname(fn)
-    r = createRedis()
-    #r.flushall()
-    o = fn(*args, **kwargs)
-    #对象序列化为字符串
-    f = cStringIO.StringIO()
-    cPickle.dump(o, f)
-    s = f.getvalue()
-    f.close()        
-    r.set(key, s)
+
 def set_str(key, s):
     r = createRedis()
     r.set(key, s)
 def set_obj(key, o):
     """无返回值, 记录数据"""
     r = createRedis()
-    f = cStringIO.StringIO()
-    cPickle.dump(o, f)
-    s = f.getvalue()
-    f.close()        
-    r.set(key, s)
+    b = pickle.dumps(o)
+    r.set(key, b)
 def get_obj(key):
     """用key取值 return: obj 或者 None"""
     r = createRedis()
-    s = r.get(key)
-    if agl.IsNone(s):
-        return s
-    f = cStringIO.StringIO(s)
-    o = cPickle.load(f)
-    f.close()
+    o = r.get(key)
+    try:
+        if o is not None:
+            o = pickle.loads(o)
+    except:
+        o = _get_obj_at_2(key)
     return o
 def get_Bin(key):
     r = createRedis()
@@ -133,14 +69,14 @@ def ForceGetObj(k,v):
     """如果没有该值， 那么存储"""
     v1 = get_obj(k)
     if v1 is None:
-        if agl.is_function(v):
+        if hasattr(v, '__call__'):
             v1 = v()            
         else:
             v1 = v
         set_obj(k, v1)
     return v1
 
-
+if 0: createRedisVal = Val
 def createRedisVal(key, v):
     ForceGetObj(key, v)
     return Val(key)
@@ -158,21 +94,55 @@ class enum:
     KEY_THS = 'stock.ths'
     KEY_CODENAME = 'stock.codename'
     KEY_BANKUAIS = 'stock.bankuais'
+    KEY_THS_GAIYAO = 'stock.ths.gaiyao'     #概要表, 因为整体导入redis会造成out of memory, 因此分表导入
+    KEY_BANKUAI_AVG_SYL = 'stock.ths.bankuai_syl'   #板块平均市盈率
+    KEY_JLL = 'stock.ths.jll'   #净利润表
+    KEY_YEAR = 'stock.ths.year' #净利润表年
+    KEY_HISDAT_NO_FUQUAN = 'stock.hisdat.nofuquan'  #保存未复权的hisdat
         
-def main(args):
-    #test_save()
-    #test_read()
-    #test_pickle()
-    #print get('a', lambda x: x+'adfkdf', 'bbb')
-    def getDataSource(code):
-        import stock
-        return stock.Guider(code).ToDataFrame()
-    print(get(getDataSource, '600779'))
-    print(createRedis().keys())
+
+#因为2和3的pickle流不通用， 虽然代码可以使用一份， 但用2导出到redis的流在3里不认， 两者自行使用没有问题
+#使用json作为中间流来处理df的存储
+def _get_obj_at_2(key):
+    """在3中获取2序列化到redis的值"""
+    #先使用2获取pickle流
+    exe2_path = "C:\\ProgramData\\Anaconda2\\python.exe"
+    if not os.path.exists(exe2_path):
+        exe2_path = "c:\\anaconda2\\python.exe"
+    cmd = exe2_path + ' -c "import myredis;myredis._convert_obj_to_json_for_3(\'' + key + '\')"'
+    key += '.json'
+    if  key in getKeys():
+        df = get_Bin(key)
+        return df
+    import subprocess
+    p = subprocess.Popen(cmd)
+    p.wait()
+    #print(cmd)
+    s = get_Bin(key)
+    df = pd.read_json(s)
+    return df
+def _convert_obj_to_json_for_3(key):
+    """从redis中取出并转化为json再次存入, 并修改key为key.json"""
+    df = get_obj(key)
+    if 0: df = pd.DataFrame()
+    s = df.to_json()
+    key = key + '.json'
+    set_str(key, s)
+
+import unittest
+class mytest(unittest.TestCase):
+    def _test_obj(self):
+        o = {'ad':1}
+        import pickle
+        key = 'temp'
+        b = pickle.dumps(o)
+        r = createRedis()
+        r.set(key, b)
+        print(pickle.loads(r.get(key)))
+    def test_convert_at_3(self):
+        code = '300033'
+        df = _get_obj_at_2(code)
+        print(df)
     
 if __name__ == "__main__":
-    try:
-        args = sys.argv[1:]
-        main(args)
-    except:
-        main(None)
+    unittest.main()

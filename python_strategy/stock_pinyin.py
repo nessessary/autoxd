@@ -1,4 +1,4 @@
-#coding:utf8
+#-*- coding:utf-8 -*-
 from enum import Enum
 ZXHZ='000099' #中信海直
 GJNY='000096' #广聚能源

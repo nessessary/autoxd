@@ -1,7 +1,7 @@
 Autoxd
 ======
 
-A股实盘自动化交易客户端软件
+A股实盘自动化交易系统
 
 概述
 ----
@@ -13,9 +13,10 @@ A股实盘自动化交易客户端软件
 
 功能
 ----
-1. 行情， 系统自动下载行情保存到数据池中, 快速稳定， 支持短线重连
+1. 行情， 系统自动下载行情保存到redis中, 快速稳定， 支持断线重连
 2. 交易接口， 暂时只支持中信建投证券, 基于通达信， 可与通达信同时开启， 互不干扰
-3. 由python实现的策略， 通过编写策略从而实现自动化交易
+3. 由python实现的策略， 通过编写策略从而实现自动化交易, 0.2版本以后python与行情交易部分分离， 由客户端获取数据并导入到redis中，
+   策略从redis中读取行情， 交易时向客户端发送通知来完成交易.
 
 回测
 ----
@@ -25,9 +26,11 @@ A股实盘自动化交易客户端软件
 
 使用
 ----
-1. 下载安装文件 [网盘](https://pan.baidu.com/s/1mjZxU68)
+1. 下载安装文件 [网盘](https://pan.baidu.com/s/1pMoB83h)
+	1) 依赖redis, 安装好后再安装客户端
+	2) 策略依赖python执行环境, 推荐anaconda
 2. 安装后运行， 需要的软硬件要求如下<br>
-	WIN7 8G内存 硬盘10G以上空间
+	WIN7 8G内存 硬盘5G以上空间
 3. 一个典型的执行过程如下
 	1) 填写资金账号， 成功后下次不用再输入, 帐号以加密形式存储在本地， 并不容易泄露
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_main.png)
@@ -39,37 +42,24 @@ A股实盘自动化交易客户端软件
 	4) 委托下单
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
 4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
-5. 半自动交易， 如果没有合适的策略， 那么可以采用半自动交易方式， 在策略中加入条件判断， 符合条件时进行语音播报同时通知界面显示
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_sign_speak.png)
 
-```python
-	    #信号发生时语音播报, 并通知界面回显
-	    if price > boll_poss[1] or price < boll_poss[-2]:
-		codename = stock.GetCodeName(code)
-		s = '%s, %.2f'%(codename, price)
-		self.data.show(codename)    #通知界面显示
-		self.data.speak2(s)	    #语音播报
-```
 
 升级
 ----
-本软件安装包比较大， 如果装过一次后，可以使用升级包来覆盖主文件，
-1. 查看[changlog](https://github.com/nessessary/autoxd/blob/master/changelog.txt) 看更新了什么
-2. [下载升级包](http://pan.baidu.com/s/1o83HxIq)   把里面的文件覆盖至安装目录
+本软件暂时不支持升级， 请手动下载安装文件重新安装
 
 
 策略
 ----
 1. Python环境
-	1) 安装文件附了一份Anaconda2(python27,32位), 安装为绿色版，不影响之前安装的Anaconda
-	2) 包含Redis一份， 如果本地安装了将不安装
+	1) 自行安装Anaconda
+	2) 自行安装Redis，也可从网盘下载绿色版安装
 	3) 主要使用pandas库, 回测较慢但编写方便
 	4) 策略目录在python_strategy\strategy
 	   默认使用的策略文件为boll_pramid.py
-2. 策略入口, 见boll_pramid.py<br>
-	注意：系统安装或升级都会覆盖默认策略， 删除时策略目录也会删除;因此最好有两个目录，一个回测目录和一个执行目录<br>
-	回测目录为git迁出的目录， 执行目录就是安装后的目录<br>
-	另外， 自动化交易适合高频一些的策略， 因此默认策略就是一个基于boll的区间交易策略， 并且会持续优化，直至可以稳定的执行
+2. 策略执行run.bat<br>
+	策略具体见回测文档, 数据由客户端获取，并保存在redis中
+	自动化交易适合高频一些的策略， 因此默认策略就是一个基于boll的区间交易策略， 并且会持续优化，直至可以稳定的执行
 	1) 系统会遍历下载的股票， 同时调用Run
 	2) 锁定策略处理的股票， 填写AllowCode里的list
 
@@ -137,8 +127,7 @@ listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
 ```
 
 4. 如何调用交易接口
-	1) 正确输入账号进入系统后， 交易账号即会登录， 且保持在线， 注意， 本系统使用的是通信协议登录方式，不影响其他软件，
-	   也就是可以和通达信软件同时开启， 不影响其功能， 在autoxd下单后，在通达信刷新可以看见
+	1) 正确输入账号进入系统后， 交易账号即会登录， 且保持在线，在autoxd下单后，在通达信刷新可以看见
 	2) 上面的例子可以看见使用了股票列表查询account.StockList(), 和买入account.Order(0, code, cur_price, 100)
 	   全部的交易接口见tc.py
 	3) 使用命令行方式调用接口

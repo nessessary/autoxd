@@ -152,7 +152,6 @@ class BackTestPolicy:
             if index in bars.index:
                 #bars.ix[index]['positions'] = agl.where(bSell, -1, 1)
                 bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
-        trade_positions = np.array(bars['positions'])
         #同步资金到bar
         df_zhijing.is_copy = False
         df_zhijing['changwei'] = changwei
@@ -165,7 +164,7 @@ class BackTestPolicy:
         zhican = (bars['资产']-init_money)/init_money*100
         zhican = zhican.fillna(0)
         title = '%s %s'%(self.codes[0], stock.GetCodeName(self.codes[0]).decode('utf8'))
-        ui.TradeResult_Boll(agl.where(policy.pl, policy.pl, pl), bars, trade_positions, \
+        ui.TradeResult_Boll(agl.where(policy.pl, policy.pl, pl), bars,  \
                             stock.GuiYiHua(zhican),\
                             stock.GuiYiHua(bars['changwei']),
                             title=title)

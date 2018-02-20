@@ -18,6 +18,10 @@ import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
 import stock
+try:
+    import stock_pinyin as jx
+except:
+    import stock_pinyin3 as jx
 import agl
 #x = [1,2,3,4,5,6]
 #y = [10,20,3,20,39,4]
@@ -586,25 +590,17 @@ def testShowTradeResult():
     returns = portfolio.backtest_portfolio()
     ShowTradeResult(pl, bars, signals, returns, 2)
 
-def TradeResult_Boll(pl, bars, trade_positions, zhijin,changwei, title=''):
+def TradeResult_Boll(pl, bars, zhijin,changwei, title=''):
     """显示策略结果
     bars: df 包含有  c字段即可
-    trade_positions: np.darray or df 交易信号
     zhijin: df index同bars
     changwei: df index同bars
     title: str 中文需要使用decode(utf8)
     """
-
     signals = pd.DataFrame(index=bars.index)
     signals['signal'] = 0.0
     signals['signal'] = np.zeros(len(bars['c']))
-    if agl.IsNone(trade_positions):
-        signals['positions'] = signals['signal'].diff()  
-        signals['positions'][10] = 1
-        signals['positions'][13] = 1
-        signals['positions'][20] = -1
-    else:
-        signals['positions'] = trade_positions
+    signals['positions'] = bars['positions']
     ShowTradeResult2(pl, bars, signals, zhijin,changwei , 0, title=title)
 def testTradeResult_Boll():
     code = '002074'
@@ -620,7 +616,7 @@ def testTradeResult_Boll():
     zhijin[100] = 1010000
     zhijin[200] = 980000
 
-    TradeResult_Boll(pl, bars, None, zhijin, None, stock.GetCodeName(code).decode('utf8'))
+    TradeResult_Boll(pl, bars, zhijin, None, stock.GetCodeName(code).decode('utf8'))
 def ShowCode(pl, code):
     closes = stock.Guider(code).getCloses()
     DrawTs(pl, closes)
@@ -817,6 +813,68 @@ class AsynDrawKline(object):
         plt.draw()
         plt.pause(0.1)    
 
+def Rectangle(pl,quotes, h,l, left, right):
+    """在k线图中画矩形
+    h,l : 上下的价格
+    left,right: 左右的index
+    """
+    clr = 'b'
+    linewidth = 0.25
+    a = np.zeros(len(quotes))
+    a[:] = np.nan
+    
+    #a[:] = 30
+    #pl.plot(a)
+    #画横线
+    a[left:right] = h
+    pl.plot(a, color=clr, linewidth=linewidth)
+    a[:] = np.nan
+    a[left:right] = l
+    pl.plot(a, color=clr, linewidth=linewidth)
+    #画竖线
+    pl.plot([left,left],[h,l], clr, linewidth=linewidth)
+    pl.plot([right, right], [h,l], clr, linewidth=linewidth)
+    
+def drawKlineUseDf(pl, df, rects=None):
+    """画k线图, 同步
+    df : 日线或5分钟线, cols('ohlcv')
+    rects: list [(h_price,l_price, left_index, right_index),...]
+    """
+
+    def df_to_matplotformat(df):
+        """
+        return: list[turpl(t,o,h,l,c)]
+        """
+        data_list = []
+        for dates,row in df.iterrows():
+            # 将时间转换为数字
+            #date_time = datetime.datetime.strptime(dates,'%Y-%m-%d')
+            t = date2num(dates)
+            open,high,low,close = row[:4]
+            datas = (t,open,high,low,close)
+            data_list.append(datas)	
+        return data_list
+    quotes = df_to_matplotformat(df)
+    pl.figure
+    # 创建一个子图 
+    ax = pl.gca()
+    pl.subplots_adjust(bottom=0.2)
+
+    #调整下面日期显示的密度
+    freq = len(quotes)/20
+    weekday_candlestick(quotes, ax, fmt='%b %d %H:%M', freq=freq, width=0.01, colorup='r',colordown='green')
+    
+    if rects is not None:
+        #left,right = 1000, 2000
+        #Rectangle(pl, quotes, h=quotes[left][2], l=quotes[right][3], left=left, right=right)
+        for rect in rects:
+            h,l,left,right = rect
+            Rectangle(pl, quotes, h, l, left, right)
+        
+    pl.show()
+    pl.close()
+    
+
 def draw3d(df=None, titles=None, datas=None):
     """画3d"""
     #该行在c运行时会报错
@@ -868,7 +926,7 @@ class MyTest(unittest.TestCase):
         #zz = stock.ZigZag(closes,percent=1)
         #DrawDvsAndZZ(pl, closes, zz)
         
-    def test_ShowTradeResult(self):
+    def _test_ShowTradeResult(self):
         #testShowTradeResult()
         testTradeResult_Boll()
     def _test_AsynDrawKline(self):
@@ -893,6 +951,12 @@ class MyTest(unittest.TestCase):
         #plt.show()  #最后停在画面处， 没有的话进程结束
     def _test_3d(self):
         draw3d()
+    def test_drawKline2(self):
+        code = jx.CYJM
+        start_day = '2017-8-25'
+        df = stock.getFiveHisdatDf(code, start_day=start_day)
+        drawKlineUseDf(pl, df)
+        
 
 if __name__ == "__main__":
     unittest.main()    

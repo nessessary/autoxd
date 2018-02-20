@@ -6,6 +6,10 @@
 
 import os
 try:
+    import stock_pinyin as jx
+except:
+    import stock_pinyin3 as jx
+try:
     import mysql
 except:
     pass
@@ -25,7 +29,10 @@ import pandas as pd
 from sklearn.cluster import KMeans
 import pickle,re,pyprind
 #from pymemcache.client import Client
-#import grabThsWebStockInfo
+try:
+    import grabThsWebStockInfo
+except:
+    pass
 #import tushare as ts
 
 #from pypublish import publish
@@ -162,7 +169,25 @@ class LiveData:
     """获取在线数据"""
     def getHisdat(self, code):
         """return: df"""
-        df = getHisdatDataFrameFromRedis(code)
+        #df = getHisdatDataFrameFromRedis(code)
+        key = 'live_h_'+code
+        hisdat = myredis.get_Bin(key)
+        if agl.IsNone(hisdat) or len(hisdat) == 0:
+            return pd.DataFrame([])
+        a = []
+        n = (4+5*4)
+        for i in xrange(len(hisdat)/n):
+            e = list(struct.unpack("=ifffff", hisdat[n*i:n*(i+1)]))
+            e[0] = StockTime.s_ToStrDate(e[0])
+            a.append(e)
+        df = pd.DataFrame(a)
+        df = df.set_index(df.columns[0])
+        df.index = pd.DatetimeIndex(df.index)
+        df.columns = list('hlocv')
+        df['h'] /= 100.0
+        df['l'] /= 100.0
+        df['o'] /= 100.0
+        df['c'] /= 100.0
         return df
     def getFenshi(self, code):
         """return: df"""
@@ -175,7 +200,11 @@ class LiveData:
         for i in range(len(fenshi)/n):
             a.append(struct.unpack("=hfhhb", fenshi[n*i:n*(i+1)]))
         df = pd.DataFrame(a)
-        df.columns = list('tpvdb')
+        df[0] = df[0].map(lambda x: StockTime.s_ToStrTime(int(x), agl.CurDay()))
+        df = df.set_index(df.columns[0])
+        df.index = pd.DatetimeIndex(df.index)
+        df.columns = list('pvdb')
+        df['p'] /= 100.0
         return df
     def getFiveMinHisdat(self, code):
         """return: df col=['hloc']"""
@@ -209,6 +238,10 @@ class LiveData:
         df = df.set_index(df.columns[0])
         df.index = pd.DatetimeIndex(df.index)
         df.columns = list('hloc')
+        df['h'] /= 100.0
+        df['l'] /= 100.0
+        df['o'] /= 100.0
+        df['c'] /= 100.0
         if code == '510050':
             df = pd.concat([ df_five,df])
         #数据如果太短， 从数据库中补充
@@ -388,9 +421,9 @@ class mytest(unittest.TestCase):
         #upper, middle, lower = BOLL(df_five_hisdat['c'])
         #print(upper[-1], lower[-1])
         upper, middle, lower = TDX_BOLL(df_five_hisdat['c'])
-        print upper[-10:]
-        print middle[-10:]
-        print lower[-10:]
+        print(upper[-10:])
+        print(middle[-10:])
+        print(lower[-10:])
         #df_five_hisdat['upper'] = upper
         #df_five_hisdat['lower'] = lower
         #df_five_hisdat['mid'] = middle
@@ -398,11 +431,14 @@ class mytest(unittest.TestCase):
         #df.plot()
         #pl.show()
         upper, middle, lower, boll_w = TDX_BOLL2(df_five_hisdat['c'])
-        print boll_w
+        print(boll_w)
     def _test_livedata(self):
         code = '300033'
-        #print LiveData().getFiveMinHisdat('000043')
-        print(LiveData().getFenshi(code))
+        print(LiveData().getHisdat(code))
+        print(LiveData().getFiveMinHisdat(code))
+        f=LiveData().getFenshi(code)
+        print(f)
+        print(1)
     def _test_ths(self):
         agl.tic()
         ths = createThs()
@@ -420,7 +456,7 @@ class mytest(unittest.TestCase):
         print(code.get_syl())
         
         ths = THS()
-        print ths.df_jll
+        print(ths.df_jll)
     def _test_account(self):
         print('test account T+1')
         acount = Account(1000000)
@@ -434,35 +470,43 @@ class mytest(unittest.TestCase):
         acount.sell(code, price+0.1, 3000, '2016-5-3')
         print(acount.get_WeituoDf(day='2016-5-3'))
         acount.myprint([(code, 15)])
+    def test_history(self):
+        code = jx.THS
+        df = myredis.get_obj(code)
+        print(df)
     def _test_fenshi_fuquan(self):
         #5-9除权
         code, start_day, end_day = '002560', '2016-3-1','2016-5-20'
         df = getHisdatDf(code, start_day, end_day, True)
         #df = FenshiEx(code, start_day, end_day, True).df
         print(df)
-    def test_Bankuais(self):
+    def _test_Bankuais(self):
         #myredis.delkey(myredis.enum.KEY_BANKUAIS)
         agl.print_ary(get_bankuais())
         bankuais = filter(lambda x: x.find('360')>=0, get_bankuais())
         agl.print_ary(bankuais)
-        print get_bankuai_codes(bankuais[0])
-        print get_bankuai_codes('航母')
+        print(get_bankuai_codes(bankuais[0]))
+        print(get_bankuai_codes('航母'))
         #板块评价市盈率
         bankuai = '人工智能'
-        print get_bankuai_avg_syl(bankuai)
+        print(get_bankuai_avg_syl(bankuai))
         
         df = THS().df_jll
         df = df[df['code']=='300033']
-        print df
+        print(df)
     def _test_bankuai_analyze(self):
         StockInfoThs.Test_Bankuai_Zhishu()
     def _test_GetCodeName(self):
-        print GetCodeName('603444')
+        print(GetCodeName('603444'))
     def _test_get_ths_codes(self):
-        print getTHS_custom_codes()
+        print(getTHS_custom_codes())
+    def _test_baimagu(self):
+        print(IsBaiMaGu(jx.SWKJ))
+    def _test_dump(self):
+        Guider.DumpToRedis()
 def IsKaiPan():
     """确定当前是处于开盘时间 return: bool"""
-    t = ['9:31:00','11:30:00','13:00:00', '15:03:00']	#后面的3分钟让策略执行一些收盘工作
+    t = ['9:15:00','11:30:00','13:00:00', '15:00:00']	
     for i in range(len(t)):
         t[i] = dateutil.parser.parse(t[i]).time()
     cur_t = time.localtime()
@@ -470,6 +514,12 @@ def IsKaiPan():
     if (cur_t >= t[0] and cur_t<= t[1]) or (cur_t>t[2] and cur_t <t[3]):
         return True
     return False
+def IsShouPan():
+    """收盘"""
+    t = dateutil.parser.parse('15:00:00').time()
+    cur_t = time.localtime()
+    cur_t = datetime.time(cur_t.tm_hour, cur_t.tm_min, cur_t.tm_sec)
+    return cur_t > t
 def calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs):
     """计算板块分时指数,
     1.取大盘的开盘天数
@@ -824,15 +874,6 @@ class StockInfoThs:
         """一个表中code记录, 一行 return: df"""
         df = self.getDf(table_id)
         return df[df['code'] == code]
-    @staticmethod
-    def _getGrabThsTableNames():
-        table_names = ['概要','新闻','解禁','盈利预测','机构推荐',\
-                       '财务主要指标_汇报期','财务主要指标_年','财务主要指标_单季度','分红融资']
-        try:
-            table_names = grabThsWebStockInfo.GrabThsWeb.table_names
-        except:
-            pass        
-        return table_names
     def getCodeDict(self, code):
         d = {}
         for i,k in enumerate(grabThsWebStockInfo.GrabThsWeb.table_names):
@@ -1260,7 +1301,8 @@ class StockInfoThs:
         d = StockInfoThs.ThsOneCode(d)
         print( d.get_mgsy(), d.get_zgb(), SYL(getHisdatDf(code)['c'][-1], d.get_mgsy()))
         
-g_ths_single_table = None        
+g_ths_single_table = None   
+#Warning: 未来需要改进， 一个gaiyao表加载至redis花了20秒，可以考虑使用rpc方式， 基本面全部抛到一个常驻进程里
 class THS(object):
     """使用redis保存分项表"""
     def __init__(self):
@@ -3654,8 +3696,10 @@ def ZigZag(closes, percent=1):
     return zz   
 def analyzeZZ(zz):
     """只取最后两段
-    return: np.darray [[direction0, y0],[direction1, y1]] 方向1为上涨， -1为下跌, 价格差比, 前一个价格作为基准
+    #return: np.darray [[direction0, y0],[direction1, y1]] 方向1为上涨， -1为下跌, 价格差比, 前一个价格作为基准
+    return: (y0, y1)
     """
+    assert(len(zz)>2)
     zz = zz[-3:]
     y0 = (zz[1,1]-zz[0, 1])/zz[0,1]
     y1 = (zz[2,1]-zz[1,1])/zz[1,1]
@@ -3878,6 +3922,18 @@ def IsZhiShuCode(code):
     if code[0] == '6' or code[0] == '3' or code[0] == '0':
         return False
     return True
+def IsBaiMaGu(code):
+    """白马股"""
+    ths = THS.getInstance()
+    df_gaiyao = ths.df_gaiyao
+    s = df_gaiyao[df_gaiyao['code'] == code]['概念强弱排名'].tolist()[0]
+    return s.find('白马股')>=0
+def IsLanChouGu(code):
+    """蓝筹股"""
+    ths = THS.getInstance()
+    df_gaiyao = ths.df_gaiyao
+    s = df_gaiyao[df_gaiyao['code'] == code]['财务分析'].tolist()[0]
+    return s.find('蓝筹')>=0
 def IsChuanYeBan(code):
     return code[0] == '3'
 #板块

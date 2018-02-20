@@ -24,9 +24,16 @@ class Live:
             """return: 当前exe执行的路径"""
             cur_path = os.path.abspath(__file__)
             cur_path = os.path.dirname(cur_path)
-            cur_path += '\\python_load.txt'
-            path = agl.ReadFile(cur_path)
-            return path
+            #cur_path += '\\python_load.txt'
+            #path = agl.ReadFile(cur_path)
+            path1 = '/../../build/release'
+            ret_path = cur_path+path1
+            ret_path = os.path.abspath(ret_path)
+            if os.path.isdir(ret_path):
+                return ret_path
+            ret_path = cur_path + '/../'
+            ret_path = os.path.abspath(ret_path)
+            return ret_path
         path = getCurProcessRunPath()
         #添加该路径到系统path， 因为dll的依赖dll也需要在路径中才能加载
         if not path in os.environ['path']:

@@ -5,6 +5,12 @@
 # QQ: 1764462457
 
 import os
+def AddPath():
+    from sys import path
+    mysourcepath = os.getenv('AUTOXD_PYTHON')
+    if not mysourcepath in path:
+        path.append(mysourcepath)    
+AddPath()
 import numpy as np
 import help
 import math
@@ -105,7 +111,7 @@ def DateYearAdd(d, n):
     """
     d = dateutil.parser.parse(d)
     return d
-    
+
 #----------------------------------------------------------------------
 def max2(a):
     """
@@ -320,19 +326,19 @@ def Print(a1, a2='', a3='', a4='', a5='', a6='', a7=''):
     vals = [a1, a2, a3, a4, a5, a6, a7]
     s = ''
     for val in vals:
-	if val != '':
-	    if isinstance(val, str):
-		val = val.decode('utf-8')
-	    if isinstance(val, unicode):
-		val = val.encode('gb2312')
-		#val = val.decode("utf-8")
-	    if isinstance(val, float):
-		val = round(val, 4)
-	    s += str(val)
-	    s += " "
+        if val != '':
+            if isinstance(val, str):
+                val = val.decode('utf-8')
+            if isinstance(val, unicode):
+                val = val.encode('gb2312')
+                #val = val.decode("utf-8")
+            if isinstance(val, float):
+                val = round(val, 4)
+            s += str(val)
+            s += " "
     s += ''
     print(s)
-    
+
 def ReadFile(fname):
     """return: str"""
     f = open(fname, 'r')
@@ -475,8 +481,10 @@ class SerialMgr:
                     fname = str(fname).replace('.searial','.df')
                     if help.FileExist(fname):
                         help.FileDelete(fname)
+        #相对目录转绝对目录
+        fname = os.path.dirname(__file__)+'/'+fname
         result = SerialMgr.unserial(fname)
-        if result is None:
+        if isinstance(result, list) and len(result)==0:
             SerialMgr.count += 1
             result = fn(*args)
             SerialMgr.serial(result, fname)
@@ -500,30 +508,43 @@ class SerialMgr:
         Test3()
     @staticmethod
     def serial(result, fname = "temp.bin"):
+        if isinstance(result, pd.DataFrame) or isinstance(result, pd.Panel):
+            fname = str(fname).replace('.searial','.df')
+        elif isinstance(result, np.ndarray):
+            fname = str(fname).replace('.searial','.csv')
+
         if charade.detect(fname)['encoding'] == 'utf-8':
             fname = convert(fname)
-
-        root_dir = os.path.dirname(__file__)
-        fname = root_dir + "\\" +fname            
-        f = open(fname,"wb")	    
-        p = cPickle.Pickler(f)
-        p.clear_memo()
-        p.fast = True
-        p.dump(result)
-        f.close()
+        if isinstance(result, pd.DataFrame) or isinstance(result, pd.Panel):
+            #result.to_pickle(fname)
+            result.to_csv(fname)
+        elif isinstance(result, np.ndarray):
+            np.savetxt(fname, result, delimiter=',', fmt='%.3f')
+        else:	
+            f = open(fname,"wb")	    
+            p = cPickle.Pickler(f)
+            p.clear_memo()
+            p.fast = True
+            p.dump(result)
+            f.close()
     @staticmethod
     def unserial(f_name='temp.bin'):
         """return: 之前serial的结果集"""
         import pandas as pd
-        #定位root目录
-        root_dir = os.path.dirname(__file__)
-        f_name = root_dir + "\\" +f_name
-        a=None
+        a=[]
         if os.path.isfile(f_name):
             f = open(f_name)
             a = cPickle.load(f)
             f.close()
-
+        else:
+            f_name = str(f_name).replace('.searial','.df')
+            if os.path.isfile(f_name):
+                #a = pd.read_pickle(f_name)	
+                a = pd.read_csv(f_name)
+            else:
+                f_name = str(f_name).replace('.searial','.csv')
+                if os.path.isfile(f_name):
+                    a = np.loadtxt(f_name,delimiter=',')
         return a
 
 def unittest_matrixtostring():
@@ -546,6 +567,20 @@ def PngToBmp(f):
         img.save(file_out)
     else:
         img.save(file_out)    
+def JpgToBmp(f):
+    # convert a .png image file to a .bmp image file using PIL
+
+    file_in = f+".jpg"
+    img = Image.open(file_in)
+    file_out = f+".bmp"
+    #print len(img.split())  # test
+    if len(img.split()) == 4:
+        # prevent IOError: cannot write mode RGBA as BMP
+        r, g, b, a = img.split()
+        img = Image.merge("RGB", (r, g, b))
+        img.save(file_out)
+    else:
+        img.save(file_out)            
 def SmallImg(f, s):
     """缩小图片 f: 文件路径 s:缩小的比率, 2就是缩小一倍
     """
@@ -647,7 +682,7 @@ def count_char():
         if c=='|':
             count += 1
     print(count)
-    
+
 def PostTask(fn, t, reset=False):
     """每隔t秒执行一次fn
     主要是防止交易接口被短期内多次调用， 造成系统异常
@@ -791,11 +826,11 @@ def startDebug():
     _DEBUG = True
 def IsDebug():
     if _DEBUG:
-	return _DEBUG
+        return _DEBUG
     import psutil
     cmdlines = psutil.Process(os.getpid()).cmdline()
     if len(cmdlines)>2 and cmdlines[2].find('wingdb')>0:
-	return True
+        return True
     return False
 def is_utf8(s):
     return charade.detect(s)['encoding'] == 'utf-8'
@@ -854,17 +889,17 @@ def print_prettey_df(df):
     from prettytable import PrettyTable
     table = PrettyTable(df.columns.tolist())
     for i,row in df.iterrows():
-	table.add_row(row.tolist())
-    print table       
+        table.add_row(row.tolist())
+    print(table)
 def print_ary(ary):
     """打印数组元素内容"""
     for x in ary:
         print(x)
 def print_u(s):
     try:
-        print utf8_to_unicode(s)
+        print(utf8_to_unicode(s))
     except:
-        print s
+        print(s)
 def zip_file(src, dest):
     """把src压缩到dest, 暂时只支持一个文件"""
     f = zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED)
@@ -972,7 +1007,7 @@ def ClustList(n_clusters, X):
 
 def MD5(s):
     import hashlib   
-    
+
     m2 = hashlib.md5()   
     m2.update(s)   
     return m2.hexdigest()       
@@ -980,7 +1015,7 @@ def MD5(s):
 class Marco:
     """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
     #调试状态使用单进程
-    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\timport backtest_policy\n\tbacktest_policy.MultiProcessRun(5, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
+    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\timport backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
 def main(args):
     #TestMoveFile()
