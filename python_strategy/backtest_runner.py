@@ -150,8 +150,7 @@ class BackTestPolicy:
             index = df.index[i]
             bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
             if index in bars.index:
-                #bars.ix[index]['positions'] = agl.where(bSell, -1, 1)
-                bars.set_value(index, 'positions', agl.where(bSell, -1, 1))
+                bars.at[index,'positions'] = agl.where(bSell, -1, 1)
         #同步资金到bar
         df_zhijing.is_copy = False
         df_zhijing['changwei'] = changwei

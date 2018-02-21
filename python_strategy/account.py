@@ -79,10 +79,11 @@ class LocalAcount(AccountDelegate):
         if cur_date != last_date:
             #重置可卖数量
             for i in range(len(self.df_stock)):
-                self.df_stock.set_value(i,'证券数量', self.df_stock.iloc[i]['库存数量'])
-                self.df_stock.set_value(i,'可卖数量', self.df_stock.iloc[i]['证券数量'])
+                #self.df_stock.set_value(i,'证券数量', self.df_stock.iloc[i]['库存数量'])
+                self.df_stock.at[i,'证券数量'] = self.df_stock.iloc[i]['库存数量']
+                self.df_stock.at[i,'可卖数量'] = self.df_stock.iloc[i]['证券数量']
                 if int(self.df_stock.iloc[i]['库存数量'])==0:
-                    self.df_stock.set_value(i,'买入数量', 0)
+                    self.df_stock.at[i,'买入数量'] = 0
     def _insertChengJiaoRecorde(self, code, price, num, date, bSell):
         #成交记录
         row = {}

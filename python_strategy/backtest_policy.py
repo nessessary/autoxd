@@ -137,33 +137,9 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
         d1, d2 = help.MyDate.s_Dec(cur_day, -20),cur_day
         if start_day != '':
             d1 = start_day
-        def getTradeDay(d1, d2, dtype=backtest_runner.BackTestPolicy.enum.hisdat_mode):
-            """确定是交易日
-            return: (d1, d2)"""
-            try:
-                if dtype == backtest_runner.BackTestPolicy.enum.hisdat_mode:
-                    df = stock.getHisdatDataFrameFromRedis(code, d1, d2)
-                else:
-                    df = stock.getFenshiDfUseRedis(code, d1,d2)
-                if len(df) == 0:
-                    #在指定日期内没有数据，应该是新股或次新股
-                    return d2,d2
-                d2 = agl.datetime_to_date(df.index[-1])
-                if agl.DateTimeCmp(d1, agl.datetime_to_date(df.index[0])) <0:
-                    d1 =  agl.datetime_to_date(df.index[0])
-            except:
-                pass
-            return d1, d2
-            #for i in range(10):
-                #if d1 in df.index:
-                    #return d1,d2
-                #else:
-                    #d1 = help.MyDate.s_Dec(d1, 1)
-        d1,d2 = getTradeDay(d1,d2, mode)	
         if start_day == '':
             #再次修正为已有数据的20天
             d1 = help.MyDate.s_Dec(d2, -day_num)
-        d1,d2 = getTradeDay(d1,d2, mode)	
         
         if d1 != d2:        
             print d1, d2

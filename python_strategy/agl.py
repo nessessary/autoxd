@@ -516,8 +516,8 @@ class SerialMgr:
         if charade.detect(fname)['encoding'] == 'utf-8':
             fname = convert(fname)
         if isinstance(result, pd.DataFrame) or isinstance(result, pd.Panel):
-            #result.to_pickle(fname)
-            result.to_csv(fname)
+            result.to_pickle(fname)
+            #result.to_csv(fname)
         elif isinstance(result, np.ndarray):
             np.savetxt(fname, result, delimiter=',', fmt='%.3f')
         else:	
@@ -539,8 +539,8 @@ class SerialMgr:
         else:
             f_name = str(f_name).replace('.searial','.df')
             if os.path.isfile(f_name):
-                #a = pd.read_pickle(f_name)	
-                a = pd.read_csv(f_name)
+                a = pd.read_pickle(f_name)	
+                #a = pd.read_csv(f_name)
             else:
                 f_name = str(f_name).replace('.searial','.csv')
                 if os.path.isfile(f_name):

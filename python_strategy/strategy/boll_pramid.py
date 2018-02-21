@@ -344,7 +344,6 @@ import unittest
 class mytest(unittest.TestCase):
     def test_strategy(self):
 	codes = stock.DataSources.getCodes()
-	codes = stock.get_codes(stock.myenum.randn, 5)
 	cpu_num = 5
 	agl.startDebug()
 	if agl.IsDebug():

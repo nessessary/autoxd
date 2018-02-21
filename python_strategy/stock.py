@@ -45,7 +45,8 @@ def get_codes(flag=myenum.all, n=100):
     return: list """
     def readTDXlist():
         #从本地csv读取
-        fname = 'datas/tdx_codes.csv'
+        cur_path = os.path.dirname(os.path.abspath(__file__))
+        fname = cur_path + '/datas/tdx_codes.csv'
         df = pd.read_csv(fname, dtype=str, header=None)
         codes = df[0].tolist()    
         if len(codes)>0:
