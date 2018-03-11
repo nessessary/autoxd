@@ -194,7 +194,7 @@ class Publish:
 def example():
     #不发布把该行注销
     pl = Publish()
-    print 'test python html publish.'
+    print('test python html publish.')
     for i in range(2):
         pl.figure(i)
         pl.plot(np.arange(0,10*(i+1)))
@@ -202,7 +202,6 @@ def example():
     
 def main(args):
     example()
-    print "end"
     
 if __name__ == "__main__":
     args = sys.argv[1:]

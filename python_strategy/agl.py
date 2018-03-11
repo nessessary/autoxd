@@ -51,13 +51,15 @@ def toc():
     sec = time.clock()-globals()['tt']
     minutie = sec/60.0
     hour = minutie / 60.0
-    print('\nElapsed time: %.2f seconds / %.2f min / %.2f hour\n' % (sec, minutie, hour))
+    a = datetime.timedelta(seconds = sec)
+    print('\nElapsed time: %.2f seconds / %.2f min / %.2f hour     %s\n' % (sec, minutie, hour, str(a)))
 class tic_toc:
     """要赋个值"""
     def __init__(self):
         tic()
     def __del__(self):
         toc()
+
 #
 def sign(a):
     """"""
@@ -119,7 +121,7 @@ def max2(a):
     return : [v, i] 值和下标
     """
     m = -999999999; I=0;
-    for i in xrange(0, len(a)):
+    for i in range(0, len(a)):
         if a[i] > m:
             m=a[i]
             I = i
@@ -130,7 +132,7 @@ def max2(a):
 def min2(a):
     """"""
     m = 999999999; I=0;
-    for i in xrange(0, len(a)):
+    for i in range(0, len(a)):
         if a[i] < m:
             m=a[i]
             I = i
@@ -469,9 +471,10 @@ class SerialMgr:
         #fname = 'datas/'+fn.__name__+str(*args)+str(SerialMgr.count)+'.searial'
         #fname = 'datas/'+fn.__name__+str(*args)+'.searial'
         caller_name = getCallerName()
-        fname = 'datas/' + caller_name +'.searial'	
+        data_path = os.path.dirname(__file__) + '/datas/'
+        fname = data_path + caller_name +'.searial'	
         if 'fname' in kwargs.keys():
-            fname = 'datas/' + kwargs[fname]+'.searial' 
+            fname = data_path + kwargs[fname]+'.searial' 
         #删除文件
         if 'restart' in kwargs.keys():
             if kwargs['restart'] == True:
@@ -482,7 +485,6 @@ class SerialMgr:
                     if help.FileExist(fname):
                         help.FileDelete(fname)
         #相对目录转绝对目录
-        fname = os.path.dirname(__file__)+'/'+fname
         result = SerialMgr.unserial(fname)
         if isinstance(result, list) and len(result)==0:
             SerialMgr.count += 1
@@ -1040,6 +1042,7 @@ def main(args):
     #Logger.Test()
     #removeDir(os.getcwd()+'/html')
     #archiveZip('tmp/my.zip', 'html')
+    a = tic_toc()
     print(ClustList(3, [100,300,600,300,600,300,600,1200]))
     print(ClustList(2, [200]))
 

@@ -721,7 +721,8 @@ def weekday_candlestick(ohlc_data, ax, fmt='%b %d', freq=7, **kwargs):
     fmt: 日期格式
     freq: 日期显示的间隔
     """
-
+    freq = int(freq)
+    
     # Convert data to numpy array
     ohlc_data_arr = np.array(ohlc_data)
     ohlc_data_arr2 = np.hstack(
