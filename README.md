@@ -1,147 +1,58 @@
-Autoxd
-======
+回测框架
+------
 
-A股实盘自动化交易系统
+回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 当回测成功后， 有中信建投帐户可转入
+[实盘执行](https://github.com/nessessary/autoxd/blob/master/README_autoxd.md)
+这个回测框架主要关注具体的交易细节， 适合T+0操作
 
-概述
-----
-输入账号即可执行的快速交易系统。行情及交易接口由c++编写，通信协议方式获取，非API方式， 策略由python编写。
-适合使用该软件的目标人群<br>
-1. 希望使用quant方式交易的投资者， 
-2. 有一定的python编程经验, 可以自行实现策略的 
-3. 希望策略在本地执行的， 本软件承诺不上传任何用户数据
+1. 数据源<br>
+   请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源， 包含300033的日线，5分钟线，及分时线, <br>
+   下载该目录放置到python_strategy\datas目录中<br>
+   要使用全部数据源可以联系作者或者修改框架使用第三方数据源, 具体见stock.DataSources<br>
+   stock_createThs.searial为同花顺F10全部数据<br>
+   自动加载， 使用见stock.py里的StockInfoThs<br>
+   前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
 
-功能
-----
-1. 行情， 系统自动下载行情保存到redis中, 快速稳定， 支持断线重连
-2. 交易接口， 暂时只支持中信建投证券, 基于通达信， 可与通达信同时开启， 互不干扰
-3. 由python实现的策略， 通过编写策略从而实现自动化交易, 0.2版本以后python与行情交易部分分离， 由客户端获取数据并导入到redis中，
-   策略从redis中读取行情， 交易时向客户端发送通知来完成交易.
+2. 依赖包问题， 作者主要使用anaconda 32bit python2.7版本， 需要的库为ta-lib, redis, charade等<br>
+   64位 python3.x也可使用，估计需要修改部分代码; 作者只在windows下测试通过，linux可能有问题<br>
 
-回测
-----
-使用该系统前可以先进行策略的回测开发, 毕竟有一个好的策略才能进行自动化交易
-请迁出python_strategy目录， 先在该目录中跑一个回测， 执行boll_pramid.py将得到一个默认回测
-具体过程查询 [回测文档](https://github.com/nessessary/autoxd/blob/master/python_strategy/README.md)
+3. 执行
+   回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
+   分时执行时间比较长，成交为实际的时间<br>
+   1> 分时的例子<br>
+   用ide打开缺省策略boll_pramid.py并执行<br>
+   或者用命令行<br>
+   python boll_pramid.py<br>
 
-使用
-----
-1. 下载安装文件 [网盘](https://pan.baidu.com/s/1pMoB83h)
-	1) 依赖redis, 安装好后再安装客户端
-	2) 策略依赖python执行环境, 推荐anaconda
-2. 安装后运行， 需要的软硬件要求如下<br>
-	WIN7 8G内存 硬盘5G以上空间
-3. 一个典型的执行过程如下
-	1) 填写资金账号， 成功后下次不用再输入, 帐号以加密形式存储在本地， 并不容易泄露
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_main.png)
-	2) 账号输入后， 系统即开始运行， 下载行情，并登录交易账号, 成功后类似下图
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_enter.png)
-	3) 行情下载完成后即会执行策略， 默认策略是一个简单的demo， 仅仅是读取交易账户中股票列表的第一行， 如果有买入股票的话
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_stocklist.png)
+   中间结果显示TickReport<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)<br>
+   可看见输出的结果图<br>
+   资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
+   输出窗口可以看见交易明细<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
-	4) 委托下单
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
-4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
+   <br>
+   2>日线的例子<br>
+   支持并行<br>
+   boll_fenchang.py<br>
 
-
-升级
-----
-本软件暂时不支持升级， 请手动下载安装文件重新安装
-
-
-策略
-----
-1. Python环境
-	1) 自行安装Anaconda
-	2) 自行安装Redis，也可从网盘下载绿色版安装
-	3) 主要使用pandas库, 回测较慢但编写方便
-	4) 策略目录在python_strategy\strategy
-	   默认使用的策略文件为boll_pramid.py
-2. 策略执行run.bat<br>
-	策略具体见回测文档, 数据由客户端获取，并保存在redis中
-	自动化交易适合高频一些的策略， 因此默认策略就是一个基于boll的区间交易策略， 并且会持续优化，直至可以稳定的执行
-	1) 系统会遍历下载的股票， 同时调用Run
-	2) 锁定策略处理的股票， 填写AllowCode里的list
-
+4. 发布
+   见boll_fencang.py
+   发布输出内容到web页面, 
+   [例子](http://autoxd.applinzi.com/html/boll_fencang_setParams6100.html)
 ```python
-class Strategy_Boll_Pre(qjjy.Strategy):
-    """为了实现预埋单"""
-    def AllowCode(self, code):
-	codes = ['300033']		 #自己想交易的股票
-	return code in codes
-    
-    #入口函数
-    def Run(self):
-	"""每个股票调用一次该函数, 调用后会释放， 因此不能使用简单的全局变量， 而需要使用redis来持续化
-	另外， 交易接口要慎用， 比如列表查询， 可保存至redis， 
-	不要每进入函数都查询一下， 下单则无这种情况， 因为都是条件触发， 所以直接调即可
-	"""
-        #self._log('Strategy_Boll_Pre')
-	account = self._getAccount()	#获取交易账户
-	def run_stocklist():
-	    df = account.StockList()	#查询股票列表
-	    self._log(df.iloc[0])
-	PostTask(run_stocklist,	100)	#每100秒执行一次
+    #设置策略参数
+    def setParams(s):
+	s.setParams(trade_num = 300, 
+                    #pl=publish.Publish()	#发布方式
+                    )
+    if codes == '':
+	codes = [u'300033']
+    #执行策略
+    backtest_policy.test_strategy(codes, BollFenCangKline, setParams, day_num=20, mode=myenum.hisdat_mode, 
+                                  start_day='2016-10-20', end_day='2017-10-1'
+                                  )    
+
+```
 	
-	#以下为交易测试
-        code = self.data.get_code()	#当前策略处理的股票
-	if not self.is_backtesting and not self.AllowCode(code):
-	    return
-
-        self._log(code)
-	df_hisdat = pd_help.Df(self.data.get_hisdat(code))	#日k线
-	df_fenshi = pd_help.Df(self.data.get_fenshi(code))	#日分时
-	if len(df_fenshi.df) == 0:
-	    self.data.log(code+u"停牌")
-	    return
-	price = df_fenshi.getLastPrice()    #当前股价
-        closes = df_hisdat.getCloses()
-	yestoday_close = closes[-2]	    #昨日收盘价
-	self._log(price)
-	self._log(yestoday_close)
-	
-	def buy_at_price_once():
-	    """在某一个价位下一个单"""
-	    cur_price = price * (1-0.02)
-	    if cur_price < yestoday_close*0.901:
-		cur_price = yestoday_close*0.901
-		cur_price = agl.FloatToStr(cur_price)
-	    account.Order(0, code, cur_price, 100)	#买入
-	#测试下单请放开下行的注释
-	#PostTask(buy_at_price_once, 60*60*3)	
-	return	
-```
-	3)策略加载， 见live_policy_runner.py
-```python
-	p.Regist(boll_pramid.Strategy_Boll_Pre(live_policy.Live()))
-```
-
-3. 行情
-	1) 现只获取日k线, 5分钟线和分时线
-	2) 具体获取的股票行情见config.ini, 一般的只针对关注的股票获取行情并执行策略会快很多, 修改后下次启动后执行<br>
-	   修改listinfo_codes中的股票为你的自选股
-```python
-#取列表方式 0/1		取全部、取部分
-listinfo_type=1
-listinfo_codes="002074|002108|300399|300384|300033|300059|002174"
-```
-
-4. 如何调用交易接口
-	1) 正确输入账号进入系统后， 交易账号即会登录， 且保持在线，在autoxd下单后，在通达信刷新可以看见
-	2) 上面的例子可以看见使用了股票列表查询account.StockList(), 和买入account.Order(0, code, cur_price, 100)
-	   全部的交易接口见tc.py
-	3) 使用命令行方式调用接口
-	   在ide中, 推荐wingide, 在其shell窗口输入
-```python
-import tc, stock_pinyin as jx
-tc.Buy('300033', 60.1, 100)
-#用拼音简写传参
-tc.Buy(jx.THS, 60.1, 100)
-#碰到简写冲突的情况, ide里的自动完成提示会出现[a,a#杰瑞股份,b, b#晶瑞股份], 选择相应的a,b,代表冲突的代码
-tc.Buy(jx.JRGF.a, 15, 100)
-```
-
-
-反馈
-----
-交流请加qq群 213155151 <br>
