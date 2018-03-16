@@ -1,8 +1,7 @@
 回测框架
 ------
 
-回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， 当回测成功后， 有中信建投帐户可转入
-[实盘执行](https://github.com/nessessary/autoxd/blob/master/README_autoxd.md)
+回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， <br>
 这个回测框架主要关注具体的交易细节， 适合T+0操作
 
 1. 数据源<br>
