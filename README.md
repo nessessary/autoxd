@@ -33,6 +33,7 @@
    2>日线的例子<br>
    支持并行<br>
    boll_fenchang.py<br>
+   图形示例<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
 4. 发布
