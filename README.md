@@ -35,6 +35,7 @@
    boll_fenchang.py<br>
    图形示例<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
+   <br>
 
 4. 发布
    见boll_fencang.py
