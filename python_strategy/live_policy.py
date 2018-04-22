@@ -5,7 +5,7 @@
 # QQ: 1764462457
 
 import os
-import sys, struct, StringIO,copy, traceback
+import sys, struct, copy, traceback
 import numpy as np
 import pandas as pd
 from ctypes import *
@@ -308,7 +308,7 @@ class Live:
             s = str(s)
         b=self.MyTrace(s)
         if b==0:
-            print s
+            print(s)
     def speak(self, unicode_str, code):
         """unicode_str: 必须为unicode
         code: str, 需要转化为中间带空格的
@@ -345,34 +345,14 @@ def Reshape(a, cols=6):
         b.append(a[i:i+cols])
     return b
 
-def Test():
-    #重定向输出
-    logfile = open("log.txt", "w")
-    oldstdout = sys.stdout
-    sys.stdout = logfile
-    
-    TestAccont()
-    
-    #还原输出
-    sys.stdout = oldstdout
-    logfile.close()
-def PrintDf(df, p):
-    if 0:df = pd.DataFrame()
-    row = df.shape[0]
-    for i in range(0, row, 60):
-        p.log(str(df[i:i+60]))
-        #print df[i:i+60]
-
-
 def testVoice():
     p = Live()
     s = u'发现突破%s'
-    print p.speak(s, '600086')
+    print(p.speak(s, '600086'))
 def main(args):
     #TestCon()
     testVoice()
     #TestConEx()
-    print "end"
     
 if __name__ == "__main__":
     try:

@@ -225,10 +225,10 @@ class LocalAcount(AccountDelegate):
         """return: df"""
         return self.df_ChengJiao
     def CheDanList(self):
-        raise NotImplementedError("Implement Interface")
+        assert(False)        
     def CheDan(self, code, weituo_id):
-        raise NotImplementedError("Implement Interface")
-
+        assert(False)
+        
     def Report(self, end_day, is_detail=False):
         import stock,agl
         #成交记录
@@ -336,7 +336,7 @@ class AccountMgr(object):
     def init_money(self):
         df_zhijing = self.account.ZhiJing()
         if len(df_zhijing) == 0:
-            return 100000
+            return 100000.0
         return float(df_zhijing.iloc[0]['资产'])
     def yin_kui(self):
         df_stock_list = self.account.StockList()
@@ -344,7 +344,7 @@ class AccountMgr(object):
         if len(df_stock_list) > 0:
             yinkui = df_stock_list['参考盈亏成本价'].tolist()[0]
             return float(yinkui)
-        return 0
+        return 0.0
     def getInitCanWei(self):
         """得到初始仓位"""
         df = self.account.ChengJiao()
@@ -426,20 +426,7 @@ class mytest(unittest.TestCase):
         account.Order(0, code,4, 1000)
         print(account.StockList())
         print(account.WeiTuoList())
-    def _test_to_mysql(self):
-        account = self.test_multi()
-        df = account.ZhiJing()
-        df.index.name = 't'
-        print(df.columns)
-        db = mysql.Tc()
-        df.columns = db.getZhiJinCols()+['yin_kui']
-        db.save(df, tbl_name=mysql.Tc.enum.zhijin)
-        df = account.ChengJiao()
-        df = df.loc[:,['证券代码','买卖标志','成交数量','成交价格','成交金额','成交编号']]	
-        df.columns = db.getChenJiaoCols()
-        df.index.name = 't'
-        df['trade_id'] = df['trade_id'].map(lambda x: np.random.randint(0,100000) )
-        db.save(df, tbl_name=mysql.Tc.enum.chenjiao)
+
 
 if __name__ == "__main__":
     unittest.main()

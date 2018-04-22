@@ -58,7 +58,6 @@ class LivePolicySwitch:
 def main(args):
     #debug下dll加载出错， 但live方式没问题
     LivePolicySwitch.Test()
-    print "end"
     
 if __name__ == "__main__":
     try:

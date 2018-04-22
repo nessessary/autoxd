@@ -12,18 +12,14 @@ def AddPath():
         path.append(mysourcepath)    
 AddPath()
 import numpy as np
-import help
-import math
-import myenum
-import myredis
-import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math
+import pandas as pd
+import help,myenum,myredis
+import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math,time, datetime,dateutil
 if sys.version > '3':
     import _pickle as cPickle
 else:
     import cPickle
 from PIL import Image
-import time, datetime,dateutil
-import pandas as pd
 from sklearn.utils import shuffle
 import traceback
 
@@ -305,8 +301,8 @@ def removeDir(dirPath):
         return
     files = os.listdir(dirPath)
     try:
-        for file in files:
-            filePath = os.path.join(dirPath, file)
+        for f in files:
+            filePath = os.path.join(dirPath, f)
             if os.path.isfile(filePath):
                 os.remove(filePath)
             elif os.path.isdir(filePath):
@@ -316,7 +312,6 @@ def removeDir(dirPath):
         print(e)
 def archiveZip(filename, dirSrc):
     """打包目录到zip"""
-    import zipfile  
     f = zipfile.ZipFile(filename,'w',zipfile.ZIP_DEFLATED)  
     startdir = dirSrc
     for dirpath, dirnames, filenames in os.walk(startdir):  
@@ -532,7 +527,6 @@ class SerialMgr:
     @staticmethod
     def unserial(f_name='temp.bin'):
         """return: 之前serial的结果集"""
-        import pandas as pd
         a=[]
         if os.path.isfile(f_name):
             f = open(f_name)
@@ -708,6 +702,9 @@ class TimeDelta:
     def FromMinutes(minutes):
         """return: seconds"""
         return minutes*60
+    @staticmethod
+    def FromHours(hour):
+        return hour*60*60
 def MoveFile(src, dst):
     shutil.move(src, dst)
 def TestMoveFile():
@@ -716,41 +713,8 @@ def TestMoveFile():
     dst = "C:/ProgramData/HiveSoft/AntiFiles/a.dll"
     MoveFile(src, dst)
 
-def NetTest():
-    """神经网络调用测试"""
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import neurolab as nl
-    input = np.array([[4,11],[7,340],[10,95],[3,29],[7,43],[5,128]])
-    target=np.array([[1],[0],[1],[0],[1],[0]])
-    #2层网络，5个输入节点，一个输出节点
-    net=nl.net.newff([[3,10],[11,400]],[5,1])
-    err=net.train(input,target,epochs=500, show=1, goal=0.02)
-    out=net.sim(input)
-    mymean=np.mean(out)
-    x_max=np.max(input[:,0])+5
-    x_min=np.min(input[:,0])-5
-    y_max=np.max(input[:,1])+5
-    y_min=np.min(input[:,1])-5
-    plt.subplot(211)
-    #误差曲线
-    plt.plot(range(len(err)),err)
-    plt.xlabel('Epoch number')
-    plt.ylabel('err (default SSE)')
-    plt.subplot(212)
-    #可视化图
-    plt.xlim(x_min,x_max)
-    plt.ylim(y_min,y_max)
-    for i in xrange(0,len(input)):
-        if out[i]>mymean:
-            plt.plot(input[i,0],input[i,1],'ro')
-        else:
-            plt.plot(input[i,0],input[i,1],'r*')
 
-    plt.show()
-
-
-#开发一个日志系统， 既要把日志输出到控制台， 还要写入日志文件   
+#日志， 既要把日志输出到控制台， 还要写入日志文件   
 _log = None
 class Logger():
     def __init__(self, logname, loglevel, logger):
@@ -930,17 +894,6 @@ def get_string_digit(s):
     if s_result == '':
         return -0.01
     return float(s_result)
-def df_convert_to_r_csv(df, fname):
-    """把python的df转化成r的csv"""
-    #获得r接口
-    import rpy2
-    from rpy2 import robjects as ro
-    r = ro.r
-
-    #转换数据
-    import pandas.rpy.common as com
-    r_dataframe = com.convert_to_r_dataframe(df)
-    r['write.csv'](r_dataframe, fname)
 def df_get_pre_date(df, date):
     """获取当前日期的上一个索引日期 return : str(date)"""
     d = df.ix[:date].index[-2]
@@ -964,17 +917,7 @@ def find_str_use_re(pattern, string, index=0):
     if len(m.groups()) < index:
         return ""
     return m.groups()[index]    
-def find_str_list_use_re(pattern, string):
-    """用正则表达式提取结果, 其中的一个
-    pattern: 表达式
-    string: 源字符串
-    reutrn: list"""
-    m = re.match(pattern, string)
-    if m == None:
-        return ""
-    if len(m.groups()) < index:
-        return []
-    return m.groups() 
+
 def calcGoldCut(v, is_left=True, ratio=0.62):
     """计算黄金分割的位置 sample-  calcGoldCur([10,20], True) => 14.8
     v: list[2], float 数值, v[1]大于v[0]

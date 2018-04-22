@@ -45,7 +45,7 @@ class Df:
         return np.array(self.df['v'])
 
 def main(args):
-    print "end"
+    print("end")
     
 if __name__ == "__main__":
     try:

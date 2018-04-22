@@ -8,7 +8,7 @@
 import os
 import numpy as np
 import pandas as pd
-import sys,unittest
+import sys,unittest,time
 import live_policy,agl,stock,account,myredis,myenum
 import win32con, win32gui
 import ctypes
@@ -38,7 +38,7 @@ class TcAccount(account.AccountDelegate):
     chengjiao_columns = "成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"
     weituo_columns = '操作日期|委托时间|股东代码|深0沪1|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明|撤单标志|委托日期|备注|'
     chedanlist_columns = "操作日期|委托时间|股东代码|深0沪1|证券代码|证券名称|状态说明|"\
-		"买卖标志|买0卖1|委托价格|委托数量|委托编号|成交数量|撤单数量|委托日期|"
+		"买0卖1|买卖标志|委托价格|委托数量|委托编号|成交数量|撤单数量|委托日期||"
     def __init__(self, live=None):
         if live == None:
             self.delegate = live_policy.Live()
@@ -142,7 +142,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "CheDanList|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
             df.columns = self.chedanlist_columns.split('|')
             return df
@@ -246,12 +246,18 @@ def Sell(code, price, num):
     #print price
     SendOrder(bSell, code, price, num)    
 def CheDan(code):
-    """撤单, 如果该股票有多个单， 全部撤销"""
-    #先查委托列表
-    df_weituo = get_weituo_from_redis(True)
-    df_weituo = df_weituo[df_weituo['证券代码'] == code]
-    for weituo_id in df_weituo['委托编号']:
-	SendCheDan(code, weituo_id)
+    """撤单, 如果该股票有多个单， 全部撤销
+    code == None删除全部
+    """
+    #查询撤单列表
+    import data_interface
+    tc_account = TcAccount(data_interface.TdxData())
+    df = tc_account.CheDanList()
+    if len(df)>0:
+	if code is not None and len(code)>0:
+	    df = df[df['证券代码'] == code]
+	for weituo_id in df['委托编号']:
+	    tc_account.CheDan(code, weituo_id)
     
 #def AdjustPrice(bSell, code, price):
     #"""为了市价成交， 调整为对应二档"""
@@ -319,6 +325,8 @@ def SendCheDan(code, weituo_id):
     cds.lpData = ctypes.c_char_p(s)
     print s
     SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))    
+
+    
 def ShouShu(num):
     """"""
     num = int(num /100.0 )*100
@@ -361,8 +369,10 @@ def get_stocklist_from_redis(is_have_return=False):
     if is_have_return:
 	return df
     if df is not None and len(df)>0:
+	#过滤掉卖掉的股票
+	df = df[df['库存数量'].astype(int)>0]
 	from prettytable import PrettyTable
-	cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
+	cols = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考盈亏成本价|买入均价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)'
 	cols = cols.split('|')
 	table = PrettyTable(cols)
 	for i,row in df.iterrows():
@@ -392,9 +402,11 @@ def get_weituo_from_redis(is_have_return=False):
 	#table.sort_key("ferocity")
 	#table.reversesort = True
 	print table    
-def get_chengjiao_from_redis(is_have_return=False):
+def get_chengjiao_from_redis(is_have_return=False, is_history=False):
     """输出为成交的委托列表"""
     key = 'df_chengjiao'
+    if is_history:
+	key = 'df_history_chengjiao'
     if 0: df = pd.DataFrame()
     df = myredis.get_obj(key)
     if is_have_return:
@@ -422,11 +434,13 @@ class mytest(unittest.TestCase):
     def _test_TradeCloseAnalyzer(self):
 	analyzer = TradeCloseAnalyzer()
 	analyzer.Report()
-    def test_get_stocklist_from_redis(self):
+    def _test_get_stocklist_from_redis(self):
 	#get_stocklist_from_redis()
-	get_chengjiao_from_redis(is_have_return=False)
-    def _test_chedan(self):
-	CheDan('300367')
+	#get_chengjiao_from_redis(is_have_return=False)
+	#get_chengjiao_from_redis(is_have_return=False, is_history=True)
+	SendCheDanList()
+    def test_chedan(self):
+	CheDan(stock.jx.YDGF.e)
 
 def query_code_chengben(code, df_stocklist):
     """查询股票参考成本价"""

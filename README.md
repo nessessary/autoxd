@@ -14,14 +14,13 @@
 
 2. 依赖包问题， 作者主要使用anaconda 32bit python2.7版本， 需要的库为ta-lib, redis, charade等<br>
    64位 python3.x也可使用，估计需要修改部分代码; 作者只在windows下测试通过，linux可能有问题<br>
+   建议使用WingIDE来加载项目并执行， 使用命令行执行可能会碰到乱码的问题
 
 3. 执行
    回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
    分时执行时间比较长，成交为实际的时间<br>
    1> 分时的例子<br>
    用ide打开缺省策略boll_pramid.py并执行<br>
-   或者用命令行<br>
-   python boll_pramid.py<br>
 
    中间结果显示TickReport<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)<br>
@@ -29,12 +28,12 @@
    资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    输出窗口可以看见交易明细<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
    <br>
    2>日线的例子<br>
    支持并行<br>
    boll_fenchang.py<br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br>
 
 4. 发布
    见boll_fencang.py

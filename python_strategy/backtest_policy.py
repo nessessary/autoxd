@@ -93,7 +93,7 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
     def getCurTickTime(self):
         return self.tick
 def main(args):
-    print "end"
+    print("end")
 
 def MultiProcessRun(cpu, codes, fn_name, mod):
     """多进程执行, 并行

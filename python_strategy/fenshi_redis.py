@@ -56,7 +56,7 @@ class mytest(unittest.TestCase):
     def test1(self):
         self.assertFalse(0)
     def testCreate(self):
-        codes = stock.get_codes(myenum.rand10)
+        codes = stock.get_codes(myenum.randn, 10)
         codes = [u'002072']
         for code in codes:
             genOne(code)

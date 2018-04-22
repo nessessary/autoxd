@@ -18,10 +18,7 @@ import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
 import stock
-try:
-    import stock_pinyin as jx
-except:
-    import stock_pinyin3 as jx
+import stock_pinyin as jx
 import agl
 #x = [1,2,3,4,5,6]
 #y = [10,20,3,20,39,4]
@@ -40,160 +37,6 @@ mpl.rcParams['font.serif'] = [FontStyle.YAHEI]
 #plt.show()
 def getFont():
     return fm.FontProperties(fname="c:/windows/fonts/simsun.ttc")
-########################################################################
-class StockView:
-    """"""
-    x = []
-    y = []
-
-    #----------------------------------------------------------------------
-    def __init__(self, x, y):
-        """Constructor"""
-        self.x = x
-        self.y = y
-        plt.plot(self.x, self.y, linewidth=2)
-
-    #
-    #----------------------------------------------------------------------
-    def line(self, x):
-        """"""
-        plt.plot(x, )
-
-    #----------------------------------------------------------------------
-    def layer(self, x, y):
-        """"""
-        #n = np.random.randn(1000)
-        #plt.hist(n, 100)
-        plt.plot(x, y, 'r')
-
-
-
-    #----------------------------------------------------------------------
-    def show(self):
-        """"""
-
-        plt.show()
-
-
-
-
-########################################################################
-class KlineView:
-    """"""
-
-    #----------------------------------------------------------------------
-    def __init__(self):
-        """Constructor"""
-
-    def Title(self, s):
-        plt.title(s)
-    #
-    #加入k线绘制
-    #----------------------------------------------------------------------
-    def AddKlineLayer(self, kline):
-        """"""
-        if 0: kline = stock.Kline
-        x =[]
-        y = []
-        k = 0
-        for hisdat in kline.hisdats:
-            if 0 : hisdat = stock.Hisdat
-            x.append(k)
-            y.append(hisdat.close)
-            k += 1
-        plt.plot(x,y,'b')
-
-    #
-    #
-    #----------------------------------------------------------------------
-    def AddCloses(self, closes, color='b', m=0, s=1):
-        """"""
-        x=[]
-        i = 0
-        ys=[]
-        for close in closes:
-            x.append(i)
-            i += 1
-            y = close*s
-            y += m
-            ys.append(y)
-        plt.plot(x, ys, color)
-
-
-    #
-    #加入买卖集合 
-    #a - [x, y, flag(buy/sell)]
-    #----------------------------------------------------------------------
-    def AddBuySellPoints(self, a):
-        """"""
-        for v in a:
-            self.AddBuyOrSellArrow(v[0], v[1], v[2])
-
-    #画买卖
-    #----------------------------------------------------------------------
-    #----------------------------------------------------------------------
-    def AddBuyOrSellArrow(self, x, y, buy=True):
-        """"""
-        if buy:
-            plt.arrow(x, y, 1, 2)
-        else:
-            plt.arrow(x, y, 1, -2)
-
-
-
-    #
-    #增加普通的x，y， 比如均线
-    #----------------------------------------------------------------------
-    def AddY(self, y, col='y'):
-        """"""
-        x = []
-        s = -1
-        size = len(y)
-        for i in range(0, size):
-            #过滤掉前面的0
-            if y[i] != 0:
-                if s ==-1:
-                    s = i
-                x.append(i)
-        y = y[s:]
-        plt.plot(x, y, col)
-    def AddY2(self, y, col='y'):
-        """"""
-        x = []
-        s = -1
-        size = len(y)
-        for i in range(0, size):
-            x.append(i)
-        plt.plot(x, y, col)        
-    #
-    #----------------------------------------------------------------------
-    def AddX(self, x, y, col='tan'):
-        """"""
-        plt.plot(x, y, col)
-
-    #----------------------------------------------------------------------
-    def AddLineX(self, x, closes, col='tan'):
-        """"""
-        y = [max(closes), min(closes)]
-        x = [x,x]
-        plt.plot(x, y, col)
-
-    #显示
-    #----------------------------------------------------------------------
-    def Show(self):
-        """"""
-        plt.show()
-
-
-#
-#----------------------------------------------------------------------
-def ShowKlineView(kline, curve):
-    """"""
-    view = KlineView()
-    view.AddKlineLayer(kline)
-    view.AddUptrendLayer(curve)
-    view.Show()
-
 
 
 #
@@ -617,9 +460,7 @@ def testTradeResult_Boll():
     zhijin[200] = 980000
 
     TradeResult_Boll(pl, bars, zhijin, None, stock.GetCodeName(code).decode('utf8'))
-def ShowCode(pl, code):
-    closes = stock.Guider(code).getCloses()
-    DrawTs(pl, closes)
+
 
 def drawFenshi(pl, df_fenshi, title=None):
     """df_fenshi: ['bpv']"""
@@ -836,7 +677,7 @@ def Rectangle(pl,quotes, h,l, left, right):
     pl.plot([left,left],[h,l], clr, linewidth=linewidth)
     pl.plot([right, right], [h,l], clr, linewidth=linewidth)
     
-def drawKlineUseDf(pl, df, rects=None):
+def drawKlineUseDf(pl, df, rects=None, is_show=True):
     """画k线图, 同步
     df : 日线或5分钟线, cols('ohlcv')
     rects: list [(h_price,l_price, left_index, right_index),...]
@@ -871,9 +712,10 @@ def drawKlineUseDf(pl, df, rects=None):
         for rect in rects:
             h,l,left,right = rect
             Rectangle(pl, quotes, h, l, left, right)
-        
-    pl.show()
-    pl.close()
+    
+    if is_show:
+        pl.show()
+        pl.close()
     
 
 def draw3d(df=None, titles=None, datas=None):
