@@ -14,7 +14,7 @@
 
 2. 依赖包问题， 作者主要使用anaconda 32bit python2.7版本， 需要的库为ta-lib, redis, charade等<br>
    64位 python3.x也可使用，估计需要修改部分代码; 作者只在windows下测试通过，linux可能有问题<br>
-   建议使用WingIDE来加载项目并执行， 使用命令行执行可能会碰到乱码的问题
+   建议使用WingIDE 5.x来加载项目并执行， 使用命令行执行可能会碰到乱码的问题
 
 3. 执行
    回测有两种模式， hisdat_mode|tick_mode分别是日线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
