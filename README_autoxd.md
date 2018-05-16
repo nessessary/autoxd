@@ -43,12 +43,6 @@ A股实盘自动化交易系统
 	![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_weituo.png)
 4. 如果不想使用交易接口， 只使用行情部分的话， 只需要输入一个短帐号，比如用户名为1， 密码为1， 那么下次就不会提示输入交易帐号了。
 
-
-升级
-----
-本软件暂时不支持升级， 请手动下载安装文件重新安装
-
-
 策略
 ----
 1. Python环境
@@ -141,7 +135,3 @@ tc.Buy(jx.THS, 60.1, 100)
 tc.Buy(jx.JRGF.a, 15, 100)
 ```
 
-
-反馈
-----
-交流请加qq群 213155151 <br>
