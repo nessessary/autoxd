@@ -51,9 +51,6 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
     def get_fiveminhisdat(self, code):
         df = self.panel_fiveminhisdat[code]
         return df[:self.tick]
-    def get_info(self, code):
-        info = stock.StockInfo(code)
-        return info
     def get_bankuaisort(self):
         a = np.zeros(500*200, dtype=np.int8)
         l = self.GetBankuaiSort(a)
@@ -106,15 +103,17 @@ def MultiProcessRun(cpu, codes, fn_name, mod):
     multi = MultiSubProcess.MultiSubProcess()
     multi.Map(cpu, mod, fn_name, codes)
     multi.Run()	  
-def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0, start_day='', end_day=''):	
+def test_strategy(codes, strategy_name, cbfn_setparams=None, mode=1, start_day='', end_day='',
+                  datasource_mode=stock.DataSources.datafrom.mysql):	
     """strategy_name: str 通过策略名称来构造策略
     cbfn_setparams: callback function 回调函数 fn(strategy) 用该函数来重新设置参数
-    day_num: 当前天或者数据集的最后一天向前推的天数， 同时会修正为数据集有效的第一天
-    mode : enum/int tick/hisdat
+    mode : enum/int tick=0/hisdat=1
+    datasource_mode : 数据源引用地 stock.DataSource.data_mode
     """
     import backtest_runner
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
+    stock.DataSources.data_mode = datasource_mode
     for code in codes:
         print code, stock.GetCodeName(code)
         p = backtest_runner.BackTestPolicy(mode)
@@ -132,14 +131,12 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, day_num=20, mode=0,
         p.Regist(strategy)
         #p.Regist(Strategy_Trade(backtesting, is_backtesting=True))
         cur_day = agl.CurDay() 
-        if end_day != '':
-            cur_day = end_day
-        d1, d2 = help.MyDate.s_Dec(cur_day, -20),cur_day
-        if start_day != '':
-            d1 = start_day
-        if start_day == '':
-            #再次修正为已有数据的20天
-            d1 = help.MyDate.s_Dec(d2, -day_num)
+        if end_day == '':
+            end_day = cur_day
+        #if start_day == '':
+            ##再次修正为已有数据的20天
+            #start_day = help.MyDate.s_Dec(end_day, -day_num)
+        d1,d2 = p.initData(start_day, end_day)
         
         if d1 != d2:        
             print d1, d2

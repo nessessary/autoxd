@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 # QQ: 1764462457
 
-import os
+import os,sys
 def AddPath():
     from sys import path
     mysourcepath = os.getenv('AUTOXD_PYTHON')
@@ -250,45 +250,6 @@ class LiveData:
         hwnd_frame = struct.unpack('=i', hwnd_frame)
         return hwnd_frame[0]
 
-#看股票基本面
-########################################################################
-class StockInfo:
-    """"""
-    code = ''
-    name = ''
-    ltgb = 0	#流通股本
-    hy = ''	#行业
-    zgb = 0	#总股本
-    zzc = 0	#总资产
-    mgsy = 0	#每股收益
-
-    #----------------------------------------------------------------------
-    def __init__(self, code):
-        """Constructor"""
-        db = mysql.createStockDb()
-        vals = db.getGupiaoInfo(code)
-        if len(vals)>0:
-            index, self.code, self.name, self.ltgb, self.hy, self.zgb, self.zzc, self.mgsy = vals[0]
-    @staticmethod
-    def UpdateTable():
-        """更新股票基本数据, 暂定一个季度跑一次
-        1. 先手工跑一下通达信的插件选股， 把数据导出到log.txt
-        2. 先清空数据gupiao表, 把log.txt的内容写入到数据库"""
-        fpath = "C:\\jcb_zxjt\\plugin\\log.txt"
-        d = np.loadtxt(fpath, dtype=str, delimiter=',')
-        #db = mysql.StockMysql()
-        db = mysql.createStockDb()
-        db.ExecSql('TRUNCATE TABLE gupiao;')
-        db.ExecSql('set names gb2312')
-        for i in range(len(d)):
-            sql = 'insert into gupiao (stock_code, stock_name,ActiveCapital,J_hy,J_zgb,J_zzc,J_mgsy) values ("%s","%s","%s","%s","%s","%s","%s")' % \
-                tuple(d[i])
-            db.ExecSql(sql)
-        db.ExecSql('commit')
-    #----------------------------------------------------------------------
-    def myprint(self):
-        """"""
-        help.myprint(self.code, self.name, self.ltgb, self.hy, self.zgb, self.zzc, self.mgsy)
 def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
     """计算板块指数
     codes: list 代码
@@ -355,19 +316,39 @@ def run_adx():
 class mytest(unittest.TestCase):
     def _test1(self):
         self.assertFalse(0)
-    def test_calc_bankuai_zhishu(self):
+    def _test_calc_bankuai_zhishu(self):
         codes, date, end_day, ltgbs = (['601268'], '2014-5-1', '2015-09-25', [16.9])
         codes = get_bankuai_codes('智能音箱')
         print(calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs))
+    def _test_beta(self):
+        pl = publish.Publish()
+        days = pd.period_range(start='2014-8-1', end='2015-4-28', freq='Q' )
+        codes = get_codes(myenum.randn, 5)
+        codes = [jx.DFZQ]
+        for code in codes:
+            for day in days.to_datetime():
+                day = str(day.date())
+                get_onecode_beta(code, day, pl)
+        df = getHisdatDataFrameFromRedis(code)                
+        df_bk = getHisdatDataFrameFromRedis('手机游戏')
+        BETA(df['c'], df_bk,pl)
+    
     def _test_calc_fuquan(self):
-        code = '002407'
+        code = '603179'
+        code = jx.JJWD
         ths = createThs()
         df = mysql.getHisdat(code)
+	df = mysql.getFiveHisdat(code, start_day='2018-1-1')
         one = ths.createThsOneCode(code)
         #复权计算
         df_fenhong = one.get_fenhong()
         df = calc_fuquan_use_fenhong(df, df_fenhong)
         print(df)
+        
+        df = one.convertVolToStockTrunover(df)
+        #print(df)
+	agl.print_df(df)
+	ui.drawDf(pl, df)
     def _test_mgsy(self):
         ths = createThs()
         for code in ['002027']:
@@ -427,20 +408,17 @@ class mytest(unittest.TestCase):
         agl.tic()
         ths = createThs()
         agl.toc()
-        code1 = '002074'
-        code1 = '600981'
-        code1 = '600120'
-        price = getHisdatDataFrameFromRedis(code1).iloc[-1]['c']
-        code = ths.createThsOneCode(code1, price=price)
-        print(code._get_mgsy_3())
-        df = code.get_YinLi()
-        #因为是倒序， 因此截断日期在后面
-        print(df)
-        print(df['2011-1-1':])
-        print(code.get_syl())
-        
-        ths = THS()
-        print(ths.df_jll)
+	
+        code = jx.TJGF.c
+	df = ths.getDf(0)
+	df = df[df['code'] == code]
+	print(df.iloc[0])
+	
+        #price = getHisdatDataFrameFromRedis(code).iloc[-1]['c']
+        #one = ths.createThsOneCode(code, price=price)
+        #one = ths.createThsOneCode(code)
+        #ths = THS()
+        #print(ths.df_jll)
 
     def _test_history(self):
         code = jx.THS
@@ -479,8 +457,18 @@ class mytest(unittest.TestCase):
     def _test_zz(self):
         pl = publish.Publish()
         closes = getHisdatDataFrameFromRedis(jx.THS)['c']
-        zz = ZigZag(closes)
+        closes = closes.values[-1000:]
+        zz = ZigZag(closes, percent=5)
+        print zz
         ui.DrawZZ(pl, zz)
+        #验证zz非未来函数
+        zz = ZigZag(closes[:-200], percent=5)
+        ui.DrawZZ(pl, zz)
+        zz = ZigZag(closes[:-195], percent=5)
+        ui.DrawZZ(pl, zz)
+    def test_DumpToDir(self):
+	DumpToDir()
+	
 def IsKaiPan():
     """确定当前是处于开盘时间 return: bool"""
     t = ['9:15:00','11:30:00','13:00:00', '15:00:00']	
@@ -618,12 +606,13 @@ def BETA(df, df_dp, pl=None):
     df_dp: 指数 pd.Series
     return: df 标准差beta 调整后的指数 df.columns=beta,stock,zhishu"""
     #同步df与df_dp, 去除数据缺失
-    for i in range(2):
-        if len(df) > len(df_dp):
-            df = df[df.index.map(lambda x: x in df_dp.index)]
-        else:
-            df_dp = df_dp[df_dp.index.map(lambda x: x in df.index)]
-    assert(len(df) == len(df_dp))	    
+    #for i in range(2):
+        #if len(df) > len(df_dp):
+            #df = df[df.index.map(lambda x: x in df_dp.index)]
+        #else:
+            #df_dp = df_dp[df_dp.index.map(lambda x: x in df.index)]
+    df_dp = df_dp[df_dp.index.map(lambda x: x in df.index)]
+    #assert(len(df) == len(df_dp))	    
     if len(df) == 0:
         raise myenum.FenshiBetaTinPaiException
 
@@ -637,7 +626,7 @@ def BETA(df, df_dp, pl=None):
     temp = min(np.min(df), np.min(df_dp)) * 100
     if np.isnan(temp): temp = 0
     low = int(temp)
-
+    #low,high = 0,100
     fang_chas = []
     for i in range(low, high):
         df_dp_1 = df_dp - (df_dp.iloc[0] - float(i)/ 100.0)
@@ -672,18 +661,10 @@ def get_onecode_beta(code, day, pl=None):
     df = getHisdatDataFrameFromRedis(code, day)
     if len(df) == 0:
         return None
-    code_dapan = getDapanCode(code)
-    df_dp = getHisdatDataFrameFromRedis(code_dapan, day)
-    return BETA(df['c'], df_dp['c'], pl)
-def test_beta():
-    pl = publish.Publish()
-    days = pd.period_range(start='2014-8-1', end='2015-4-28', freq='Q' )
-    codes = get_codes(myenum.randn, 5)
-    codes = ['603005']
-    for code in codes:
-        for day in days.to_datetime():
-            day = str(day.date())
-            get_onecode_beta(code, day, pl)
+    #code_dapan = getDapanCode(code)
+    #df_dp = getHisdatDataFrameFromRedis(code_dapan, day)
+    df_dp = getHisdatDataFrameFromRedis('手机游戏')
+    return BETA(df['c'], df_dp, pl)
 def calc_fuquan_use_fenhong(df, df_fenhong):
     """获取复权后的历史数据, 用分红表来计算复权 , 前复权
     df: 日k线
@@ -738,21 +719,27 @@ if 0: createThs = StockInfoThs
 def createThs():
     """注意：在stock中执行的，别的模块不认， 因此需要在bankuai_zhishu.py中执行
     返回一个序列化的类, 单件, return: StockInfoThs"""
-    def create():
-        return StockInfoThs()
     global g_ths
     if g_ths is None:
-        g_ths = agl.SerialMgr.serialAuto(create)
+	g_ths = StockInfoThs()
     return g_ths
 
 class StockInfoThs:
     """基于同花顺的F10"""
 
-    def __init__(self):
+    def __init__(self, d={}):
+	"""d: dict 当F10重新更新时，传入数据, 其它时候不传值"""
         self.pl = None
-        self.d = grabThsWebStockInfo.getThsResults()
-        self._ChangeDf()
-        self._calcHySyl()
+	if d == {}:
+	    self.d = grabThsWebStockInfo.getThsResults()
+	else:
+	    from huge_dict import huge_dict
+	    huge_dict().clear()
+	    self.d = d
+	    self._ChangeDf()
+	    self._calcHySyl()
+	    huge_dict(self.d)
+	    
     def _ChangeDf(self):
         """调整df"""
         #把财务预测的时间索引提前一年
@@ -795,9 +782,25 @@ class StockInfoThs:
             total = len(df_hy)
             if len(df_hy) == 0:
                 return [np.nan, np.nan, np.nan, np.nan, np.nan]
+	    
             avg = np.average(np.array(df_hy))
+	    
+	    #计算板块最小扣非市盈率, 最小三个的平均数
+	    min_kfsyls = []
+	    for code in codes:
+		one = self.createThsOneCode(code)
+		min_kfsyls.append(one.get_koufei_syl())
+	    min_kfsyl = 100
+	    if len(min_kfsyls) >0:
+		min_kfsyls = np.array(min_kfsyls)
+		min_kfsyls = min_kfsyls[min_kfsyls>0]
+		if len(min_kfsyls)>0:
+		    min_kfsyls = np.sort(min_kfsyls)
+		    min_kfsyls = min_kfsyls[:3]
+		    min_kfsyl = int(np.sum(min_kfsyls)/len(min_kfsyls))
+	    
             if len(df_hy)<3:
-                return [avg, help.p(avg), '100%', np.nan, np.nan, total]
+                return [avg, help.p(avg), '100%', min_kfsyl, np.nan, total]
             #计算聚类
             results_n = np.zeros((len(df_hy),2))
             results_n[:,0] = 1
@@ -811,7 +814,7 @@ class StockInfoThs:
                 c = a
                 a = b
                 b = c
-            return [help.p(avg), help.p(a[0]),a[1], help.p(b[0]), b[1], total]
+            return [help.p(avg), help.p(a[0]),a[1], min_kfsyl, b[1], total]
         df = self.getDf(0)
         d = {}
         bankuais = self.getBankuais()
@@ -822,7 +825,7 @@ class StockInfoThs:
         #df[1] = df[1].map(lambda x: agl.get_string_digit(str(x).split(',')[0]))
         df[1] = df[1].astype(float)
         df = df.sort_values(by=1)
-        df.columns = ['平均市盈率','低位聚类市盈率','percent1', 'kmean2','percent2', '数量','行业及概念']
+        df.columns = ['平均市盈率','低位聚类市盈率','percent1', '最小扣非市盈率','percent2', '数量','行业及概念']
         #agl.print_df(df)
         self.d['平均市盈率'] = df
     def getTableName(self):
@@ -843,7 +846,8 @@ class StockInfoThs:
     def getHySyl(self, hy):
         """获取平均市盈率表中的行业市盈率 return: float"""
         df = self.getPjSylTable()
-        return df[df['行业及概念'] == hy]['低位聚类市盈率'].get_values()[0]
+        #return df[df['行业及概念'] == hy]['低位聚类市盈率'].get_values()[0]
+	return df[df['行业及概念'] == hy]['最小扣非市盈率'].get_values()[0]
     def size(self):
         return len(self.d.keys())
     def getDf_Code(self, table_id, code):
@@ -1177,6 +1181,25 @@ class StockInfoThs:
             return : float"""
             df = self.getDf(0)
             return agl.get_string_digit(df['总股本'].tolist()[0])
+        def get_koufei_syl(self):
+            """扣非市盈率
+            return: float
+            """
+	    jll = float(self.d['财务主要指标_汇报期'][u'扣非净利润万元'].iloc[0])/10000.0
+	    report_day = self.d['财务主要指标_汇报期'].index[0].to_pydatetime()
+	    quarter = agl.getQuarter(report_day) #报告期季度
+	    code = self.getDf(0)['code'].iloc[0]
+	    try:
+		shizhi = getHisdatDataFrameFromRedis(code, start_day='', end_day='').iloc[-1]['c'] * self.get_zgb()	#市值(亿)
+		kou_fei_syl = PE(shizhi, jll/quarter*4)
+	    except:
+		#新股
+		#print code
+		#shizhi = self.getDf(0)['总市值'].iloc[0]
+		#shizhi = agl.StrToNumber(shizhi)
+		kou_fei_syl = 100
+	    return kou_fei_syl
+            
         def get_ltgb(self):
             """流通股本, 亿股 return: float"""
             return agl.get_string_digit(self.d['概要']['流通A股'].tolist()[0])
@@ -1236,6 +1259,43 @@ class StockInfoThs:
                     if agl.is_valid_date(date):
                         df_fenhong = pd.concat([df_fenhong, pd.DataFrame([gu, money, date]).T])
             return df_fenhong	    
+        def convertVolToStockTrunover(self, df):
+            """成交量转换手率, 通过历史股本变更表来计算
+            df: hisdat
+            return: df 换手率覆盖了v字段
+            """
+            #股本变动表
+            col = '变动后流通A股(股)'
+            df_GuBen_change = self.getDf(3)
+            #调整一下col
+            df_GuBen_change.columns = df_GuBen_change.iloc[0]
+            df_GuBen_change = df_GuBen_change.drop(index=0)
+            #防止有超过当前日期的数据
+            df_GuBen_change.index = pd.DatetimeIndex(df_GuBen_change[df_GuBen_change.columns[0]])
+            df_GuBen_change = df_GuBen_change.sort_index(ascending=True)    #与df顺序一致
+            last_day = agl.datetime_to_date(df.index[-1].to_pydatetime())
+            
+            #计算当时的流通股本
+            df_GuBen_change[col] = df_GuBen_change[col].map(lambda x: agl.StrToFloat(x))
+            df_GuBen_change = df_GuBen_change.dropna()
+            first_day = agl.datetime_to_date(df.index[0].to_pydatetime())
+            df_GuBen_change = df_GuBen_change.ix[first_day:last_day]
+            
+            #Merge时排序需要对应
+            df = df.sort_index()    #mysql存储时有些乱序， merge时必须是排序的，降序
+            if len(df_GuBen_change) > 0:
+                df2 = pd.merge_asof(df, df_GuBen_change,left_index=True,right_index=True)
+                df2 = df2.fillna(method='backfill') #降序， 前面的Nan用第一个有数的值填充
+                df2['v'] = df2['v']*100/df2[col]
+                df['v'] = df2['v']
+            else:   #有些老股因为送股太早，因此这里为空
+                df['v'] = df['v']*100/(self.get_ltgb()*myenum.YI)
+            
+            #df['v'].plot()
+            #pl.show()
+            
+            return df
+                    
     def createThsOneCode(self, code, use_price_for_syl=False, price=0.0):
         d = self.getCodeDict(code)
         if use_price_for_syl:
@@ -1329,7 +1389,7 @@ def load_ths_custom_codes():
         for l in f.readlines():
             if l[:2] == 'SH' or l[:2] == 'SZ':
                 code = l[2:8]
-                if code != '510050':
+                if code != '510050' and code not in myenum.DaPan.all_codes:
                     codes.append(code)
         f.close()	
     return codes
@@ -1506,7 +1566,6 @@ def FuQuan_Fenshi(df_fenshi, df_hisdat):
             df_fenshi[:day] = df_fenshi[:day] *(1+z)
     return df_fenshi
 
-
 def DumpToRedis():
     """把数据放入redis， code为日线，分时会发生out of memory"""
     ths = createThs()
@@ -1542,55 +1601,91 @@ def DumpToRedis():
 class DataSources:
     """生成数据面板, 面板数据选取的例子panel.ix[0].ix['2014-1-2']
     panel.ix[0, '2014']会失败"""
+    class datafrom:
+	"""enum"""
+	mysql = 1
+	livedata = 2
+	serial = 3
+	online = 4  #下载hd5 , 不支持分时
+    data_mode = datafrom.mysql   #默认值, 影响日线模式
+    @staticmethod
+    def _downloadfile(code, mode=1):
+	"""mode : 1|0 hisdat|five"""
+	type_name = ['kline_five', 'kline']
+	fname_2 = 'datas/datasource/%s/%s.hd5'%(type_name[mode],code)
+	fname_2 = help.abspath_join(__file__, fname_2)
+	if not help.FileExist(fname_2):
+	    url = 'http://autoxd.applinzi.com/getfile.php?code=%s&type=%d'%(code, mode)
+	    fname = 'datas/datasource/%s/%s.hd5.gz'%(type_name[mode],code)
+	    fname = help.abspath_join(__file__, fname)
+	    print('get file...')
+	    help.get_file(url, fname)
+	    agl.uncompress_file(fname, fname_2)
+	    help.FileDelete(fname)
+	df = pd.read_hdf(fname_2)
+	return df
     @staticmethod
     def getHisdatPanl(codes, days):
         """k线的历史数据框面板
         codes: [list]
         days: [turple]
         return: [pandas.panel]"""
-        def gen():
-            start_day , end_day = days
-            d = {}
-            for code in codes:
-                df = getHisdatDf(code, start_day, end_day)
-                d[code] = df
-            panel = pd.Panel(d)
-            return panel
-        panel = agl.SerialMgr.serialAuto(gen)
-        if panel is None:
-            panel = gen()
+        start_day , end_day = days
+	d = {}
+	for code in codes:
+	    if DataSources.data_mode == DataSources.datafrom.mysql:
+		df = getHisdatDataFrameFromRedis(code, start_day, end_day)
+		#d = dict( (code, getHisdatDataFrameFromRedis(code, start_day, end_day)) 
+			  #for code in codes )
+	    else:
+		if DataSources.data_mode == DataSources.datafrom.livedata:
+		    df = LiveData().getHisdat(code)
+		if DataSources.data_mode == DataSources.datafrom.online:
+		    df = DataSources._downloadfile(code, 1)
+		    
+		df = df.ix[start_day:end_day]
+		#复权
+		df_fenhong = createThs().createThsOneCode(code).get_fenhong()
+		df = calc_fuquan_use_fenhong(df, df_fenhong)
+	    df = df.sort_index()
+	    d[code] = df
+        panel = pd.Panel(d)
         return panel
     @staticmethod
-    def getFenshiPanl(codes, days):
-        """索引使用datetime, 如果是一天的，那么day1=day2
-        return: dict"""
-        def gen():
-            start_day , end_day = days
-            d = {}
-            for code in codes:
-                fenshi = FenshiEx(code, start_day, end_day, is_fuquan=True)
-                if len(fenshi.df) == 0:
-                    assert(False)
-                fenshi.df = fenshi.df[fenshi.df['p']>0.01]
-                d[code] = fenshi.df
-            return d
-        d = agl.SerialMgr.serialAuto(gen)
-        if d is None:
-            d = gen()
-        return d
-    @staticmethod
     def getFiveMinHisdatPanl(codes, days):
-        """return: dict"""
-        def gen():
-            start_day , end_day = days
-            d = {}
-            for code in codes:
-                df = mysql.getFiveHisdat(code, start_day, end_day)
-                d[code] = df
-            return d
-        d = agl.SerialMgr.serialAuto(gen)
-        if d is None:
-            d = gen()
+        start_day , end_day = days
+        d = {}
+        for code in codes:
+	    if DataSources.data_mode == DataSources.datafrom.mysql:
+		df = mysql.getFiveHisdat(code, start_day, end_day)
+	    else:		
+		if DataSources.data_mode == DataSources.datafrom.livedata:
+		    df = LiveData().getFiveMinHisdat(code)
+		if DataSources.data_mode == DataSources.datafrom.online:
+		    df = DataSources._downloadfile(code, 0)
+		    
+		df = df.ix[start_day:end_day]
+		#复权
+		df_fenhong = createThs().createThsOneCode(code).get_fenhong()
+		df = calc_fuquan_use_fenhong(df, df_fenhong)
+	    df = df.sort_index()
+	    d[code] = df
+        return d
+    
+    @staticmethod
+    def getFenshiPanl(codes, days):
+        """索引使用datetime, 如果是一天的，那么day1=day2"""
+        start_day , end_day = days
+        d = {}
+        for code in codes:
+            fenshi = FenshiEx(code, start_day, end_day, is_fuquan=True)
+            if len(fenshi.df) == 0:
+                return d
+            fenshi.df = fenshi.df[fenshi.df['p']>0.01]
+            d[code] = fenshi.df
+        #d = dict( (code, FenshiEx(code, start_day, end_day, is_fuquan=True).df) for code in codes )
+        #这里产生了异常
+        #panel = pd.Panel(d)
         return d
     @staticmethod
     def getCodes():
@@ -1881,7 +1976,11 @@ def FENSHI_BIAS(df):
 
 def ZigZag(closes, percent=1):
     """计算zz线
+    只有最后一个值是当前值， 之前的节点都是一致的, 非未来函数
+    closes : np.ndarray
+    percent: 忽略的百分比
     return: np.ndarray"""
+    assert(isinstance(closes, np.ndarray))
     #如果是有负值的向量， 需要先偏移到正值再计算
     m = min(closes)
     if m<0:
@@ -1898,7 +1997,11 @@ def ZigZag(closes, percent=1):
         if (abs(relClose)>=percent) and (direction==0):
             j += 1
             zz.append([i, closes[i]])
-            direction = help.sign(relClose)
+            direction = 0
+            if relClose>0:
+                direction = 1
+            if relClose<0:
+                direction = -1
 
         if (closes[i]>=zz[j][1]) and (direction==1):
             zz[j][0] = i
@@ -1918,8 +2021,8 @@ def ZigZag(closes, percent=1):
             j += 1
             zz.append([i, closes[i]])
 
-    #如果最后一个没有保存， 那么记上	
-    if agl.array_last(zz)[0] != len(closes) -1:
+    #如果最后一个没有保存， 那么记上
+    if zz[-1][0] != len(closes) -1:
         j += 1
         i = len(closes) -1
         zz.append([i, closes[i]])
@@ -1942,6 +2045,15 @@ def analyzeZZ(zz):
     y1 = (zz[2,1]-zz[1,1])/zz[1,1]
     return (y0, y1)    
 
+def zz_to_dfzz(zz,df):
+    """把数组格式的zz转成df"""
+    indexs = np.zeros(len(df))
+    for i in zz[:,0]:
+        indexs[int(i)] = 1
+    indexs = indexs.astype(bool)
+    indexs = df.index[indexs]    
+    df = pd.DataFrame(zz[:,1], indexs)
+    return df
 
 def SYL(price, mgsy):
     """mgsy = 全年利润/总股本"""

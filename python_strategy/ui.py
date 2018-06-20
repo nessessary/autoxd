@@ -158,9 +158,9 @@ def DrawClosesAndVolumes(pl, closes, volumes, zz=None, avg=None, trade_index=Non
         pl.title(title, fontproperties=getFont())
     pl.plot(closes)
     legend.append('close')
-    if zz != None:
+    if zz is not None:
         DrawZZ(pl, zz, c='r')
-    if avg != None:
+    if avg is not None:
         pl.plot(avg)
     if not agl.IsNone(closes_dp):
         pl.plot(closes_dp)
@@ -244,14 +244,16 @@ def drawTwoDf(pl, df1, df2, title=''):
     df2.plot(ax=ax2)
     pl.show()
     pl.close()    
-def DrawScatt(pl, x,y, title=''):
+def DrawScatt(pl, x,y, title='', label_legend=None):
     pl.figure
     prop = fm.FontProperties(fname="c:/windows/fonts/simsun.ttc")
     if title != "":
         pl.title(title, fontproperties=prop)
-    pl.scatter(x,y)
-    pl.ylabel(u"市盈率", fontproperties=prop)
-    pl.xlabel(u"流通市值(亿)", fontproperties=prop)
+    pl.scatter(x,y,s=10)
+    if label_legend is None:
+        label_legend = [u"市盈率", u"流通市值(亿)"]
+    pl.ylabel(label_legend[0], fontproperties=prop)
+    pl.xlabel(label_legend[1], fontproperties=prop)
     pl.show()
     pl.close()
 
@@ -482,13 +484,14 @@ def test_drawFenshi():
     df_fenshi = stock.FenshiEx(code, is_fuquan=True).df
     drawFenshi(pl, df_fenshi)
 ######根据pandas来画图
-def drawKline(pl, df_code, df_dp=None, df_bk=None, title=None, df_syl=None):
+def drawKline(pl, df_code, df_dp=None, df_bk=None, title=None, df_syl=None, legend2=None):
     """画个股k线图
     pl: 自定义pl
     df_code: 个股pd.DataFrame, ['holcv']
     df_dp: 大盘
     df_bk: 板块
     df_syl: 历史市盈率
+    legend2: 标识, 不支持中文
     """
     if 0: pl = plt
     pl.figure
@@ -528,6 +531,8 @@ def drawKline(pl, df_code, df_dp=None, df_bk=None, title=None, df_syl=None):
         #legend.append('mgsy')
         df.plot()
         legend.append('jll')
+    if legend2 is not None:
+        legend = legend2
     pl.legend(legend, loc='upper left')	
     pl.show()
     pl.close()
@@ -794,12 +799,15 @@ class MyTest(unittest.TestCase):
         #plt.show()  #最后停在画面处， 没有的话进程结束
     def _test_3d(self):
         draw3d()
-    def test_drawKline2(self):
+    def _test_drawKline2(self):
         code = jx.CYJM
         start_day = '2017-8-25'
         df = stock.getFiveHisdatDf(code, start_day=start_day)
         drawKlineUseDf(pl, df)
-        
+    def test_drawKlin(self):
+        code = jx.THS
+        df = stock.getHisdatDataFrameFromRedis(code)
+        drawKline(pl, df, legend2=['成交量'])
 
 if __name__ == "__main__":
     unittest.main()    

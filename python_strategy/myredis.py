@@ -39,6 +39,7 @@ def get_obj(key):
         if o is not None:
             o = pickle.loads(o)
     except:
+        return None
         o = _get_obj_at_2(key)
     return o
 def get_Bin(key):
@@ -62,8 +63,15 @@ def clear():
     r = createRedis()
     for key in r.keys():
         r.delete(key)
-def getKeys():
-    return createRedis().keys()
+def getKeys(k=''):
+    keys = createRedis().keys()
+    if k == '':
+        return keys
+    find_keys = []
+    for key in keys:
+        if key.find(k)>=0:
+            find_keys.append(key)
+    return find_keys
 
 def ForceGetObj(k,v):
     """如果没有该值， 那么存储"""
@@ -78,6 +86,10 @@ def ForceGetObj(k,v):
 
 if 0: createRedisVal = Val
 def createRedisVal(key, v):
+    """key: str
+    v: object or function 值或者使用该函数返回的值
+    return: class Val
+    """
     ForceGetObj(key, v)
     return Val(key)
 class Val(object):
@@ -129,6 +141,15 @@ def _convert_obj_to_json_for_3(key):
     key = key + '.json'
     set_str(key, s)
 
+def dump_redis(host, key='*'):
+    """从目标redis倾倒数据到当前redis"""
+    db_host = redis.Redis(host=host, port=6379, db=0)
+    db_me = redis.Redis(host='localhost', port=6379, db=0) 
+    keys = db_host.keys(pattern=key)
+    for key in keys:
+        v = db_host.get(key)
+        db_me.set(key, v)
+    
 import unittest
 class mytest(unittest.TestCase):
     def _test_obj(self):
@@ -139,10 +160,15 @@ class mytest(unittest.TestCase):
         r = createRedis()
         r.set(key, b)
         print(pickle.loads(r.get(key)))
-    def test_convert_at_3(self):
+    def test_obj2(self):
+        keys = getKeys()
+        print(get_obj(keys[2]))
+    def _test_convert_at_3(self):
         code = '300033'
         df = _get_obj_at_2(code)
         print(df)
+    def _test_dump(self):
+        dump_redis(host='192.168.3.4', key='')
     
 if __name__ == "__main__":
     unittest.main()

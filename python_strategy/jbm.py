@@ -23,7 +23,7 @@ def calc_history_syl(df, df_hisdat, period='year', dtype='pd.series'):
     #df_hisdat = stock.getHisdatDataFrameFromRedis(code)
     if len(df_hisdat) == 0:
         return pd.Series([])
-    rows = rows.ix[df_hisdat.index[0]:]
+    rows = rows.ix[df_hisdat.index[0]:df_hisdat.index[-1]]
     if len(rows) == 0:
         return rows
     if str(rows.dtype) != 'float64':

@@ -102,7 +102,7 @@ class Publish:
         return fig
     def gcf(self):
         return pl.gcf()
-    def text(x, y, s, fontdict=None, withdash=False, **kwargs):
+    def text(self, x, y, s, fontdict=None, withdash=False, **kwargs):
         pl.text(x, y, s, fontdict, withdash, **kwargs)
     def plot(self, *args, **kwargs):
         pl.plot(*args, **kwargs)
@@ -188,7 +188,6 @@ class Publish:
         self.t_html = self.t_html.replace('<%year%>', str(year))        
         
     def show(self):
-        info = publishinfo()
         self.save()
         
 def example():

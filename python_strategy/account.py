@@ -114,7 +114,7 @@ class LocalAcount(AccountDelegate):
             self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
         #需要加上手续费作为成本
         if org_num+num > 0:
-            new_price = (org_num*org_price+price*num - price*abs(num)*sxf())/(org_num+num)
+            new_price = (org_num*org_price+price*num + price*abs(num)*sxf())/(org_num+num)
             yinkui_ratio = float('%.2f'%((price - new_price)/new_price*100))
         else:
             new_price = 0
@@ -290,6 +290,16 @@ class AccountMgr(object):
         self.account = account
         self.price = price
         self.code = code
+    def getCanSellNum(self):
+        """得到能卖的数量"""
+        df = self.account.StockList()
+        if len(df) == 0:
+            return 0
+        df = df[df['证券代码'] == self.code]
+        if len(df) == 0:
+            return 0
+        return int(df.iloc[-1]['可卖数量'])
+        
     def getCurCanWei(self):
         """得到当前仓位"""
         df = self.account.StockList()
@@ -299,16 +309,23 @@ class AccountMgr(object):
         if len(df) == 0:
             return 0
         return int(df.iloc[-1]['库存数量'])
-    def last_chengjiao_price(self, index=-1):
-        """上一个成交的价位"""
+    def last_chengjiao_price(self, index=-1,is_sell=1):
+        """上一个成交的价位
+        is_sell : -1 不使用该flag
+        """
         df_chengjiao = self.account.ChengJiao()
+        if is_sell != -1:
+            is_sell = str(is_sell)
+            df_chengjiao = df_chengjiao[df_chengjiao['买0卖1'] == is_sell]
         if len(df_chengjiao) == 0:
             return np.nan
         if index == -2 and len(df_chengjiao)<2:
             return np.nan
         return float(df_chengjiao.iloc[index]['成交价格'])
-    def last_chengjiao_num(self, index=-1):
+    def last_chengjiao_num(self, index=-1, is_sell=1):
         df_chengjiao = self.account.ChengJiao()
+        is_sell = str(is_sell)
+        df_chengjiao = df_chengjiao[df_chengjiao['买0卖1'] == is_sell]
         if len(df_chengjiao) == 0:
             return np.nan
         if index == -2 and len(df_chengjiao)<2:
@@ -339,6 +356,7 @@ class AccountMgr(object):
             return 100000.0
         return float(df_zhijing.iloc[0]['资产'])
     def yin_kui(self):
+        """盈亏成本"""
         df_stock_list = self.account.StockList()
         df_stock_list = df_stock_list[df_stock_list['证券代码'] == self.code]
         if len(df_stock_list) > 0:
@@ -381,7 +399,7 @@ class mytest(unittest.TestCase):
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
         account.Report('2016-5-12')
         print(account.ZhiJing())
-    def test_buy_avg_price(self):
+    def _test_buy_avg_price(self):
         from pypublish import publish
         pl = publish.Publish()
         #import os, psutil
@@ -426,7 +444,16 @@ class mytest(unittest.TestCase):
         account.Order(0, code,4, 1000)
         print(account.StockList())
         print(account.WeiTuoList())
-
+    def test_chengben(self):
+        ac = LocalAcount(BackTesting())
+        code = '300033'
+        day = '2018-3-1 14:20:00'
+        ac._buy(code, 10, 1000, day)
+        #ac._buy(code, 9.8, 2000, day)
+        ac._buy(code, 9.5, 3000, day)
+        print ac.StockList()
+        ac.Order(1,code, 9.5*1.02, 4000)
+        print ac.ZhiJing()
 
 if __name__ == "__main__":
     unittest.main()

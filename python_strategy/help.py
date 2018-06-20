@@ -104,7 +104,7 @@ def GetParentDir(path):
     return os.path.abspath(os.path.join(path, os.path.pardir))
 def CreateDir(path):
     if not os.path.isdir(path):
-        os.mkdir(path)
+        os.makedirs(path)
 def FileExist(path):
     return os.path.isfile(path)
 def FileDelete(path):
@@ -281,11 +281,6 @@ def array_find(a, v):
             return True
     return False
 
-#
-#----------------------------------------------------------------------
-def array_last(a):
-    """"""
-    return a[len(a)-1]
 
 #
 #----------------------------------------------------------------------
@@ -511,9 +506,79 @@ def ExecMatlabFunction(fn_name):
         time.sleep(1)
     print2("耗时", str(time.time()-t))
 
+from contextlib import closing
+from six.moves.urllib.request import urlopen
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.error import URLError
+if sys.version_info[0] == 2:
+    def urlretrieve(url, filename, reporthook=None, data=None):
+        """Replacement for `urlretrive` for Python 2.
+
+        Under Python 2, `urlretrieve` relies on `FancyURLopener` from legacy
+        `urllib` module, known to have issues with proxy management.
+
+        # Arguments
+            url: url to retrieve.
+            filename: where to store the retrieved data locally.
+            reporthook: a hook function that will be called once
+                on establishment of the network connection and once
+                after each block read thereafter.
+                The hook will be passed three arguments;
+                a count of blocks transferred so far,
+                a block size in bytes, and the total size of the file.
+            data: `data` argument passed to `urlopen`.
+        """
+
+        def chunk_read(response, chunk_size=8192, reporthook=None):
+            content_type = response.info().get('Content-Length')
+            total_size = -1
+            if content_type is not None:
+                total_size = int(content_type.strip())
+            count = 0
+            while True:
+                chunk = response.read(chunk_size)
+                count += 1
+                if reporthook is not None:
+                    reporthook(count, chunk_size, total_size)
+                if chunk:
+                    yield chunk
+                else:
+                    break
+
+        with closing(urlopen(url, data)) as response, open(filename, 'wb') as fd:
+            for chunk in chunk_read(response, reporthook=reporthook):
+                fd.write(chunk)
+else:
+    from six.moves.urllib.request import urlretrieve
+
+def get_file(origin, fpath):
+    CreateDir(os.path.dirname(fpath))
+    try:
+        try:
+            urlretrieve(origin, fpath, None)
+        except URLError as e:
+            raise Exception(error_msg.format(origin, e.errno, e.reason))
+        except HTTPError as e:
+            raise Exception(error_msg.format(origin, e.code, e.msg))
+    except (Exception, KeyboardInterrupt) as e:
+        if os.path.exists(fpath):
+            os.remove(fpath)
+        raise
+
+def abspath_join(cur_file, fname):
+    """
+    # Arguments
+        cur_file :  __file__
+        fname: 目标路径
+    """
+    fname = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), fname))
+    return fname
+
 def main(args):
     #ExecMatlabFunction('test([1,2])')
-    print2(u'\u7cfb\u7edf\u627e\u4e0d\u5230\u6307\u5b9a\u7684\u9a71\u52a8\u5668\u3002\r\n')
+    url = 'http://autoxd.applinzi.com/getfile.php?code=000001&type=1'
+    filename = 'datas/datasource/kline/000001.hd5.gz'
+    get_file(url, filename)
 
 if __name__ == "__main__":
     args = sys.argv[1:]

@@ -5,6 +5,7 @@
 # QQ: 1764462457
 
 #把主目录放到路径中， 这样可以支持不同目录中的库
+from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
@@ -29,14 +30,14 @@ def ComboArg(sArg=""):
         for arg in args:
             sResult += str(dict_arg[arg])
             sResult += '|'
-    print sResult
+    print(sResult)
     
 class TcAccount(account.AccountDelegate):
     """在虚拟环境里使用的新的tc接口"""
     stocklist_columns = '证券代码|证券名称|证券数量|库存数量|可卖数量|参考成本价|买入均价|参考盈亏成本价|当前价|最新市值|参考浮动盈亏|盈亏比例(%)|在途买入|在途卖出|股东代码'
     zhijing_columns = '余额|可用|可用2|参考市值|资产'
     chengjiao_columns = "成交日期|成交时间|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交价格|成交数量|成交金额|成交编号|股东代码|状态数字标识|状态说明"
-    weituo_columns = '操作日期|委托时间|股东代码|深0沪1|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|撤单数量|状态说明|撤单标志|委托日期|备注|'
+    weituo_columns = '操作日期|委托时间|股东代码|深0沪1|证券代码|证券名称|买0卖1|买卖标志|委托价格|委托数量|委托编号|成交数量|成交金额|成交价格|撤单数量|状态说明|撤单标志|委托日期|备注|'
     chedanlist_columns = "操作日期|委托时间|股东代码|深0沪1|证券代码|证券名称|状态说明|"\
 		"买0卖1|买卖标志|委托价格|委托数量|委托编号|成交数量|撤单数量|委托日期||"
     def __init__(self, live=None):
@@ -111,7 +112,7 @@ class TcAccount(account.AccountDelegate):
         #s = ComboArg()
         s = "HistoryChengJiao|"
         sReturn = self.delegate.handleRotuer(s)
-        if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时":
+        if sReturn is not None and sReturn != '' and agl.ascii_to_utf8(sReturn) != "超时":
             df = self._str_to_df(sReturn)
 	    df = df[df.columns[:16]]
             df.columns = self.chengjiao_columns.split('|')
@@ -133,8 +134,9 @@ class TcAccount(account.AccountDelegate):
         sReturn = self.delegate.handleRotuer(s)
         if sReturn is not None and agl.ascii_to_utf8(sReturn) != "超时" and len(sReturn)>0:
             df = self._str_to_df(sReturn)
-	    df = df[df.columns[:19]]
-            df.columns = self.weituo_columns.split('|')
+	    new_cols = self.weituo_columns.split('|')
+	    df = df[df.columns[:len(new_cols)]]
+            df.columns = new_cols
             return df
         return pd.DataFrame([])        
     def CheDanList(self):
@@ -234,11 +236,10 @@ class COPYDATASTRUCT(ctypes.Structure):
         #formally lpData is c_void_p, but we do it this way for convenience
     ]
 SendMessage = ctypes.windll.user32.SendMessageW    
+
 def Buy(code, price, num):
     """通知autoxd去买入"""
     bSell = 0
-    #price = AdjustPrice(bSell, code, price)
-    #print price
     SendOrder(bSell, code, price, num)    
 def Sell(code, price, num):
     bSell = 1
@@ -304,9 +305,9 @@ def SendOrder(bSell, code, price, num):
     s = "Order|"+str(bSell)+"|"+str(code)+"|"+str(price)+"|"+str(num)+"|"
     cds.cbData = ctypes.sizeof(ctypes.create_string_buffer(s))
     cds.lpData = ctypes.c_char_p(s)
-    print s
+    print(s)
     SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))
-    myredis.set_obj('TCAccountCache_dirty', True)
+    #myredis.set_obj('TCAccountCache_dirty', True)
 def Notify(s):
     hwnd = FindMainWindow()
     cds = COPYDATASTRUCT()
@@ -323,7 +324,7 @@ def SendCheDan(code, weituo_id):
     s = "CheDan|"+str(code)+"|"+str(weituo_id)+"|"
     cds.cbData = ctypes.sizeof(ctypes.create_string_buffer(s))
     cds.lpData = ctypes.c_char_p(s)
-    print s
+    print(s)
     SendMessage(hwnd, win32con.WM_COPYDATA, 0, ctypes.byref(cds))    
 
     
@@ -360,7 +361,7 @@ def get_zhijing_from_redis(is_have_return=False):
 	table = PrettyTable(cols)
 	for i,row in df.iterrows():
 	    table.add_row(row[cols].tolist())
-	print table    
+	print(table)
 def get_stocklist_from_redis(is_have_return=False):
     """临时函数， 因为策略basesign保存了列表， 因此可以直接取"""
     key_df_stocklist = 'df_stocklist'
@@ -379,7 +380,7 @@ def get_stocklist_from_redis(is_have_return=False):
 	    table.add_row(row[cols].tolist())
 	#table.sort_key("ferocity")
 	#table.reversesort = True
-	print table
+	print(table)
     get_zhijing_from_redis(False)
     #return df
 def get_weituo_from_redis(is_have_return=False):
@@ -401,7 +402,7 @@ def get_weituo_from_redis(is_have_return=False):
 	    table.add_row(row[cols].tolist())
 	#table.sort_key("ferocity")
 	#table.reversesort = True
-	print table    
+	print(table)
 def get_chengjiao_from_redis(is_have_return=False, is_history=False):
     """输出为成交的委托列表"""
     key = 'df_chengjiao'
@@ -422,25 +423,31 @@ def get_chengjiao_from_redis(is_have_return=False, is_history=False):
 	    table.add_row(row[cols].tolist())
 	#table.sort_key("ferocity")
 	#table.reversesort = True
-	print table    	
+	print(table)
 
     
 class mytest(unittest.TestCase):
     def _test_str_to_df(self):
         df = TcAccount()._str_to_df('0|500.13|500.13||9100.00|13004.13|||{}')
-	print df
+	print(df)
     def _test_cache(self):
-	print TCAccountCache().ChengJiao()
+	print(TCAccountCache().ChengJiao())
     def _test_TradeCloseAnalyzer(self):
 	analyzer = TradeCloseAnalyzer()
 	analyzer.Report()
-    def _test_get_stocklist_from_redis(self):
+    def test_get_stocklist_from_redis(self):
 	#get_stocklist_from_redis()
-	#get_chengjiao_from_redis(is_have_return=False)
+	get_weituo_from_redis(is_have_return=False)
 	#get_chengjiao_from_redis(is_have_return=False, is_history=True)
-	SendCheDanList()
-    def test_chedan(self):
+	#SendCheDanList()
+    def _test_chedan(self):
 	CheDan(stock.jx.YDGF.e)
+    def _test_Buy(self):
+	Buy('300033', 47.5, 100)
+    def _test_tushare_hq(self):
+	import stock_pinyin as jx
+	code = jx.KYWL
+	hq(code)
 
 def query_code_chengben(code, df_stocklist):
     """查询股票参考成本价"""

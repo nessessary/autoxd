@@ -158,8 +158,8 @@ def Run(codes='', task_id=0):
     if codes == '':
 	codes = ['300033']
     #现在的5分钟线在2017-5-15之后才有
-    backtest_policy.test_strategy(codes, BollFenCangKline, setParams, day_num=20, mode=myenum.hisdat_mode, 
-                                  start_day='2016-10-20', end_day='2017-8-20'
+    backtest_policy.test_strategy(codes, BollFenCangKline, setParams, mode=myenum.hisdat_mode, 
+                                  start_day='2016-10-20', end_day='2017-11-17'
                                   )    
 
 def SelectCodes():

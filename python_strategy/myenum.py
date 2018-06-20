@@ -5,16 +5,6 @@
 # QQ: 1764462457
 
 
-#交易监测的股票， basesign里引用
-allow_traded_codes = ['300457','300384']
-#枚举值
-
-#enum
-IID_Simulator = 101             #分时
-IID_SimulatorCode = 102         #日线
-IID_SimulatorOneStock = 103
-IID_SimulatorAllData = 104      #直接从AllData数据文件读入全部的日线
-
 #
 one = 0	    #一个
 some = 2    #固定的列表
@@ -23,10 +13,6 @@ randn = 11
 hang_ye = 12
 exclude_dapan = 15  #排除大盘指数
 
-#
-class Uptrend:
-    its_bogu = 1
-    its_bofeng = 0
 
 #描述曲线匹配形态
 class Curve:
@@ -59,6 +45,7 @@ class DaPan:
     zhongxiao = '399005'        #中小板
     chuangyeban = '399006'      #创业板
     etf = '510050'              #50etf
+    all_codes = ['399001', '999999','399005','399002','399006','510050']
     
 class boll_type:
     msg = ['布林下中轨', '布林下下中轨','布林下轨','布林中轨','布林上轨','布林上中轨']
@@ -78,3 +65,8 @@ class FenshiBetaTinPaiException(Exception):
 #见backtest_runner.BackTestPolicy.enum.tick_mode
 tick_mode = 0
 hisdat_mode = 1
+five_hisdat_mode = 0x4      
+
+#亿
+YI = 10**8
+WAN = 10**4

@@ -14,7 +14,7 @@ AddPath()
 import numpy as np
 import pandas as pd
 import help,myenum,myredis
-import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math,time, datetime,dateutil
+import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math,time, datetime,dateutil,gzip
 if sys.version > '3':
     import _pickle as cPickle
 else:
@@ -77,6 +77,9 @@ def getCurTime():
     """return : str"""
     return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 def getQuarter(t):
+    """获取第几季度 t : datetime
+    return: float
+    """
     return math.ceil(float(t.month)/3)
 def is_valid_date(s):
     '''判断是否是一个有效的日期字符串'''
@@ -181,6 +184,7 @@ def array_transpose(a):
     else:#列转行
         return a.T
 def array_shuffle(ary):
+    """搅乱"""
     return shuffle(ary)    
 def Unittest_array_transpose():
     a = np.array([1,2,3])
@@ -228,9 +232,8 @@ def StrToMatrix(s):
             b[j] = float(c)
         a[i] = b
     return np.array(a)
-#
-def array_last(a):
-    return a[len(a)-1]
+
+
 
 #----------------------------------------------------------------------
 #同矩阵连接
@@ -414,9 +417,31 @@ def StrToArray(s, a):
     for i,s1 in enumerate(s):
         a[i] = ord(s1)
     return a
+def StrToNumber(s):
+    """获取字符串中的数字及小数点
+    return: float 
+    """
+    return float(filter(str.isdigit, s))
+def StrToFloat(s):
+    """字符串转数值
+    s: 包含有数量单位的字符串
+    return: float
+    """
+    s = str(s)
+    unit = 1
+    if s.find('亿')>0:
+        unit = myenum.YI
+    if s.find('万')>0:
+        unit = myenum.WAN
+    s = re.sub('\D','', s)
+    if s == '':
+        return np.nan
+    return float(s)*unit
 def FloatToStr(s):
     """保留小数点后两位"""
     return "%.2f"%s
+def float_to_2(f):
+    return '{:.2f}'.format(f)
 #----------------------------------------------------------------------
 def GetIntWeiShu(v):
     """获取最大位数"""
@@ -529,7 +554,7 @@ class SerialMgr:
         """return: 之前serial的结果集"""
         a=[]
         if os.path.isfile(f_name):
-            f = open(f_name)
+            f = open(f_name, 'rb')
             a = cPickle.load(f)
             f.close()
         else:
@@ -798,6 +823,22 @@ def IsDebug():
     if len(cmdlines)>2 and cmdlines[2].find('wingdb')>0:
         return True
     return False
+
+_ISRUNATCMD = None
+def IsRunAtCmd():
+    """当前进程在cmd中执行
+    进程打印结果['python', 'agl.py']
+    return: boolean
+    """
+    global _ISRUNATCMD
+    if _ISRUNATCMD is None:
+        import psutil
+        cmdlines = psutil.Process(os.getpid()).cmdline()
+        print cmdlines
+        _ISRUNATCMD = len(cmdlines)>=2 and cmdlines[0] == 'python'
+    print _ISRUNATCMD
+    return _ISRUNATCMD
+    
 def is_utf8(s):
     return charade.detect(s)['encoding'] == 'utf-8'
 def is_unicode(s):
@@ -878,6 +919,21 @@ def unzip_file(src, dest):
     f2.write(f.read(f.namelist()[0]))
     f2.close()
     f.close()
+def compress_file(fn_in, fn_out):  
+    f_in = open(fn_in, 'rb')  
+    f_out = gzip.open(fn_out, 'wb')  
+    f_out.writelines(f_in)  
+    f_out.close()  
+    f_in.close()  
+  
+def uncompress_file(fn_in, fn_out):  
+    f_in = gzip.open(fn_in, 'rb')  
+    f_out = open(fn_out, 'wb')  
+    file_content = f_in.read()  
+    f_out.write(file_content)  
+    f_out.close()  
+    f_in.close() 
+    
 def get_string_digit(s):
     """提取字符串中的数值, s: 字符串 return: float"""
     if not isinstance(s, str):
@@ -897,7 +953,15 @@ def get_string_digit(s):
 def df_get_pre_date(df, date):
     """获取当前日期的上一个索引日期 return : str(date)"""
     d = df.ix[:date].index[-2]
-    return datetime_to_date(d)
+    d = datetime_to_date(d)
+    if d == date:
+        #5分钟
+        indexs = df.ix[:date].index
+        for index in indexs.sort_values(ascending=False):
+            d = datetime_to_date(index)
+            if d != date:
+                break
+    return d
 def where(con, a, b):
     """条件选择， con条件， 同c的con ? a : b"""
     if con is None:
@@ -986,8 +1050,9 @@ def main(args):
     #removeDir(os.getcwd()+'/html')
     #archiveZip('tmp/my.zip', 'html')
     a = tic_toc()
-    print(ClustList(3, [100,300,600,300,600,300,600,1200]))
-    print(ClustList(2, [200]))
+    #print(ClustList(3, [100,300,600,300,600,300,600,1200]))
+    #print(ClustList(2, [200]))
+    print(IsRunAtCmd())
 
 if __name__ == "__main__":
     args = sys.argv[1:]

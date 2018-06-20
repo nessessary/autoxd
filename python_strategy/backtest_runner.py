@@ -15,36 +15,58 @@ import agl,stock,help,ui
 import backtest_policy
 import pylab as pl
 
+_ISRUNING = False       #查询是否回测状态
 class BackTestPolicy:
     """回测入口"""
     class enum:
         tick_mode = 0           #每个tick都处理
         hisdat_mode = 1         #只处理日线，close
+        hisdat_five_mode = 2    #用&来判断
     def __init__(self, mode=0):
+        global _ISRUNING
+        _ISRUNING = True
         self.policys = []
         self.mode = mode    #回测模式
     def Regist(self, policy):
         """添加策略"""
         self.policys.append(policy)
+    def initData(self,start_day, end_day):
+        #数据初始化, 生成数据面板
+        days = (start_day, end_day)
+        hisdat_start_day = help.MyDate.s_Dec(start_day, -100)
+        self.panel_hisdat = stock.DataSources.getHisdatPanl(self.codes, 
+                                                            (hisdat_start_day, end_day))
+
+        if start_day == '':
+            start_day = hisdat_start_day
+        fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
+        fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
+        self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(
+            self.codes, fenshi_days)   
+
+        if self.mode == BackTestPolicy.enum.tick_mode:
+            self.dict_fenshi = stock.DataSources.getFenshiPanl(self.codes, fenshi_days)
+        else:
+            self.dict_fenshi = None
+            #self.panel_fiveminHisdat = None
+        for policy in self.policys:
+            policy.data.set_datasource(self.panel_hisdat, self.dict_fenshi, \
+                                       self.panel_fiveminHisdat)
+        #修正日期
+        if self.mode & self.enum.hisdat_mode == self.enum.hisdat_mode:
+            if self.mode & self.enum.hisdat_five_mode == self.enum.hisdat_five_mode:
+                df = self.panel_fiveminHisdat[self.codes[0]]
+            else:
+                df = self.panel_hisdat[self.codes[0]]
+        else:
+            df = self.dict_fenshi[self.codes[0]]
+        if len(df) > 0:
+            end_day = agl.datetime_to_date(df.index[-1])
+        start_day = help.MyDate.s_Dec(start_day , 2)
+                
+        return start_day, end_day
     def Run(self, start_day, end_day, is_report=False):
         #try:
-            #数据初始化, 生成数据面板
-            days = (start_day, end_day)
-            hisdat_start_day = help.MyDate.s_Dec(start_day, -100)
-            self.panel_hisdat = stock.DataSources.getHisdatPanl(self.codes, 
-                                                                (hisdat_start_day, end_day))
-            if self.mode == BackTestPolicy.enum.tick_mode:
-                fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
-                fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
-                self.dict_fenshi = stock.DataSources.getFenshiPanl(self.codes, fenshi_days)
-                self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(\
-                    self.codes, fenshi_days)   
-            else:
-                self.dict_fenshi = None
-                self.panel_fiveminHisdat = None
-            for policy in self.policys:
-                policy.data.set_datasource(self.panel_hisdat, self.dict_fenshi, \
-                                           self.panel_fiveminHisdat)
             #按照天来排
             #self._TravlDay('2014-5-1','2015-8-1')
             self._OnFirstRun(start_day)
@@ -76,7 +98,7 @@ class BackTestPolicy:
                     if hasattr(strategy, 'OnFirstRun'):
                         strategy.data.set_code(code, start_day, ts[0])
                         strategy.OnFirstRun()
-                if self.mode == self.enum.hisdat_mode:
+                if self.mode & self.enum.hisdat_mode == self.enum.hisdat_mode:
                     if hasattr(strategy, 'OnFirstRun'):
                         strategy.data.set_code(code, start_day, ts[0])
                         strategy.OnFirstRun()                
@@ -96,9 +118,15 @@ class BackTestPolicy:
                     for t in ts:
                         strategy.data.set_code(code, day, t)
                         strategy.Run()
-                if self.mode == self.enum.hisdat_mode:
-                    strategy.data.set_code(code, day, 900-1)
-                    strategy.Run()
+                if self.mode&self.enum.hisdat_mode == self.enum.hisdat_mode:
+                    if self.mode & self.enum.hisdat_five_mode == self.enum.hisdat_five_mode:
+                        #按5分钟遍历
+                        for t in  range(575, 900, 5):
+                            strategy.data.set_code(code, day, t)
+                            strategy.Run()
+                    else:
+                        strategy.data.set_code(code, day, 900-1)
+                        strategy.Run()
     def _TravlDay(self, start_day, end_day):
         """遍历天， 开始时间， 结束时间"""
         #为了只读一次数据库, 先把日线读了
@@ -132,6 +160,8 @@ class BackTestPolicy:
         else:
             #日线
             bars = self.panel_hisdat[self.codes[0]]
+            if self.mode & self.enum.hisdat_five_mode == self.enum.hisdat_five_mode:
+                bars = self.panel_fiveminHisdat[self.codes[0]]
         bars['positions'] = 0
         bars = bars.dropna()
         df = policy._getAccount().ChengJiao()
