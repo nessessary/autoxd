@@ -5,7 +5,7 @@
 这个回测框架主要关注具体的交易细节， 适合T+0操作
 
 1. 数据源<br>
-   系统会自动下载 <br>
+   请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源<br>
    下载该目录放置到python_strategy\datas目录中<br>
    要使用全部数据源修改框架使用第三方数据源, 具体见stock.DataSources<br>
    huge_dict目录为同花顺F10全部数据<br>
@@ -47,10 +47,11 @@
                     )
     if codes == '':
 	codes = [u'300033']
-    #执行策略
+    #执行策略, 5分钟线
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams,
 				  mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode, 
-                                  start_day='2016-10-20', end_day='2017-10-1'
+                                  #start_day='2016-10-20', end_day='2017-10-1',
+				  datasource_mode=stock.DataSources.datafrom.online	#从网上下载测试数据
                                   )    
 
 ```
