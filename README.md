@@ -56,3 +56,6 @@
 
 ```
 	
+5. 使用autoxd客户端下载行情
+   Windows客户端下载行情至redis, 使用autoxd实盘交易
+   [跳转至下载页面](http://autoxd.applinzi.com)
