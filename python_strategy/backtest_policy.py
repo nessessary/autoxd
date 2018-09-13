@@ -115,7 +115,7 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, mode=1, start_day='
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     stock.DataSources.data_mode = datasource_mode
     for code in codes:
-        print code, stock.GetCodeName(code)
+        print(code, stock.GetCodeName(code))
         p = backtest_runner.BackTestPolicy(mode)
         p.SetStockCodes([code])
         backtesting = Backtest()
@@ -139,10 +139,10 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, mode=1, start_day='
         d1,d2 = p.initData(start_day, end_day)
         
         if d1 != d2:        
-            print d1, d2
+            print(d1, d2)
             p.Run(d1, d2)    
         else:
-            print '没有数据'
+            print('没有数据')
 
 if __name__ == "__main__":
     try:

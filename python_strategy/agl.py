@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 # QQ: 1764462457
 
+from __future__ import print_function
 import os
 def AddPath():
     from sys import path
@@ -493,10 +494,10 @@ class SerialMgr:
         caller_name = getCallerName()
         data_path = os.path.dirname(__file__) + '/datas/'
         fname = data_path + caller_name +'.searial'	
-        if 'fname' in kwargs.keys():
+        if 'fname' in list(kwargs.keys()):
             fname = data_path + kwargs[fname]+'.searial' 
         #删除文件
-        if 'restart' in kwargs.keys():
+        if 'restart' in list(kwargs.keys()):
             if kwargs['restart'] == True:
                 if help.FileExist(fname):
                     help.FileDelete(fname)
@@ -834,9 +835,9 @@ def IsRunAtCmd():
     if _ISRUNATCMD is None:
         import psutil
         cmdlines = psutil.Process(os.getpid()).cmdline()
-        print cmdlines
+        print(cmdlines)
         _ISRUNATCMD = len(cmdlines)>=2 and cmdlines[0] == 'python'
-    print _ISRUNATCMD
+    print(_ISRUNATCMD)
     return _ISRUNATCMD
     
 def is_utf8(s):

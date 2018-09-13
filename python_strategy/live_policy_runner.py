@@ -12,6 +12,9 @@ def AddPath():
     mysourcepath = os.path.abspath('.')
     if not mysourcepath in path:
         path.append(mysourcepath)    
+    strategy_path = mysourcepath+"\\strategy"
+    if strategy_path not in path:
+        path.append(strategy_path)        
 AddPath()
 """在线策略入口"""
 import numpy as np

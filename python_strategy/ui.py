@@ -5,7 +5,7 @@
 # QQ: 1764462457
 
 
-
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -18,7 +18,10 @@ import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
 import stock
-import stock_pinyin as jx
+if sys.version > '3':
+    import stock_pinyin3 as jx
+else:
+    import stock_pinyin as jx
 import agl
 #x = [1,2,3,4,5,6]
 #y = [10,20,3,20,39,4]

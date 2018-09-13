@@ -309,7 +309,7 @@ class AccountMgr(object):
         if len(df) == 0:
             return 0
         return int(df.iloc[-1]['库存数量'])
-    def last_chengjiao_price(self, index=-1,is_sell=1):
+    def last_chengjiao_price(self, index=-1,is_sell=-1):
         """上一个成交的价位
         is_sell : -1 不使用该flag
         """
@@ -318,18 +318,18 @@ class AccountMgr(object):
             is_sell = str(is_sell)
             df_chengjiao = df_chengjiao[df_chengjiao['买0卖1'] == is_sell]
         if len(df_chengjiao) == 0:
-            return np.nan
+            return 0
         if index == -2 and len(df_chengjiao)<2:
-            return np.nan
+            return 0
         return float(df_chengjiao.iloc[index]['成交价格'])
     def last_chengjiao_num(self, index=-1, is_sell=1):
         df_chengjiao = self.account.ChengJiao()
         is_sell = str(is_sell)
         df_chengjiao = df_chengjiao[df_chengjiao['买0卖1'] == is_sell]
         if len(df_chengjiao) == 0:
-            return np.nan
+            return 0
         if index == -2 and len(df_chengjiao)<2:
-            return np.nan
+            return 0
         return int(df_chengjiao.iloc[index]['成交数量'])
 
     def get_BuyAvgPrice(self):
@@ -451,9 +451,9 @@ class mytest(unittest.TestCase):
         ac._buy(code, 10, 1000, day)
         #ac._buy(code, 9.8, 2000, day)
         ac._buy(code, 9.5, 3000, day)
-        print ac.StockList()
+        print(ac.StockList())
         ac.Order(1,code, 9.5*1.02, 4000)
-        print ac.ZhiJing()
+        print (ac.ZhiJing())
 
 if __name__ == "__main__":
     unittest.main()

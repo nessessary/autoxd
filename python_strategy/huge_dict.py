@@ -21,6 +21,7 @@ class huge_dict:
     """单件， 定向处理ths_f10, 按单表保存至path
     dict的键值转换为数字， 数字与表名查table_names
     dict映射到目录， 并从目录映射回dict
+    clear后由 getThsResults创建
     """
     dir_path = 'datas/huge_dict/'
     def __init__(self, d={}):
@@ -47,7 +48,7 @@ class huge_dict:
     def _write(self):
         """分表写入redis"""
         #先写表名
-        table_names = self.d.keys()
+        table_names = list(self.d.keys())
         path = self.dir_path + 'table_names.df'
         df = pd.DataFrame(table_names)
         df.to_pickle(path)

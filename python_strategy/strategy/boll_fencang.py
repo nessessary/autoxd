@@ -202,7 +202,7 @@ class mytest(unittest.TestCase):
 	#codes = myredis.createRedisVal(key, lambda : SelectCodes()).get()
 	#codes = myredis.createRedisVal(key, lambda: select_code2()).get()
 	#backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
-	exec agl.Marco.IMPLEMENT_MULTI_PROCESS
+	exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
     unittest.main()

@@ -73,4 +73,4 @@ if __name__ == "__main__":
              4<5,
              )
     if assemble(1<2):
-        print 'aaa'
+        print('aaa')

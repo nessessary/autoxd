@@ -90,6 +90,8 @@ def myprint(a1, a2='', a3='', a4='', a5='', a6='', a7=''):
     #f.write(s)
     #f.write("\n")     
 def convert(val):
+    if sys.version >= '3':
+        return val
     if isinstance(val, str):
         #val = val.decode('utf-8')
         val = val.decode('gbk')

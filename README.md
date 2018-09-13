@@ -13,7 +13,7 @@
    前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
 
 2. 依赖包问题， 作者主要使用anaconda 32bit python2.7版本， 需要的库为ta-lib, redis, charade等<br>
-   64位 python3.x也可使用，估计需要修改部分代码; 作者只在windows下测试通过，linux可能有问题<br>
+   ,作者只在windows下测试通过，linux可能有问题<br>
    建议使用WingIDE来加载项目并执行， 使用命令行执行可能会碰到乱码的问题
 
 3. 执行

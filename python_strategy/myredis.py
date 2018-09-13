@@ -64,7 +64,7 @@ def clear():
     for key in r.keys():
         r.delete(key)
 def getKeys(k=''):
-    keys = createRedis().keys()
+    keys = list(createRedis().keys())
     if k == '':
         return keys
     find_keys = []
