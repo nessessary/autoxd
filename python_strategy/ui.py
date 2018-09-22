@@ -402,7 +402,7 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     if changwei is not None and len(changwei)>1:
         changwei.plot(ax=ax2)
         legends.append('changwei')
-    ax2.legend(legends)
+    ax2.legend(legends,loc=0)
 
     #剔除非交易时间
     #freq = 300
@@ -449,7 +449,7 @@ def TradeResult_Boll(pl, bars, zhijin,changwei, title=''):
     signals['signal'] = 0.0
     signals['signal'] = np.zeros(len(bars['c']))
     signals['positions'] = bars['positions']
-    ShowTradeResult2(pl, bars, signals, zhijin,changwei , 0, title=title)
+    ShowTradeResult2(pl, bars, signals, zhijin,changwei , 0, freq=30, title=title)
 def testTradeResult_Boll():
     code = '002074'
     bars = stock.CreateFenshiPd(code, '2017-7-22','2017-8-4')
@@ -800,14 +800,14 @@ class MyTest(unittest.TestCase):
 
         plt.ioff()
         #plt.show()  #最后停在画面处， 没有的话进程结束
-    def _test_3d(self):
+    def test_3d(self):
         draw3d()
     def _test_drawKline2(self):
         code = jx.CYJM
         start_day = '2017-8-25'
         df = stock.getFiveHisdatDf(code, start_day=start_day)
         drawKlineUseDf(pl, df)
-    def test_drawKlin(self):
+    def _test_drawKlin(self):
         code = jx.THS
         df = stock.getHisdatDataFrameFromRedis(code)
         drawKline(pl, df, legend2=['成交量'])

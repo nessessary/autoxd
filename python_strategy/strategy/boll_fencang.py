@@ -30,9 +30,12 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                             #跌幅， 当前资金占比 
         self.base_four = [-0.4, 0.3]		#第一次买卖的技术指标阀值
         self.first_price = 0
-        if sys.version < '3':
-            for k, v in kwargs.iteritems():
+        if sys.version > '3':
+            for k, v in kwargs.items():
                 setattr(self, k, v)
+        else:
+            for k, v in kwargs.iteritems():
+                setattr(self, k, v)            
     def OnFirstRun(self):
         self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
         self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())
@@ -119,18 +122,13 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
         closes, four, boll_up, boll_mid, boll_low ,boll_w, adx = self.tech
         assert(len(closes) == len(four))
         cur_pl = agl.where(self.pl, self.pl, pl)
-        if hasattr(self, 'jbm'):
-            syl = self.jbm
-            df = pd.DataFrame(syl)    
-            df.columns = ['市盈率']
-            df.plot()
-            cur_pl.show()
-            cur_pl.close()
         df = pd.DataFrame(closes)
         df['boll_w'] = boll_w
         df = stock.GuiYiHua(df)
         df['four'] = four
         #df[df.columns[0]] = (df[df.columns[0]]-1)*2
+        #index转日期
+        df.index = pd.DatetimeIndex(df.index)
         df.plot()
         cur_pl.show()
         cur_pl.close()
@@ -139,15 +137,12 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 #测试策略， 为了并行计算， 需要使用这种格式的函数定义		    
 def Run(codes='', task_id=0):
     from pypublish import publish
-    code = codes[0]
-    def fnSample():
+    def fnSample(code):
         import tushare as ts
         df = ts.get_hist_data(code)[['high','low','open','close','volume']]
         df.columns = list('hlocv')
         df = df.sort_index()
         return df
-    def fn():
-        return myredis.createRedisVal('abcxd', fnSample).get()
 
     #设置策略参数
     def setParams(s):
@@ -159,7 +154,7 @@ def Run(codes='', task_id=0):
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams, mode=myenum.hisdat_mode, 
                                   start_day='2017-4-10', end_day='2018-9-15',
                                   datasource_mode=DataSources.datafrom.custom,
-                                  datasource_fn=fn
+                                  datasource_fn=fnSample
                                   )    
 
 
@@ -167,14 +162,13 @@ def calcYinKui(price, chengben):
     return (price - chengben)/chengben
 
 def test_strategy():
-    cpu_num = 5
-    agl.startDebug()
+    codes = stock.get_codes(flag=myenum.randn, n=4)
+    cpu_num = 2
+    #codes = ['300434']
+    #agl.startDebug()
     if agl.IsDebug():
         codes = [jx.ZCKJ.b]
-    #key = agl.getModuleName(__file__)+'.selectcodes'
-    #myredis.delkey(key)
-    #codes = myredis.createRedisVal(key, lambda : SelectCodes()).get()
-    #codes = myredis.createRedisVal(key, lambda: select_code2()).get()
+        codes = ['600969']
     #backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 

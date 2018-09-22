@@ -4,49 +4,33 @@
 回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， <br>
 这个回测框架主要关注具体的交易细节， 适合T+0操作
 
-1. 数据源<br>
-   请到 [网盘](http://pan.baidu.com/s/1bpto0wv) 下载一个数据源<br>
-   下载该目录放置到python_strategy\datas目录中<br>
-   要使用全部数据源修改框架使用第三方数据源, 具体见stock.DataSources<br>
-   huge_dict目录为同花顺F10全部数据<br>
-   自动加载， 使用见stock.py里的StockInfoThs<br>
-   前复权使用同花顺的分红表， 具体见stock.py里的calc_fuquan_use_fenhong<br>
-
-2. 依赖包问题， 作者主要使用anaconda 32bit python2.7版本， 需要的库为ta-lib, redis, charade等<br>
-   ,作者只在windows下测试通过，linux可能有问题<br>
-   建议使用WingIDE来加载项目并执行， 使用命令行执行可能会碰到乱码的问题
-
-3. 执行
-   回测有3种模式，日线和5分钟线和分时, 日线模式执行比较快， 每天收盘时成交,<br>
-   分时执行时间比较长，成交为实际的时间<br>
-   建议使用5分钟线<br>
-   1> 分时的例子<br>
-   用ide打开缺省策略boll_pramid.py并执行<br>
-
-   中间结果显示TickReport<br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_tick_1.png)<br>
-   可看见输出的结果图<br>
-   资金0表示没有盈亏， 负值表示亏损， 正值表示盈利, 资金和仓位为归一化结果<br>
+- 例子
+	python boll_fencang.py<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
-   输出窗口可以看见交易明细<br>
-
-   2>日线的例子<br>
-   支持并行<br>
-   boll_fenchang.py<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)<br><br>
 
-4. 发布
-   见boll_fencang.py
-   发布输出内容到web页面, 
-   [例子](http://autoxd.applinzi.com/html/boll_fencang_setParams6100.html)
+- 依赖
+1. redis
+	window可以去[网盘](https://pan.baidu.com/s/1pMoB83h) 下载一个, 调用里面的bat即可安装
+2. 支持py2及py3 windows， linux及macos未知
+3. 推荐使用wingide， 可直接加载wpr项目文件
+4. 用pip install -r requirement.txt安装相关依赖包
+
+- 使用
+
+1. 数据源<br>
+   1) 使用[客户端](https://pan.baidu.com/s/1pMoB83h) 下载数据, 编制config.ini填写需要下载的代码, 
+      下载后放置到redis里, 见datasource_mode=stock.DataSources.datafrom.livedata
+   2) 使用自定义的第三方数据源， 已实现了一个调用tushare的例子, 
+      datasource_mode=stock.DataSources.datafrom.custom
+
+2. 调用
 ```python
     #设置策略参数
     def setParams(s):
 	s.setParams(trade_num = 300, 
                     #pl=publish.Publish()	#发布方式
                     )
-    if codes == '':
-	codes = [u'300033']
     #执行策略, 5分钟线
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams,
 				  mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode, 
@@ -56,6 +40,3 @@
 
 ```
 	
-5. 使用autoxd客户端下载行情
-   Windows客户端下载行情至redis, 使用autoxd实盘交易
-   [跳转至下载页面](http://autoxd.applinzi.com)

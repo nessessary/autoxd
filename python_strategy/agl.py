@@ -836,9 +836,8 @@ def IsRunAtCmd():
     if _ISRUNATCMD is None:
         import psutil
         cmdlines = psutil.Process(os.getpid()).cmdline()
-        print(cmdlines)
+        #print(cmdlines)
         _ISRUNATCMD = len(cmdlines)>=2 and cmdlines[0] == 'python'
-    print(_ISRUNATCMD)
     return _ISRUNATCMD
     
 def is_utf8(s):
@@ -888,17 +887,17 @@ def df_to_html(df):
     return s
 def print_df(df):
     """完整的打印df"""
-    s = df.to_string()
-    s = s.encode('utf8')
-    pprint.pprint(s)
-    #if 0: df = pd.DataFrame
-    #i=0
-    #while i<len(df):
-        #start_index = i
-        #i += 50
-        #v = df.iloc[start_index:i]
-        #v = v.to_string()
-        #print(v)
+    #s = df.to_string()
+    #s = s.encode('utf8')
+    #pprint.pprint(s)
+    if 0: df = pd.DataFrame
+    i=0
+    while i<len(df):
+        start_index = i
+        i += 50
+        v = df.iloc[start_index:i]
+        v = v.to_string()
+        print(df.iloc[start_index:i])
 def print_prettey_df(df):
     from prettytable import PrettyTable
     table = PrettyTable(df.columns.tolist())

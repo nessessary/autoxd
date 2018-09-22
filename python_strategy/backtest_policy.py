@@ -5,6 +5,7 @@
 # QQ: 1764462457
 
 #把主目录放到路径中， 这样可以支持不同目录中的库
+from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd

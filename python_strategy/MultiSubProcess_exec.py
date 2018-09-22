@@ -37,10 +37,14 @@ def main(args):
     #module.fn
     s += 'r = %s.%s(%s, %d)'%v
     #print s
-    exec s
+    exec(s)
     #print 'result=',r
     #保存结果
-    myredis.set_obj(MultiSubProcess.getResultName(i), r)
+    try:
+        #r未获取
+        myredis.set_obj(MultiSubProcess.getResultName(i), r)
+    except:
+        pass
     #print "end"
     
 if __name__ == "__main__":

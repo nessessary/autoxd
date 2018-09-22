@@ -235,6 +235,9 @@ class LocalAcount(AccountDelegate):
         df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','买0卖1','证券代码']]
         df.columns = ['price','num','flag','flag2','code']
 
+        df['num'] = df['num'].astype(int)
+        #只显示两位数
+        df['price'] = df['price'].map(lambda x: agl.float_to_2(x))
         df['d'] = df.index.astype(str)
         df['d'] = df['d'].map(lambda x: str(dateutil.parser.parse(x) + \
                                             datetime.timedelta(minutes=5)))
@@ -250,7 +253,8 @@ class LocalAcount(AccountDelegate):
             num = self.df_stock.iloc[0]['库存数量']
             shizhi += float(close)*int(num)
         print(self.df_zhijing.tail(n=1))
-        print('市值:%f,总资产:%f'%(shizhi, self.money+shizhi))
+        output_str = '市值:%f,总资产:%f'%(shizhi, self.money+shizhi)
+        print(output_str)
         #如果持股不动，现在的资金
         #取第一次交易后的可用资金
         if len(self.df_zhijing)>1:

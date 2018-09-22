@@ -11,6 +11,7 @@
 2. 回撤到均线时就要回补, 用大的量来弥补
 3. 超过限额就不要做波动了
 """
+assert(False)
 import sys
 import qjjy
 import pd_help

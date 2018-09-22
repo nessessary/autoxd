@@ -7,6 +7,7 @@
 
 """基于成本交易
 """
+assert(False)
 from __future__ import print_function
 import sys
 import qjjy

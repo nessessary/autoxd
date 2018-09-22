@@ -1,5 +1,6 @@
 #-*- coding:utf-8 -*-
 #把主目录放到路径中， 这样可以支持不同目录中的库
+from __future__ import print_function
 import os
 def getMainDir():
     add_path = os.path.dirname(__file__) + '/..'
@@ -49,7 +50,7 @@ class MultiSubProcess():
         self.task_id += 1
     def Run(self):
         self.pd_task.index = range(len(self.pd_task))
-        print self.pd_task
+        print(self.pd_task)
         #保存任务表
         myredis.set_obj('multi', self.pd_task)
         cmd = sys.executable
@@ -123,10 +124,10 @@ class pp_func_param:
         return r
         
 def test(a):
-    print 'pid=',os.getpid(), a
+    print('pid=',os.getpid(), a)
     return pd.DataFrame(a)
 def test2(b):
-    print 'test2', b
+    print('test2', b)
     return pd.DataFrame(b)
 def main(args):
     multi = MultiSubProcess()
@@ -134,8 +135,7 @@ def main(args):
     multi.Map(1, __file__, test2, range(20))
     multi.Run()
     df1, df2 = multi.Reduce()
-    print df1
-    print "end"
+    print(df1)
     
 if __name__ == "__main__":
     try:

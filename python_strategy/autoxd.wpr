@@ -4,7 +4,15 @@
 # Wing IDE project file                                          #
 ##################################################################
 [project attributes]
-console.toolbox = []
+console.toolbox = [{'autosave': False,
+                    'id': 'cmd-xgRYxNf1xhUyaIQx',
+                    'io_encoding': 'utf_8',
+                    'key_binding': '',
+                    'line_mode': True,
+                    'loc': u'C:\\chromium\\src\\autoxd3\\autoxd_backtesting\\python_strategy\\strategy\\boll_fencang.py',
+                    'pseudo_tty': False,
+                    'raise_panel': True,
+                    'title': ''}]
 proj.directory-list = [{'dirloc': loc('.'),
                         'excludes': (),
                         'filter': u'*',
@@ -12,4 +20,4 @@ proj.directory-list = [{'dirloc': loc('.'),
                         'recursive': True,
                         'watch_for_changes': True}]
 proj.file-type = 'shared'
-proj.main-file = loc('proxy_live_runner.py')
+proj.main-file = loc('strategy/boll_fencang.py')

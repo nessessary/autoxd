@@ -6,7 +6,7 @@
 
 import numpy as np
 import pylab as pl
-import sys,os,psutil
+import sys,os,agl
 
 """模仿matlab的publish, 不用怀疑，只是最简单的模拟
 在当前工作目录中生成一个html\name\name.html
@@ -42,6 +42,8 @@ class Publish:
         self.t_html = ''
         f = open(os.path.dirname(__file__)+'/test.html', 'r')
         self.t_html = f.read()
+        if agl.IsRunAtCmd() or sys.version>'3':
+            self.t_html = self.t_html.replace('utf-8', 'gb2312')
         f.close()
         
         self.name = name 

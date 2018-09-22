@@ -24,7 +24,7 @@ from pypublish import publish
 
 def get_codes(flag=myenum.all, n=100):
     """获取有效的股票列表, enum现在改为myenum
-    flag : enum.all 等枚举 , enum.exclude_cyb 排除创业板, enum.rand10 随机选10个
+    flag : enum.all 等枚举 
     n : enum.rand时使用
     return: list """
     def readTDXlist():
@@ -811,17 +811,22 @@ def GetCodeName(code):
     if code=='510050':
         return '50ETF'
     #从拼音文件里获取中文名称
-    fname = '../stock_pinyin3.py'
-    name = None
+    fname = os.path.dirname(__file__) +'/stock_pinyin3.py'
+    fname = os.path.abspath(fname)
+    name = ''
     f = open(fname)
     if sys.version > '3':
         f = open(fname, encoding='utf8')
-    for line in f.readlines():
-        line = str(line)
-        if str(line).find(code)>0 and str(line).find('#')>0:
-            name = line.split('#')[-1]
-            name = name[:-1]
-            break
+    try:
+        for line in f.readlines():
+            line = str(line)
+            if line.find(code)>0:
+                if line.find('#')>0:
+                    name = line.split('#')[-1]
+                    name = name[:-1]
+                    break
+    except:
+        pass
     return name
         
 def load_ths_custom_codes():
@@ -1069,7 +1074,7 @@ class DataSources:
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
-                    df = datasource_fn()
+                    df = datasource_fn(code)
                 df = df.ix[start_day:end_day]
                 #复权
                 df_fenhong = getFenHong(code)
@@ -1089,7 +1094,7 @@ class DataSources:
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getFiveMinHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
-                    df = datasource_fn()
+                    df = datasource_fn(code)
             df = df.ix[start_day:end_day]
             #复权
             df_fenhong = getFenHong(code)

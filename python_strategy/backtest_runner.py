@@ -189,7 +189,10 @@ class BackTestPolicy:
         bars['资产'] = bars['可用']+bars['changwei']*bars['c']
         zhican = (bars['资产']-init_money)/init_money*100
         zhican = zhican.fillna(0)
-        title = '%s %s'%(self.codes[0], stock.GetCodeName(self.codes[0]).decode('utf8'))
+        if sys.version>'3':
+            title = '%s %s'%(self.codes[0], stock.GetCodeName(self.codes[0]))
+        else:
+            title = '%s %s'%(self.codes[0], stock.GetCodeName(self.codes[0]).decode('utf8'))
         ui.TradeResult_Boll(agl.where(policy.pl, policy.pl, pl), bars,  \
                             stock.GuiYiHua(zhican),\
                             stock.GuiYiHua(bars['changwei']),
