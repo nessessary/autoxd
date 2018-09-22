@@ -23,6 +23,7 @@ else:
 from PIL import Image
 from sklearn.utils import shuffle
 import traceback
+import pprint
 
 def getFunctionName():
     """得到当前调用的函数名称"""
@@ -887,12 +888,17 @@ def df_to_html(df):
     return s
 def print_df(df):
     """完整的打印df"""
-    if 0: df = pd.DataFrame
-    i=0
-    while i<len(df):
-        start_index = i
-        i += 50
-        print(df.iloc[start_index:i])
+    s = df.to_string()
+    s = s.encode('utf8')
+    pprint.pprint(s)
+    #if 0: df = pd.DataFrame
+    #i=0
+    #while i<len(df):
+        #start_index = i
+        #i += 50
+        #v = df.iloc[start_index:i]
+        #v = v.to_string()
+        #print(v)
 def print_prettey_df(df):
     from prettytable import PrettyTable
     table = PrettyTable(df.columns.tolist())

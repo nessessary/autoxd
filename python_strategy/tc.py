@@ -11,9 +11,12 @@ import numpy as np
 import pandas as pd
 import sys,unittest,time
 import live_policy,agl,stock,account,myredis,myenum
-import win32con, win32gui
-import ctypes
-import ctypes.wintypes
+try:
+    import win32con, win32gui
+    import ctypes
+    import ctypes.wintypes
+except:
+    pass
 #import tushare as ts
 import math
 

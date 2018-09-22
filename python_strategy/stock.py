@@ -5,13 +5,7 @@
 # QQ: 1764462457
 from __future__ import print_function
 import os,sys
-def AddPath():
-    from sys import path
-    mysourcepath = os.getenv('AUTOXD_PYTHON')
-    if not mysourcepath in path:
-        path.append(mysourcepath)    
-AddPath()
-import mysql,help,agl,ui,myenum,myredis
+import help,agl,ui,myenum,myredis
 if sys.version > '3':
     import stock_pinyin3 as jx
 else:
@@ -24,10 +18,7 @@ import numpy as np
 import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
-try:
-    import grabThsWebStockInfo
-except:
-    pass
+import grabThsWebStockInfo
 from pypublish import publish
 #pl = publish.Publish()
 
@@ -336,20 +327,11 @@ class mytest(unittest.TestCase):
         df_bk = getHisdatDataFrameFromRedis('手机游戏')
         BETA(df['c'], df_bk,pl)
 
-    def _test_calc_fuquan(self):
-        code = '603179'
-        code = jx.JJWD
-        ths = createThs()
-        df = mysql.getHisdat(code)
-        df = mysql.getFiveHisdat(code, start_day='2018-1-1')
-        one = ths.createThsOneCode(code)
-        #复权计算
-        df_fenhong = one.get_fenhong()
-        df = calc_fuquan_use_fenhong(df, df_fenhong)
+    def test_calc_fuquan(self):
+        code = jx.SNYG
+        df = getHisdatDf(code)
         print(df)
-
-        df = one.convertVolToStockTrunover(df)
-        #print(df)
+        df = getHisdatDf(code, is_Trunover=True)
         agl.print_df(df)
         ui.drawDf(pl, df)
     def _test_mgsy(self):
@@ -407,6 +389,9 @@ class mytest(unittest.TestCase):
         f=LiveData().getFenshi(code)
         print(f)
         print(1)
+    def _test_grabths(self):
+        code = jx.THCJ
+        print(getFenHong(code))
     def _test_ths(self):
         agl.tic()
         ths = createThs()
@@ -469,7 +454,7 @@ class mytest(unittest.TestCase):
         ui.DrawZZ(pl, zz)
         zz = ZigZag(closes[:-195], percent=5)
         ui.DrawZZ(pl, zz)
-    def test_DumpToDir(self):
+    def _test_DumpToDir(self):
         DumpToDir()
 
 def IsKaiPan():
@@ -673,6 +658,7 @@ def calc_fuquan_use_fenhong(df, df_fenhong):
     df: 日k线
     df_fenhong: 分红表
     return: df"""
+    assert(len(df)>0)
     if len(df_fenhong) == 0:
         return df
     #有些分红表先把未来的日期写上了
@@ -710,654 +696,107 @@ def test_calc_fuquan_use_fenhong():
     print(df_fenhong)
     print(calc_fuquan_use_fenhong(df, df_fenhong))
 
-def test_get_yjyb():
-    ths = StockInfoThs()
-    df = ths.getDf(1)
-    #for code in df['code']:
-        #print ths.createThsOneCode(code).get_mgsy()
-    code = '002195'
-    print(ths.createThsOneCode(code).get_mgsy())
-g_ths = None
-if 0: createThs = StockInfoThs
-def createThs():
-    """注意：在stock中执行的，别的模块不认， 因此需要在bankuai_zhishu.py中执行
-    返回一个序列化的类, 单件, return: StockInfoThs"""
-    global g_ths
-    if g_ths is None:
-        g_ths = StockInfoThs()
-    return g_ths
-
-class StockInfoThs:
-    """基于同花顺的F10"""
-
-    def __init__(self, d={}):
-        """d: dict 当F10重新更新时，传入数据, 其它时候不传值"""
-        self.pl = None
-        if d == {}:
-            self.d = grabThsWebStockInfo.getThsResults()
-        else:
-            from huge_dict import huge_dict
-            huge_dict().clear()
-            self.d = d
-            self._ChangeDf()
-            self._calcHySyl()
-            huge_dict(self.d)
-
-    def _ChangeDf(self):
-        """调整df"""
-        #把财务预测的时间索引提前一年
-        name = '盈利预测'
-        if name in self.d.keys():
-            df = self.d[name]
-            df_year = df[0].map(lambda x: str(int(x)+1))
-            df.index = pd.DatetimeIndex(df_year)
-            df.columns = ['年', '每股收益','利润(亿元)','预测','code','name']
-            self.d[name] = df	
-
-        #市盈率为--认为是亏损
-        name = '概要'
-        if name in self.d.keys():
-            df = self.d[name]
-            #df = df.dropna()
-            def StrConvert(x):
-                try:
-                    y = float(x)
-                except:
-                    x = '10000'
-            #df['市盈率动态'] = df['市盈率动态'].map(lambda x: x.replace('--','10000'))
-            df['市盈率动态'] = df['市盈率动态'].map(StrConvert)
-            #用最新的预报替换当前的市盈率
-            df['市盈率动态'] = df['code'].map(lambda x: self.createThsOneCode(x, True).get_syl())
-            self.d[name] = df
-    def _calcHySyl(self):
-        """把每个行业的2,3级市盈率计算出来， 放到一张新表中"""
-        def getHySyl(df, bankuai):
-            """求行业平均市盈率, 不统计超过1000的市盈率
-            df: 数据源， 概要表
-            bankuai: 板块
-            return: list [平均市盈率, 第一个聚类, kmeans_2,percent1聚类1占比,  percent2, total_num]"""
-            codes = self.getBankuaiCodes(bankuai)	    
-            df_hy = df[df['code'].map(lambda x: x in codes)]
-            df_hy = df_hy['市盈率动态']
-            df_hy = df_hy.dropna()
-            df_hy = df_hy.map(lambda x: float(x))
-            df_hy = df_hy[df_hy< 1000]		   
-            total = len(df_hy)
-            if len(df_hy) == 0:
-                return [np.nan, np.nan, np.nan, np.nan, np.nan]
-
-            avg = np.average(np.array(df_hy))
-
-            #计算板块最小扣非市盈率, 最小三个的平均数
-            min_kfsyls = []
-            for code in codes:
-                one = self.createThsOneCode(code)
-                min_kfsyls.append(one.get_koufei_syl())
-            min_kfsyl = 100
-            if len(min_kfsyls) >0:
-                min_kfsyls = np.array(min_kfsyls)
-                min_kfsyls = min_kfsyls[min_kfsyls>0]
-                if len(min_kfsyls)>0:
-                    min_kfsyls = np.sort(min_kfsyls)
-                    min_kfsyls = min_kfsyls[:3]
-                    min_kfsyl = int(np.sum(min_kfsyls)/len(min_kfsyls))
-
-            if len(df_hy)<3:
-                return [avg, help.p(avg), '100%', min_kfsyl, np.nan, total]
-            #计算聚类
-            results_n = np.zeros((len(df_hy),2))
-            results_n[:,0] = 1
-            results_n[:,1] = np.array(df_hy)
-            k = KMeans(n_clusters=2)
-            k.fit(results_n)
-            a = (k.cluster_centers_[0,1], help.getPercentString(float(len(k.labels_[k.labels_==0]))/total) )
-            b = (k.cluster_centers_[1,1], help.getPercentString(float(len(k.labels_[k.labels_==1]))/total) )
-            #范围大的放前面
-            if len(k.labels_[k.labels_==0]) < len(k.labels_[k.labels_==1]):
-                c = a
-                a = b
-                b = c
-            return [help.p(avg), help.p(a[0]),a[1], min_kfsyl, b[1], total]
-        df = self.getDf(0)
-        d = {}
-        bankuais = self.getBankuais()
-        for bankuai in bankuais:
-            d[bankuai] = getHySyl(df, bankuai)
-        df = pd.DataFrame(d.values())
-        df['key'] = list(d.keys())
-        #df[1] = df[1].map(lambda x: agl.get_string_digit(str(x).split(',')[0]))
-        df[1] = df[1].astype(float)
-        df = df.sort_values(by=1)
-        df.columns = ['平均市盈率','低位聚类市盈率','percent1', '最小扣非市盈率','percent2', '数量','行业及概念']
-        #agl.print_df(df)
-        self.d['平均市盈率'] = df
-    def getTableName(self):
-        return grabThsWebStockInfo.GrabThsWeb.table_names
-    def getDf(self, table_id):
-        """取一个表 
-        table_id: int 见grabThsWebStockInfo.GrabThsWeb.table_names
-        return: df"""
-        df = self.d[grabThsWebStockInfo.GrabThsWeb.table_names[table_id]]
-        return df
-    def getYcTable(self):
-        """return : df 盈利预测"""
-        df = self.d['盈利预测']
-        return df
-    def getPjSylTable(self):
-        """return: df 平均市盈率"""
-        return self.d['平均市盈率']
-    def getHySyl(self, hy):
-        """获取平均市盈率表中的行业市盈率 return: float"""
-        df = self.getPjSylTable()
-        #return df[df['行业及概念'] == hy]['低位聚类市盈率'].get_values()[0]
-        return df[df['行业及概念'] == hy]['最小扣非市盈率'].get_values()[0]
-    def size(self):
-        return len(self.d.keys())
-    def getDf_Code(self, table_id, code):
-        """一个表中code记录, 一行 return: df"""
-        df = self.getDf(table_id)
-        return df[df['code'] == code]
-    def getCodeDict(self, code):
-        d = {}
-        for i,k in enumerate(grabThsWebStockInfo.GrabThsWeb.table_names):
-            d[k] = self.getDf_Code(i, code)
-        return d
-    def getBankuais(self):
-        """获取全部的板块和概念 return: np.ndarray"""
-        codes = get_codes()
-        bankuais = []
-        for code in codes:
-            bankuai = self.createThsOneCode(code).get_bankuai()
-            bankuais += bankuai.tolist()
-        bankuais = np.unique(np.array(bankuais))
-        bankuais = bankuais[bankuais != '']
-        return bankuais
-    def getBankuaiCodes(self, bankuai):
-        """得到同板块的其他股票
-        bankuai: str 板块名称
-        return: np.darray [code]"""
-        codes = []
-        names = ['所属行业', '涉及概念','概念强弱排名']
-        df = self.getDf(0)
+###基本面#######
+def getFenHong(code, update=False):
+    ths = grabThsWebStockInfo.GrabThsWeb(code)
+    key = ths.GetFenHongKey()
+    if update:
+        myredis.delkey(key)
+    def convert_fenhong(df):
+        """转换分红表格式为数据格式
+        分红记录 (说明, 股， 派现，除权日)
+        return: df columns('股，现金, 日期')"""
+        #获取分红表
+        df_fenhong = pd.DataFrame([])#股，现金, 日期
         for i in range(len(df)):
-            r = df.iloc[i]
-            code = r['code']
-            bankuai_cur = ''
-            for name in names:
-                if name in df.columns:
-                    bankuai_cur += str(r[name])
-            if bankuai_cur.find(bankuai) >= 0:
-                codes.append(code)
-        return np.array(codes)
-    def analyze_bankuai_beta(self, code, start_day, end_day, is_report=False):
-        """分析个股中板块相关度最高的那个板块， 并求出beta
-        return: (int beta[-1], str bankuai_name, df 板块涨幅分布col=zhangfu,type)"""
-        if not hasattr(StockInfoThs, 'pl'):
-            self.pl = None
-        if is_report:
-            if self.pl == None:
-                self.pl = publish.Publish()
-            else:
-                del self.pl
-                self.pl = publish.Publish()	
-        else:
-            self.pl = None
-        one = self.createThsOneCode(code)
-        if is_report:
-            print(code, one.get_name(), '关联的行业指数')
-            print('从', start_day, '开始 到', end_day)
-        hy = one.get_bankuai()
-        df_hisdat = getHisdatDataFrameFromRedis(code, start_day, end_day)
-        df_bankuai = pd.DataFrame(columns=['bankuai', 'beta', 'val'])	#把板块名称和beta值记录起来
-        i = 0
-        for s in hy:
-            if len(s) == 0:
-                continue
-            df_zhishu = getHisdatDataFrameFromRedis(s, start_day,end_day)
-            assert(df_zhishu is not None)
-            df = pd.DataFrame([])
-            df['zhishu'] = df_zhishu
-            df['stock'] = df_hisdat['c']
-            df = GuiYiHua(df)
-            if is_report:
-                ui.drawDf(self.pl, df, title=s)
-            df_betas = BETA(copy.deepcopy(df['stock']), copy.deepcopy(df['zhishu']), self.pl)
-            #集成板块名称和beta结果
-            df_bankuai.loc[i] = [s, df_betas['beta'].var(), df_betas['beta'].tolist()[-1]]
-            i += 1
-        if pd.isnull(df_bankuai['beta']).all() == True:
-            raise myenum.FenshiBetaTinPaiException
-        bankuai = df_bankuai.iloc[np.argmin(df_bankuai['beta'])]['bankuai']
-        if is_report:
-            print(df_bankuai.sort(columns=['beta']))
-            print('result: ', bankuai)
-        #涨幅分布
-        codes = self.getBankuaiCodes(bankuai)
-        codes = codes[codes!=code]
-        if len(codes) == 0:
-            codes = [code]
-        #end_day = getKlineLastDay()
-        df = summary_bankuai_zhangfu(codes, end_day)
-        if is_report:
-            if len(df)>0:
-                print(df.describe())
-                print(df['type'].value_counts())
+            #方案说明
+            content = df.iloc[i]['分红方案说明']
+            #content = '送1.2转增2.4股派3.45元'
+            #取派股信息
+            gu = agl.find_str_use_re('^(.*)送([\d.]+)(.*)$', content, 1)
+            if gu == '': gu=0
+            gu = float(gu)
+            gu2 = agl.find_str_use_re('^(.*)转([\d.]+)(.*)$', content, 1)
+            if gu2 == '':
+                gu2 = agl.find_str_use_re('^(.*)转增([\d.]+)(.*)$', content, 1)
+            if gu2 == '': gu2 = 0
+            gu2 = float(gu2)
+            gu = gu + gu2
+            money = agl.find_str_use_re('^(.*)派([\d.]+)元(.*)$', content, 1)
+            if money == '':
+                money = agl.find_str_use_re('^(.*)现金([\d.]+)元(.*)$', content, 1)
+            if money == '': money = 0
+            money = float(money)
+            #print gu, money
+            if gu > 0 or money > 0:
+                date = df.iloc[i]['A股除权除息日']
+                if agl.is_valid_date(date):
+                    df_fenhong = pd.concat([df_fenhong, pd.DataFrame([gu, money, date]).T])
+        return df_fenhong    
+    def impl():
+        return convert_fenhong(ths.getFenHong())
+    return myredis.createRedisVal(key, impl).get()
+def getGubenbiangen(code, update=False):
+    ths = grabThsWebStockInfo.GrabThsWeb(code)
+    key = ths.GetGubenbiangenKey()
+    if update:
+        myredis.delkey(key)
+    def impl():
+        return ths.getGubenbiangen()
+    return myredis.createRedisVal(key, impl).get()
+###############    
 
-        return (df_bankuai.iloc[np.argmin(df_bankuai['beta'])]['val'], bankuai,df)
-    @staticmethod
-    def getHyAvgSyl(df, hy):
-        """获取行业平均市盈率
-        df: 概要表, 已计算four技术指标的概要表
-        hy: 行业名称
-        return: float 平均市盈率, df 过滤后的df"""
-        df_hy = df[df['所属行业'].map(lambda x: x.find(hy)>=0)]
-        return np.average(np.array(df_hy['市盈率动态'], dtype=float)), df_hy
-    @staticmethod
-    def getGnAvgSyl(df, gn):
-        """获取概念平均市盈率
-        df: 概要表, 已计算four技术指标的概要表
-        gn: 概念名称, 或者是正则表达式
-        return: float 平均市盈率, df 过滤后的df"""
-        def re_hy(x):
-            x = str(x)
-            return re.search(gn, x) != None
-        #df_hy = df[df['涉及概念'].map(re_hy)]
-        #if len(df_hy) == 0:
-        df_hy = df[df['概念强弱排名'].map(re_hy)]
-        # df_hy[['code','name','市盈率动态', 'four','流通A股']]
-        if len(df_hy) == 0:
-            return np.nan, df_hy
-        return np.average(np.array(df_hy['市盈率动态'], dtype=float)), df_hy
-    @staticmethod
-    def genCodeNameTbl():
-        """在redis中创建一份代码名称dict"""
-        ths = createThs()
-        df = ths.getDf(0)
-        df = df[['code', 'name']]
-        return df
-    class ThsOneCode:
-        def __init__(self, d, price=0):
-            self.d = d
-            self.price = price
-        if 0: getDf = pd.DataFrame
-        def getDf(self, table_id):
-            """取一个表 
-            table_id: grabThsWebStockInfo.GrabThsWeb.table_names
-            return: df"""
-            df = self.d[grabThsWebStockInfo.GrabThsWeb.table_names[table_id]]
-            return df	
-        def get_name(self):
-            """return: str 股票名称"""
-            return self.getDf(0)['name'].tolist()[0]
-        def get_syl(self):
-            """return: float 市盈率"""
-            syl = SYL(self.price, self.get_mgsy())
-            if syl < 0:
-                syl = 10000
-            return syl
-        def _get_mgsy_3(self):
-            """获取每股收益及其预报的时间
-            return: 年度净利润, 利润预告时间, 该预告是否有效(在披露之前)"""
-            quarters = ['03-31','06-30','09-30','12-31']
-            mgsy , quarter = self.get_mgsy_2()
-            quarter -= 1
-            year = str(agl.curTime().year)
-            cur_quarter = int(agl.curTime().month / 3)
-            is_valid = abs(cur_quarter - quarter ) < 2
-            return mgsy*self.get_zgb(), year+'-'+quarters[quarter], is_valid
-        def get_mgsy_2(self):
-            """最新的每股收益
-            df: 某code的新闻表
-            return: float 每股收益, int 季度"""
-            df = self.getDf(1)
-            if len(df) == 0:
-                return 0, 4
-            assert(len(df)>0 and len(df.columns))
-            #已披露的业绩
-            #print df[1]
-            df_pilu = df[df[1].map(lambda x: str(x).find('业绩披露') >=0)]
-            #预告业绩
-            df = df[df[1].map(lambda x: str(x).find('业绩预告')== 0)]
-            def getQuarter(s):
-                quarter = 0
-                #计算当前现实季度
-                quarter = agl.getQuarter(agl.curTime())
-                if s.find('03-31')>=0 or s.find('一季报')>=0:	#确认是第一季报
-                    quarter = 1
-                if s.find('06-30')>=0 or s.find('中报')>=0 or s.find('二季报')>=0:
-                    quarter = 2
-                if s.find('09-30')>=0 or s.find('三季报')>=0:
-                    quarter = 3
-                if s.find('12-31')>=0 or s.find('年报')>=0:
-                    quarter = 4	
-                assert(quarter>0)
-                return quarter
-            def getYuBaoDate(s):
-                """获取预报日期"""
-                quarters = ['一季报','中报','三季报','年报']
-                dates = ['03-31','06-30','09-30','12-31']
-                for date in dates:
-                    pos = s.find(date)
-                    if pos > 0:
-                        d = s[pos-5:pos+len(date)]
-                        return d
-                #文字里只写了季度
-                s = s[:50]
-                for i,date in enumerate(quarters):
-                    pos = s.find(date)
-                    if pos > 0:
-                        cur_year = agl.CurYear()
-                        cur_day = agl.CurDay()
-                        yubao_date = str(cur_year) + '-'+dates[i]
-                        #解决跨年预报问题, 在上半年预报当年年报业绩不太可能
-                        if i>2 and help.StrToDate(cur_day)<help.StrToDate(cur_year+'-6-30'):
-                            cur_year = str(int(cur_year)-1)
-                            yubao_date = cur_year + '-' + dates[i]
-                        return yubao_date
-                return ''
-            def getPiLuDate(s):
-                """获取披露的日期"""
-                quarters = ['一季报','中报','三季报','年报']
-                dates = ['03-31','06-30','09-30','12-31']
-                for i,date in enumerate(quarters):
-                    pos = s.find('年'+date)
-                    if pos > 0:
-                        d = s[pos-4:pos] + '-' + dates[i]
-                        return d
-                return ''
-            #业绩预告：预计2014-01-01到2014-12-31业绩：净利润8000万元至8500万元,增长幅度为1915.72%至2041.71%,上年同期业绩:...
-            def IsYugaoBeforePilu():
-                """预告的内容时间大于当前披露的业绩， 比如已经披露三季报， 
-                但预告的是12-31年报的业绩
-                return : bool"""
-                if len(df) == 0: return False
-                #找到最大的预报时间
-                yubao_date = '2015-1-1'
-                for s in df[1].tolist():
-                    date = getYuBaoDate(s)
-                    if date != '':
-                        if help.StrToDate(date) - help.StrToDate(yubao_date) > datetime.timedelta(0):
-                            yubao_date = date
-                #找到最大的披露时间
-                pilu_date = '2015-1-1'
-                for s in df_pilu[1].tolist():
-                    date = getPiLuDate(s)
-                    if date != '':
-                        if help.StrToDate(date) - help.StrToDate(pilu_date) > datetime.timedelta(0):
-                            pilu_date = date
-                if pilu_date == '2015-1-1':
-                    return True
-                return help.StrToDate(yubao_date) - help.StrToDate(pilu_date) > datetime.timedelta(0)
-            #预告在披露的时间之前
-            is_yugao_first = IsYugaoBeforePilu()
-            if is_yugao_first or (len(df) > 0 and (len(df_pilu)>0 and df.index[0] > df_pilu.index[0])):
-                for s in df[1].tolist():
-                    #先把多余的切割掉
-                    s1 = agl.find_str_use_re('^(.*)上年同期业绩(.*)$', s, 0)
-                    if s1 != '':
-                        s = s1		
-                    s1 = agl.find_str_use_re('^业绩预告(.*)净利润([-.\d]+)万元至([-.\d]+)万元(.*)$', s, 1)
-                    s2 = agl.find_str_use_re('^业绩预告(.*)净利润([-.\d]+)万元至([-.\d]+)万元(.*)$', s, 2)
+def convertVolToStockTrunover(df, df_GuBen_change):
+    """成交量转换手率, 通过历史股本变更表来计算
+    df: hisdat
+    return: df 换手率覆盖了v字段
+    """
+    #股本变动表
+    col = '变动后流通A股(股)'
+    #调整一下col
+    df_GuBen_change.columns = df_GuBen_change.iloc[0]
+    df_GuBen_change = df_GuBen_change.drop(index=0)
+    #防止有超过当前日期的数据
+    df_GuBen_change.index = pd.DatetimeIndex(df_GuBen_change[df_GuBen_change.columns[0]])
+    df_GuBen_change = df_GuBen_change.sort_index(ascending=True)    #与df顺序一致
+    last_day = agl.datetime_to_date(df.index[-1].to_pydatetime())
 
-                    #对于季报，预测是要做相应的处理， 比如第一季度，那么要*4
-                    quarter = 1
-                    quarter = getQuarter(s)
-                    #...等半年报时再来处理...
-                    if s1 != "" and s2 != "":
-                        #不取中间值， 按黄金分割
-                        v = [float (s1), float(s2)]
-                        s = agl.calcGoldCut(v, ratio=0.5)
-                        return (s/10**4)/self.get_zgb()*(4.0/quarter), quarter
-                    #新版写法2016-10-2
-                    s1 = agl.find_str_use_re('^业绩预告(.*)净利润([-.\d]+)亿元至([-.\d]+)亿元(.*)$', s, 1)
-                    s2 = agl.find_str_use_re('^业绩预告(.*)净利润([-.\d]+)亿元至([-.\d]+)亿元(.*)$', s, 2)
-                    if s1 != "" and s2 != "":
-                        #不取中间值， 按黄金分割
-                        v = [float (s1), float(s2)]
-                        s = agl.calcGoldCut(v, ratio=0.5)
-                        return (s)/self.get_zgb()*(4.0/quarter), quarter
-                    jtsyl = agl.get_string_digit(self.d['概要']['市盈率静态'][1])
-                    if jtsyl < 0:
-                        jtsyl = 10000
-                    s1 = agl.find_str_use_re('^业绩预告(.*)下降幅度为([-.\d]+)%至([-.\d]+)%(.*)$', s, 1)
-                    if s1=='':
-                        s1 = agl.find_str_use_re('^业绩预告(.*)下降幅度为([-.\d]+)%(.*)$', s, 1)
-                    if s1 != "":
-                        s = -float (s1)/100
-                        #(now-yes)/yes = up => now = (up+1)*yes
-                        return (s+1.0)/jtsyl, quarter
-                    s1 = agl.find_str_use_re('^业绩预告(.*)增长幅度为([-.\d]+)%至([-.\d]+)%(.*)$', s, 1)
-                    if s1=='':
-                        s1 = agl.find_str_use_re('^业绩预告(.*)增长幅度为([-.\d]+)%(.*)$', s, 1)
-                    if s1 != "":
-                        s = float (s1)/100
-                        return (s+1.0)/jtsyl, quarter
+    #计算当时的流通股本
+    df_GuBen_change[col] = df_GuBen_change[col].map(lambda x: agl.StrToFloat(x))
+    df_GuBen_change = df_GuBen_change.dropna()
+    first_day = agl.datetime_to_date(df.index[0].to_pydatetime())
+    df_GuBen_change = df_GuBen_change.ix[first_day:last_day]    
 
-            #通过财务报表取每股收益, 因为有分红转增， 所以还是要用概要里的，季节可由财务汇报中获得
-            str_mgsy = self.d['概要']['每股收益'].tolist()[0]
-            str_mgsy = str(str_mgsy)
-            #b_fhzz = str_mgsy.find("分红")>=0  #是否有分红转增
-            mgsy = agl.get_string_digit(str_mgsy)
-            quarter= getQuarter(str(self.d['财务主要指标_汇报期'].index[0]))
+    #Merge时排序需要对应
+    df = df.sort_index()    #mysql存储时有些乱序， merge时必须是排序的，降序
+    if len(df_GuBen_change) > 0:
+        df2 = pd.merge_asof(df, df_GuBen_change,left_index=True,right_index=True)
+        df2 = df2.fillna(method='backfill') #降序， 前面的Nan用第一个有数的值填充
+        df2['v'] = df2['v']*100/df2[col]
+        df['v'] = df2['v']
+    else:   #有些老股因为送股太早，因此这里为空
+        df['v'] = df['v']*100/(self.get_ltgb()*myenum.YI)
 
-            pre_year = str(agl.curTime().year-1)
-            if len(df_pilu):
-                for s in df_pilu[1].tolist():
-                    if s.find(str(mgsy))>0:
-                        if s.find('一季报')>0 :
-                            #在公告里的才是真正的一季度收益
-                            str_content = s
-                            s = agl.find_str_use_re('^(.*)每股收益([-.\d]+)元(.*)$', str_content, 1)
-                            #如果有除权， 那么还是用原来的
-                            if s != "" :
-                                mgsy = float(s)
-                            quarter = np.max([1, quarter])
-                        if s.find('中报')>0:
-                            quarter = np.max([2, quarter])
-                        if s.find('三季报')>0:
-                            quarter = np.max([3, quarter])
-                        if s.find('年报')>=0:
-                            quarter = np.max([4, quarter])
-            #每股收益/4*季度=当前的季报 => 每股收益=当前季报*4/季度
-            mgsy = mgsy * 4 / quarter
-            return mgsy, quarter
-        def get_mgsy(self):
-            mgsy , quarter = self.get_mgsy_2()
-            return mgsy
-        def get_YinLi(self):
-            """获取盈利 , 把季度利润反推为年度利润
-            return: np.array"""
-            df = self.getDf(6)[u'净利润万元']
-            yinli , yugao_date, is_valid = self._get_mgsy_3()
-            yinli = float(yinli)*10**4
-            df = df.astype(float)
-            df[df.index.map(lambda x: str(x).find('3-31')>0)] = df[df.index.map(lambda x: str(x).find('3-31')>0)]*4
-            df[df.index.map(lambda x: str(x).find('6-30')>0)] = df[df.index.map(lambda x: str(x).find('6-30')>0)]*2
-            df[df.index.map(lambda x: str(x).find('9-30')>0)] = df[df.index.map(lambda x: str(x).find('9-30')>0)]*4.0/3.0
-            #添加预告业绩
-            if len(df[yugao_date]) == 0 and is_valid:
-                df = df.append(pd.Series([yinli], index=pd.DatetimeIndex([yugao_date])))
-            df = df.sort_index()
-            return df
-        def get_zgb(self):
-            """总股本, 单位， 亿股
-            return : float"""
-            df = self.getDf(0)
-            return agl.get_string_digit(df['总股本'].tolist()[0])
-        def get_koufei_syl(self):
-            """扣非市盈率
-            return: float
-            """
-            jll = float(self.d['财务主要指标_汇报期'][u'扣非净利润万元'].iloc[0])/10000.0
-            report_day = self.d['财务主要指标_汇报期'].index[0].to_pydatetime()
-            quarter = agl.getQuarter(report_day) #报告期季度
-            code = self.getDf(0)['code'].iloc[0]
-            try:
-                shizhi = getHisdatDataFrameFromRedis(code, start_day='', end_day='').iloc[-1]['c'] * self.get_zgb()	#市值(亿)
-                kou_fei_syl = PE(shizhi, jll/quarter*4)
-            except:
-                #新股
-                #print code
-                #shizhi = self.getDf(0)['总市值'].iloc[0]
-                #shizhi = agl.StrToNumber(shizhi)
-                kou_fei_syl = 100
-            return kou_fei_syl
+    #df['v'].plot()
+    #pl.show()
 
-        def get_ltgb(self):
-            """流通股本, 亿股 return: float"""
-            return agl.get_string_digit(self.d['概要']['流通A股'].tolist()[0])
-        def get_bankuai(self):
-            """获取当前股票的所属行业和概念板块
-            return: np.ndarray 按，分割的字符串"""
-            names = ['所属行业', '涉及概念','概念强弱排名']
-            df = self.getDf(0)
-            if len(df) == 0:
-                return np.array([])
-            hy = df[names[0]]
-            if not isinstance(hy, str):
-                hy = hy.tolist()[0]
-                hy = hy.split(',')[1:]
-            #现在概念标题既有使用‘涉及概念'的也有使用’概念强弱排名‘的
-            if names[2] in df.columns:
-                gn = df[names[2]]
-                if isinstance(gn.iloc[0], str):
-                    s = gn.iloc[0]
-                    s = s.replace('详情>', '')
-                    s = s.replace('...', '')
-                    gn = s.split('，')
-                    hy += gn
-            hy = np.unique(np.array(hy))
-            if len(hy) > 0:
-                hy = hy[hy != '']
-            return hy
-        def get_fenhong(self):
-            """获取分红记录 (说明, 股， 派现，除权日)
-            分红表有时候更新不及时， 可能需要等待
-            return: df columns('股，现金, 日期')"""
-            df = self.getDf(-1)
-            #获取分红表
-            df_fenhong = pd.DataFrame([])#股，现金, 日期
-            for i in range(len(df)):
-                #方案说明
-                content = df.iloc[i]['分红方案说明']
-                #content = '送1.2转增2.4股派3.45元'
-                #取派股信息
-                gu = agl.find_str_use_re('^(.*)送([\d.]+)(.*)$', content, 1)
-                if gu == '': gu=0
-                gu = float(gu)
-                gu2 = agl.find_str_use_re('^(.*)转([\d.]+)(.*)$', content, 1)
-                if gu2 == '':
-                    gu2 = agl.find_str_use_re('^(.*)转增([\d.]+)(.*)$', content, 1)
-                if gu2 == '': gu2 = 0
-                gu2 = float(gu2)
-                gu = gu + gu2
-                money = agl.find_str_use_re('^(.*)派([\d.]+)元(.*)$', content, 1)
-                if money == '':
-                    money = agl.find_str_use_re('^(.*)现金([\d.]+)元(.*)$', content, 1)
-                if money == '': money = 0
-                money = float(money)
-                #print gu, money
-                if gu > 0 or money > 0:
-                    date = df.iloc[i]['A股除权除息日']
-                    if agl.is_valid_date(date):
-                        df_fenhong = pd.concat([df_fenhong, pd.DataFrame([gu, money, date]).T])
-            return df_fenhong	    
-        def convertVolToStockTrunover(self, df):
-            """成交量转换手率, 通过历史股本变更表来计算
-            df: hisdat
-            return: df 换手率覆盖了v字段
-            """
-            #股本变动表
-            col = '变动后流通A股(股)'
-            df_GuBen_change = self.getDf(3)
-            #调整一下col
-            df_GuBen_change.columns = df_GuBen_change.iloc[0]
-            df_GuBen_change = df_GuBen_change.drop(index=0)
-            #防止有超过当前日期的数据
-            df_GuBen_change.index = pd.DatetimeIndex(df_GuBen_change[df_GuBen_change.columns[0]])
-            df_GuBen_change = df_GuBen_change.sort_index(ascending=True)    #与df顺序一致
-            last_day = agl.datetime_to_date(df.index[-1].to_pydatetime())
-
-            #计算当时的流通股本
-            df_GuBen_change[col] = df_GuBen_change[col].map(lambda x: agl.StrToFloat(x))
-            df_GuBen_change = df_GuBen_change.dropna()
-            first_day = agl.datetime_to_date(df.index[0].to_pydatetime())
-            df_GuBen_change = df_GuBen_change.ix[first_day:last_day]
-
-            #Merge时排序需要对应
-            df = df.sort_index()    #mysql存储时有些乱序， merge时必须是排序的，降序
-            if len(df_GuBen_change) > 0:
-                df2 = pd.merge_asof(df, df_GuBen_change,left_index=True,right_index=True)
-                df2 = df2.fillna(method='backfill') #降序， 前面的Nan用第一个有数的值填充
-                df2['v'] = df2['v']*100/df2[col]
-                df['v'] = df2['v']
-            else:   #有些老股因为送股太早，因此这里为空
-                df['v'] = df['v']*100/(self.get_ltgb()*myenum.YI)
-
-            #df['v'].plot()
-            #pl.show()
-
-            return df
-
-    def createThsOneCode(self, code, use_price_for_syl=False, price=0.0):
-        d = self.getCodeDict(code)
-        if use_price_for_syl:
-            db = mysql.createStockDb()
-            price = db.getCurrentPrice(code)
-        return self.ThsOneCode(d, price)
-    @staticmethod
-    def Test_Bankuai_Zhishu():
-        """由一个股票计算出其所属全部板块的指数, 并显示当前板块涨幅分布"""
-        #个股与板块相关性beta的判断,  下面是两个个股的相关性排序，从结果看基本准确
-        codes = ['002236', '600048']
-        codes = get_codes(myenum.randn, 2)
-        codes = ['603357']
-        date  = '2014-4-1'
-        end_day = getKlineLastDay()
-        p = createThs()
-        for code in codes:
-            beta, bankuai,df = \
-                p.analyze_bankuai_beta(code, start_day=date, \
-                                       end_day=end_day, is_report=True)
-    @staticmethod
-    def Test2():
-        """测试单个股票的每股收益获取， 即市盈率计算"""
-        code = '002346'
-        def ReadPart():
-            p = StockInfoThs()
-            return p.getCodeDict( '002346')
-        d = agl.SerialMgr.serialAuto(ReadPart)
-        print( d)
-        d = StockInfoThs.ThsOneCode(d)
-        print( d.get_mgsy(), d.get_zgb(), SYL(getHisdatDf(code)['c'][-1], d.get_mgsy()))
-
-g_ths_single_table = None   
-#Warning: 未来需要改进， 一个gaiyao表加载至redis花了20秒，可以考虑使用rpc方式， 基本面全部抛到一个常驻进程里
-class THS(object):
-    """使用redis保存分项表"""
-    def __init__(self):
-        self.df_gaiyao = myredis.createRedisVal(myredis.enum.KEY_THS_GAIYAO, lambda: createThs().getDf(0)).get()
-        #按报告期, 报告期合并了之前季度的数据
-        self.df_jll = myredis.createRedisVal(myredis.enum.KEY_JLL, lambda: createThs().getDf(-4)).get()
-        self.df_year = myredis.createRedisVal(myredis.enum.KEY_YEAR, lambda: createThs().getDf(-3)).get()
-    @staticmethod
-    def getInstance():
-        global g_ths_single_table
-        if g_ths_single_table is None:
-            g_ths_single_table = THS()
-        return g_ths_single_table
+    return df    
 
 
-def getHisdatDf(code, start_day='',end_day='',is_fuquan=False ):
-    """从数据库获取日线, 复权 return: df"""
-    df = mysql.getHisdat(code, start_day, end_day)
+def getHisdatDf(code, is_fuquan=True , is_Trunover=False):
+    """从数据库获取日线, 复权 
+    is_fuquan : 使用前复权
+    is_Trunover: 转换为换手率
+    return: df"""
+    df = LiveData().getHisdat(code)
     if is_fuquan:
-        one = createThs().createThsOneCode(code)
-        df_fenhong = one.get_fenhong()
+        df_fenhong = getFenHong(code)
         df = calc_fuquan_use_fenhong(df, df_fenhong)    
+    if is_Trunover:
+        df_gubenbiangen = getGubenbiangen(code)
+        df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
-def getHisdatDfRedis(code):
-    return myredis.createRedisVal(myredis.enum.KEY_HISDAT_NO_FUQUAN+code, lambda :getHisdatDf(code)).get()
+
 def getFiveHisdatDf(code, start_day='', end_day=''):
     """return: df col('ohlcu')"""
     return mysql.getFiveHisdat(code,start_day,end_day)
@@ -1371,18 +810,20 @@ def GetCodeName(code):
     """从redis中取出名称 return: str"""
     if code=='510050':
         return '50ETF'
-    key = myredis.enum.KEY_CODENAME
-    if key not in myredis.getKeys():
-        df = StockInfoThs.genCodeNameTbl()
-        myredis.set_obj(key, df)
-    else:
-        df = myredis.get_obj(key)
-    assert(len(df)>0)
-    assert(df is not None)
-    try:
-        return df[df['code'] == code]['name'].tolist()[0]
-    except:
-        return '新股'
+    #从拼音文件里获取中文名称
+    fname = '../stock_pinyin3.py'
+    name = None
+    f = open(fname)
+    if sys.version > '3':
+        f = open(fname, encoding='utf8')
+    for line in f.readlines():
+        line = str(line)
+        if str(line).find(code)>0 and str(line).find('#')>0:
+            name = line.split('#')[-1]
+            name = name[:-1]
+            break
+    return name
+        
 def load_ths_custom_codes():
     '先用ths导出自选股到桌面 获取自选股列表 return: list'
     fname = 'C:/Users/Administrator/Desktop/table.txt'
@@ -1601,32 +1042,18 @@ def DumpToRedis():
 
 
 
+datasource_fn = None  #数据函数 fn() return df
 class DataSources:
     """生成数据面板, 面板数据选取的例子panel.ix[0].ix['2014-1-2']
     panel.ix[0, '2014']会失败"""
     class datafrom:
         """enum"""
-        mysql = 1
+        mysql = 1   #保留
         livedata = 2
-        serial = 3
-        online = 4  #下载hd5 , 不支持分时
-    data_mode = datafrom.mysql   #默认值, 影响日线模式
-    @staticmethod
-    def _downloadfile(code, mode=1):
-        """mode : 1|0 hisdat|five"""
-        type_name = ['kline_five', 'kline']
-        fname_2 = 'datas/datasource/%s/%s.hd5'%(type_name[mode],code)
-        fname_2 = help.abspath_join(__file__, fname_2)
-        if not help.FileExist(fname_2):
-            url = 'http://autoxd.applinzi.com/getfile.php?code=%s&type=%d'%(code, mode)
-            fname = 'datas/datasource/%s/%s.hd5.gz'%(type_name[mode],code)
-            fname = help.abspath_join(__file__, fname)
-            print('get file...')
-            help.get_file(url, fname)
-            agl.uncompress_file(fname, fname_2)
-            help.FileDelete(fname)
-        df = pd.read_hdf(fname_2)
-        return df
+        serial = 3  #废弃
+        online = 4  #废弃
+        custom = 5  #自定义实现
+    data_mode = datafrom.livedata   #默认值, 影响日线模式
     @staticmethod
     def getHisdatPanl(codes, days):
         """k线的历史数据框面板
@@ -1638,17 +1065,14 @@ class DataSources:
         for code in codes:
             if DataSources.data_mode == DataSources.datafrom.mysql:
                 df = getHisdatDataFrameFromRedis(code, start_day, end_day)
-                #d = dict( (code, getHisdatDataFrameFromRedis(code, start_day, end_day)) 
-                            #for code in codes )
             else:
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getHisdat(code)
-                if DataSources.data_mode == DataSources.datafrom.online:
-                    df = DataSources._downloadfile(code, 1)
-
+                if DataSources.data_mode == DataSources.datafrom.custom:
+                    df = datasource_fn()
                 df = df.ix[start_day:end_day]
                 #复权
-                df_fenhong = createThs().createThsOneCode(code).get_fenhong()
+                df_fenhong = getFenHong(code)
                 df = calc_fuquan_use_fenhong(df, df_fenhong)
             df = df.sort_index()
             d[code] = df
@@ -1664,12 +1088,11 @@ class DataSources:
             else:		
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getFiveMinHisdat(code)
-                if DataSources.data_mode == DataSources.datafrom.online:
-                    df = DataSources._downloadfile(code, 0)
-
+                if DataSources.data_mode == DataSources.datafrom.custom:
+                    df = datasource_fn()
             df = df.ix[start_day:end_day]
             #复权
-            df_fenhong = createThs().createThsOneCode(code).get_fenhong()
+            df_fenhong = getFenHong(code)
             df = calc_fuquan_use_fenhong(df, df_fenhong)
             df = df.sort_index()
             d[code] = df
@@ -1678,6 +1101,7 @@ class DataSources:
     @staticmethod
     def getFenshiPanl(codes, days):
         """索引使用datetime, 如果是一天的，那么day1=day2"""
+        assert(False)   #废弃
         start_day , end_day = days
         d = {}
         for code in codes:
@@ -1690,30 +1114,6 @@ class DataSources:
         #这里产生了异常
         #panel = pd.Panel(d)
         return d
-    @staticmethod
-    def getCodes():
-        """return: list"""
-        def gen():
-            return [u'300059',u'300229',u'600630',u'002466', u'300033']
-        d = agl.SerialMgr.serialAuto(gen)
-        if d is None:
-            d = gen()
-        return d
-
-    @staticmethod   
-    def Test():
-        agl.tic()
-        codes = DataSources.getCodes()
-        days = ('2016-1-1', '2017-11-5')
-        DataSources.getHisdatPanl(codes, days)
-        print( DataSources.getHisdatPanl(codes, days).ix[codes[0]].head(2))
-        days = ('2017-5-15', '2017-11-5')
-        DataSources.getFiveMinHisdatPanl(codes, days)
-        print(DataSources.getFiveMinHisdatPanl(codes, days)[codes[0]].head(2))
-        days = ('2017-8-1', '2017-9-20')
-        DataSources.getFenshiPanl(codes, days)
-        print( DataSources.getFenshiPanl(codes, days)[codes[0]].head(2))
-        agl.toc()
 
 
 #

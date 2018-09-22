@@ -188,8 +188,13 @@ class MyDate:
     #----------------------------------------------------------------------
     def ToStr(self):
         """转换为字符串"""
-
-        s = str(self.d.year) + "-" + str(self.d.month) + "-" + str(self.d.day)
+        month = str(self.d.month)
+        if len(month) == 1:
+            month = '0'+month
+        day =  str(self.d.day)
+        if len(day) == 1:
+            day = '0'+day
+        s = str(self.d.year) + "-" + month + "-" + day
         return s
     #----------------------------------------------------------------------
     def echo(self):

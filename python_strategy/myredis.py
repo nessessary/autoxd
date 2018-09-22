@@ -16,7 +16,7 @@ g_redis = 0
 def createRedis():
     global g_redis
     if g_redis == 0:
-        g_redis = redis.Redis(host='localhost', port=6379, db=0) 
+        g_redis = redis.Redis(host='10.211.55.4', port=6379, db=0) 
     return g_redis
 def gen_keyname(fn):
     """根据函数堆栈来确定函数名称, 当使用内嵌函数时， 模块为父函数的名称
@@ -56,7 +56,7 @@ def delKeys(k):
     k: str 关键字"""
     r = createRedis()
     for key in r.keys():
-        if key.find(k)>=0:
+        if str(key).find(k)>=0:
             r.delete(key)
     
 def clear():

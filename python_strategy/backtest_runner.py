@@ -27,6 +27,7 @@ class BackTestPolicy:
         _ISRUNING = True
         self.policys = []
         self.mode = mode    #回测模式
+        self.panel_fiveminHisdat = None
     def Regist(self, policy):
         """添加策略"""
         self.policys.append(policy)
@@ -41,8 +42,9 @@ class BackTestPolicy:
             start_day = hisdat_start_day
         fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
         fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
-        self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(
-            self.codes, fenshi_days)   
+        if self.mode == self.enum.hisdat_five_mode:
+            self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(
+                self.codes, fenshi_days)   
 
         if self.mode == BackTestPolicy.enum.tick_mode:
             self.dict_fenshi = stock.DataSources.getFenshiPanl(self.codes, fenshi_days)
@@ -82,7 +84,8 @@ class BackTestPolicy:
                 if 0: policy = qjjy.Strategy(data)
                 #policy.get().account.Report()
                 #policy.Report(start_day, end_day)
-                self._Report(policy, start_day, end_day)
+                close = self.panel_hisdat[self.codes[0]].iloc[-1]['c']
+                self._Report(policy, start_day, end_day, close)
         #except Exception as e:
             #print str(e)
     def _IsKaiPan(self, code, day):
@@ -90,7 +93,7 @@ class BackTestPolicy:
         return day in self.panel_hisdat[code].index
     def _OnFirstRun(self, start_day):
         """允许策略在开始前有一个事件"""
-        ts = range(570,690) + range(779, 900+1)
+        ts = list(range(570,690)) + list(range(779, 900+1))
         for code in self.codes:
             for strategy in self.policys:
                 if self.mode == self.enum.tick_mode:
@@ -104,7 +107,7 @@ class BackTestPolicy:
                         strategy.OnFirstRun()                
     def _TravlTick(self, day):
         ts = [[570,690],[779,900]]
-        ts = range(570,690) + range(779, 900+1)
+        ts = list(range(570,690)) + list(range(779, 900+1))
         #按照分钟来遍历
         for code in self.codes:
             #print code
@@ -129,12 +132,6 @@ class BackTestPolicy:
                         strategy.Run()
     def _TravlDay(self, start_day, end_day):
         """遍历天， 开始时间， 结束时间"""
-        #为了只读一次数据库, 先把日线读了
-        for code in self.codes:
-            for strategy in self.policys:
-                #回测前先清除一下上次产生的cache
-                import strategy.qjjy
-                strategy.qjjy.Qjjy_accout.DelSerial(code)                
         start_day = help.MyDate(start_day)
         #start_day.Add(3)    #否则取昨收盘会失败
         end_day = help.MyDate(end_day)
@@ -144,8 +141,8 @@ class BackTestPolicy:
             self._TravlTick(day)
             if start_day.Next() > end_day.GetDate():
                 break
-    def _Report(self, policy, start_day, end_day):
-        policy._getAccount().Report(end_day, True)
+    def _Report(self, policy, start_day, end_day, last_close):
+        policy._getAccount().Report(end_day, last_close, True)
         #绘制图形
         if hasattr(policy, 'Report'):
             policy.Report()

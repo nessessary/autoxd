@@ -40,7 +40,7 @@ class Publish:
         self.explicit = explicit
         #获取模板html
         self.t_html = ''
-        f = open(os.path.dirname(__file__)+'\\test.html', 'r')
+        f = open(os.path.dirname(__file__)+'/test.html', 'r')
         self.t_html = f.read()
         f.close()
         

@@ -229,7 +229,7 @@ class LocalAcount(AccountDelegate):
     def CheDan(self, code, weituo_id):
         assert(False)
         
-    def Report(self, end_day, is_detail=False):
+    def Report(self, end_day, last_close, is_detail=False):
         import stock,agl
         #成交记录
         df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','买0卖1','证券代码']]
@@ -246,7 +246,7 @@ class LocalAcount(AccountDelegate):
         close = 0
         if len(self.df_stock)>0:
             code = self.df_stock.iloc[0]['证券代码']
-            close = stock.getHisdatDataFrameFromRedis(code,'',end_day).iloc[-1]['c']
+            close = last_close
             num = self.df_stock.iloc[0]['库存数量']
             shizhi += float(close)*int(num)
         print(self.df_zhijing.tail(n=1))
@@ -262,7 +262,7 @@ class LocalAcount(AccountDelegate):
         if len(self.df_ChengJiao)>0:
             num = self.df_ChengJiao.iloc[0]['成交数量']
             code = self.df_ChengJiao.iloc[0]['证券代码']
-            close = stock.getHisdatDataFrameFromRedis(code,'',end_day).iloc[-1]['c']
+            close = last_close
         shizhi = num*close
         print('如果持股不动 市值:%f,总资产:%f'%(shizhi, money+shizhi))
 

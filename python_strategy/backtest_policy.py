@@ -104,16 +104,18 @@ def MultiProcessRun(cpu, codes, fn_name, mod):
     multi.Map(cpu, mod, fn_name, codes)
     multi.Run()	  
 def test_strategy(codes, strategy_name, cbfn_setparams=None, mode=1, start_day='', end_day='',
-                  datasource_mode=stock.DataSources.datafrom.mysql):	
+                  datasource_mode=stock.DataSources.datafrom.livedata, datasource_fn=None):	
     """strategy_name: str 通过策略名称来构造策略
     cbfn_setparams: callback function 回调函数 fn(strategy) 用该函数来重新设置参数
     mode : enum/int tick=0/hisdat=1
     datasource_mode : 数据源引用地 stock.DataSource.data_mode
+    datasource_fn:  函数, data_mode需要使用自定义
     """
     import backtest_runner
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     stock.DataSources.data_mode = datasource_mode
+    stock.datasource_fn = datasource_fn
     for code in codes:
         print(code, stock.GetCodeName(code))
         p = backtest_runner.BackTestPolicy(mode)
