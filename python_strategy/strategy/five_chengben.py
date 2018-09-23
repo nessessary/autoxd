@@ -7,7 +7,6 @@
 
 """基于成本交易
 """
-assert(False)
 from __future__ import print_function
 import sys
 import qjjy
@@ -45,12 +44,16 @@ class Strategy_Boll_Pre(qjjy.Strategy):
         self.trade_num_ratio = 2    #二档对于一档的倍数
         self.trade_ratio = 0.1    #区间的比率
         self.lowerhold = 0.05	    #首仓使用的资金
-        self.trade_four=[-1, 0.1]
+        self.trade_four=[-0.5, 0.1]
         #self.canwei = [1,2,2,5]
         self.is_compensate = False   #仓位补偿
         #必须实现
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
+        if sys.version > '3':
+            for k, v in kwargs.items():
+                setattr(self, k, v)
+        else:
+            for k, v in kwargs.iteritems():
+                setattr(self, k, v)        
         self.min_sell_price = 1000
         self.max_buy_price = 0
         self.trade_status = self.enum.nothing
@@ -262,19 +265,14 @@ def Run(codes, task_id=0):
                                   #start_day='2017-12-2', end_day='2017-12-13', 
                                   mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode,
                                   )
-import unittest
-class mytest(unittest.TestCase):
-    def test_strategy(self):
-        main_run()
+
 def main_run():        
-        codes = stock.DataSources.getCodes()
-        cpu_num = 5
-        codes = stock.get_codes(stock.myenum.randn, cpu_num)
-        agl.startDebug()
-        if agl.IsDebug():
-            codes = [jx.KYWL]
-        exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
+    cpu_num = 5
+    codes = stock.get_codes(stock.myenum.randn, cpu_num)
+    agl.startDebug()
+    if agl.IsDebug():
+        codes = [jx.KYWL]
+    exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
-    #unittest.main()	    
     main_run()

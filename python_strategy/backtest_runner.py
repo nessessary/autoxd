@@ -42,7 +42,7 @@ class BackTestPolicy:
             start_day = hisdat_start_day
         fenshi_start_day = help.MyDate.s_Dec(start_day, -5)
         fenshi_days = (fenshi_start_day, help.MyDate.s_Dec(end_day, 1))
-        if self.mode == self.enum.hisdat_five_mode:
+        if self.mode & self.enum.hisdat_five_mode == self.enum.hisdat_five_mode:
             self.panel_fiveminHisdat = stock.DataSources.getFiveMinHisdatPanl(
                 self.codes, fenshi_days)   
 
@@ -170,7 +170,7 @@ class BackTestPolicy:
         df_flag = df_changwei[cols[0]].map(lambda x: x == '证券卖出' and -1 or 1)
         df_changwei[cols[1]] *= df_flag
         changwei = df_changwei[cols[1]].cumsum()
-        if self.mode == 1:
+        if self.mode == self.enum.hisdat_mode:
             df.index = df.index.map(lambda x: agl.datetime_to_date(x))
         bars.is_copy = False
         for i in range(len(df)):
@@ -181,7 +181,7 @@ class BackTestPolicy:
         #同步资金到bar
         df_zhijing.is_copy = False
         df_zhijing['changwei'] = changwei
-        if self.mode == 1:
+        if self.mode == self.enum.hisdat_mode:
             df_zhijing.index = df_zhijing.index.map(lambda x: agl.datetime_to_date(x))
         bars = bars.join(df_zhijing)
         bars = bars.fillna(method='pad')
@@ -199,10 +199,8 @@ class BackTestPolicy:
                             title=title)
         
         if policy.pl is not None:
-            if policy.pl.explicit:
-                #有成交才发布
-                if len(df)>0:
-                    policy.pl.publish()
+            #if policy.pl.explicit:
+                policy.pl.publish()
     def SetStockCodes(self, codes):
         """对这些codes进行回测"""
         self.codes = codes

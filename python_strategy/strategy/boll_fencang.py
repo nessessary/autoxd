@@ -168,7 +168,6 @@ def test_strategy():
     #agl.startDebug()
     if agl.IsDebug():
         codes = [jx.ZCKJ.b]
-        codes = ['600969']
     #backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 

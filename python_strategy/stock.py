@@ -153,7 +153,7 @@ class LiveData:
             return pd.DataFrame([])
         a = []
         n = (4+5*4)
-        for i in xrange(len(hisdat)/n):
+        for i in range(int(len(hisdat)/n)):
             e = list(struct.unpack("=ifffff", hisdat[n*i:n*(i+1)]))
             e[0] = StockTime.s_ToStrDate(e[0])
             a.append(e)
@@ -191,7 +191,7 @@ class LiveData:
             return pd.DataFrame([])
         a = []
         n = (7+4*7)
-        for i in xrange(len(hisdat)/n):
+        for i in range(int(len(hisdat)/n)):
             e = list(struct.unpack("=hbbbbbfffffff", hisdat[n*i:n*(i+1)]))
             #e[0] = stock.StockTime.s_ToStrDate(e[0])
             if e[1] == 0:   #tdx时间转换为真实时间
@@ -1047,7 +1047,7 @@ def DumpToRedis():
 
 
 
-datasource_fn = None  #数据函数 fn() return df
+datasource_fn = None  #数据函数 fn(code) return df
 class DataSources:
     """生成数据面板, 面板数据选取的例子panel.ix[0].ix['2014-1-2']
     panel.ix[0, '2014']会失败"""
@@ -1062,9 +1062,9 @@ class DataSources:
     @staticmethod
     def getHisdatPanl(codes, days):
         """k线的历史数据框面板
-        codes: [list]
-        days: [turple]
-        return: [pandas.panel]"""
+        codes: list
+        days: turple
+        return: pandas.panel"""
         start_day , end_day = days
         d = {}
         for code in codes:
