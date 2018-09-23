@@ -353,6 +353,7 @@ def Run(codes, task_id=0):
                                   mode=BackTestPolicy.enum.tick_mode
                                   )
 def test_strategy():
+    assert(False & '已不支持')
     codes = stock.DataSources.getCodes()
     cpu_num = 5
     agl.startDebug()
