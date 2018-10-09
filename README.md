@@ -1,8 +1,12 @@
-autoxd v0.3 回测框架
+autoxd v0.4 回测框架
 ------
 
 回測使用的账户为一个本地模拟账户(见account.py)， 接口和实盘接口一致， <br>
 这个回测框架主要关注具体的交易细节， 适合T+0操作
+
+- 变更
+  v0.4 - 大幅优化速度
+  v0.3 - python3支持
 
 - 例子
 	python boll_fencang.py<br>

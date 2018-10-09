@@ -30,6 +30,7 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                             #跌幅， 当前资金占比 
         self.base_four = [-0.4, 0.3]		#第一次买卖的技术指标阀值
         self.first_price = 0
+        self.calc_tech = {}
         if sys.version > '3':
             for k, v in kwargs.items():
                 setattr(self, k, v)
@@ -46,19 +47,43 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                 self.fenchang[i][2] = 1
                 return r2
         return 0
+    def OnCalcTech(self, df_hisdat, df_five, df_fenshi):
+        """df : kline
+        后面两个参数可能为None
+        """
+        closes = df_hisdat['c']
+        self.calc_tech['four'] = stock.FOUR(closes)
+        self.calc_tech['boll'] = stock.TDX_BOLL2(closes)
+        self.calc_tech['adx'] = stock.TDX_ADX(df_hisdat['h'], df_hisdat['l'], closes)
+    def getCalcTech(self, name, l):
+        v = self.calc_tech[name]
+        if type(v) == tuple:
+            v = list(v)
+            for i, tuple_v in enumerate(v):
+                v[i] = v[i][:l]
+        else:
+            v = v[:l]
+        return v
     def Run(self):
         account = self._getAccount()
         code = self.data.get_code()
         hisdat = self.data.get_hisdat(code)
-        hisdat = hisdat.dropna()
-        closes = hisdat['c'].dropna()
+        #hisdat = hisdat.dropna()
+        #closes = hisdat['c'].dropna()
+        closes = hisdat['c']
         if len(closes)<60:
             return
 
+        index = len(closes)
         #计算技术指标
-        four = stock.FOUR(closes)
-        boll_up, boll_mid, boll_low ,boll_w= stock.TDX_BOLL2(closes)
-        adx = stock.TDX_ADX(hisdat['h'], hisdat['l'], closes)
+        #four = stock.FOUR(closes)
+        four = self.getCalcTech('four', index)
+        #boll_up, boll_mid, boll_low ,boll_w= stock.TDX_BOLL2(closes)
+        boll_up, boll_mid, boll_low ,boll_w = self.getCalcTech('boll', index)
+        #assert(agl.array_equal(boll_up, boll_up2))
+        #adx = stock.TDX_ADX(hisdat['h'], hisdat['l'], closes)
+        adx = self.getCalcTech('adx', index)
+        #assert(agl.array_equal(adx, adx2))
         #收集使用过的技术指标，为了报告使用
         self.tech = closes, four, boll_up, boll_mid, boll_low ,boll_w, adx
 
@@ -165,7 +190,7 @@ def test_strategy():
     codes = stock.get_codes(flag=myenum.randn, n=4)
     cpu_num = 2
     #codes = ['300434']
-    #agl.startDebug()
+    agl.startDebug()
     if agl.IsDebug():
         codes = [jx.ZCKJ.b]
     #backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
@@ -173,3 +198,5 @@ def test_strategy():
 
 if __name__ == "__main__":
     test_strategy()
+    #import cProfile
+    #cProfile.run('test_strategy()', sort="cumulative")

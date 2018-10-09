@@ -169,6 +169,8 @@ def GetSortedArrayIndexs(a, num=-1):
         b.append(a[i][0])
     return b
 
+def array_equal(a1,a2):
+    return (a1[np.isnan(a1)==False] == a2[np.isnan(a2)==False]).all()
 def array_reverse(a):
     """数组倒序"""
     return np.fliplr([a])[0]

@@ -12,6 +12,7 @@ from abc import ABCMeta, abstractmethod
 """本地模拟A股卷商资金账户 v1.0 2016-5-15
 v1.1	2017-10-30
 v1.2    2017-11-5   添加股票列表的盈亏比率计算
+v2.0    2018-10-9   优化速度
 """
 
 class AccountDelegate(object):
@@ -101,28 +102,27 @@ class LocalAcount(AccountDelegate):
         row['状态说明'] = '已成'
         self.df_ChengJiao.loc[len(self.df_ChengJiao)] = row
         self.df_ChengJiao.index = pd.DatetimeIndex(list(self.df_ChengJiao.index[:-1])+[date])
-    def _updateStockChengBen(self, code, price, num, bSell):
+    def _updateStockChengBen(self, code, price, num, bSell,index):
         """更新买入成本"""
         #更新平均成本
-        org_num = int(self.df_stock['库存数量'][self.df_stock['证券代码'] == code].tolist()[0])
-        org_price = float(self.df_stock['买入均价'][self.df_stock['证券代码'] == code].tolist()[0])
-        buy_num = int(self.df_stock['买入数量'][self.df_stock['证券代码']==code].loc[0])
-        buy_avg_price = float(self.df_stock['买入均价'][self.df_stock['证券代码']==code].loc[0])
+        org_num = int(self.df_stock.iloc[index]['库存数量'])
+        buy_num = int(self.df_stock.iloc[index]['买入均价'])
+        buy_avg_price = float(self.df_stock.iloc[index]['买入均价'])
         num *= bSell and -1 or 1
         if int(bSell) == 0:
             new_price = (buy_num*buy_avg_price+price*num)/(buy_num+num)
             self.df_stock['买入均价'][self.df_stock['证券代码'] == code] = new_price
         #需要加上手续费作为成本
         if org_num+num > 0:
-            new_price = (org_num*org_price+price*num + price*abs(num)*sxf())/(org_num+num)
+            new_price = (org_num*buy_avg_price+price*num + price*abs(num)*sxf())/(org_num+num)
             yinkui_ratio = float('%.2f'%((price - new_price)/new_price*100))
         else:
             new_price = 0
             yinkui_ratio = 0
-        self.df_stock['参考成本价'][self.df_stock['证券代码'] == code] = new_price
-        self.df_stock['参考盈亏成本价'][self.df_stock['证券代码'] == code] = new_price
-        self.df_stock['盈亏比例(%)'][self.df_stock['证券代码'] == code] = yinkui_ratio
-        self.df_stock['当前价'][self.df_stock['证券代码'] == code] = price
+        self.df_stock.at[index, '参考成本价'] = new_price
+        self.df_stock.at[index, '参考盈亏成本价'] = new_price
+        self.df_stock.at[index, '盈亏比例(%)'] = yinkui_ratio
+        self.df_stock.at[index, '当前价'] = price
     def _insertZhiJing(self,code, price, num, bSell, date):
         """添加资金记录, 余额|可用|参考市值|资产|盈亏
         余额|盈亏 暂时没有使用
@@ -167,11 +167,11 @@ class LocalAcount(AccountDelegate):
         if (self.df_stock['证券代码'] == code).any():
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")	
-                self._updateStockChengBen(code, price, num, bSell)
+                index = self.df_stock[self.df_stock['证券代码'] == code].index[0]
+                self._updateStockChengBen(code, price, num, bSell, index)
                 #更新股票列表
-                #self.df_stock['证券数量'][self.df_stock['证券代码'] == code] += num
-                self.df_stock['库存数量'][self.df_stock['证券代码'] == code] += num
-                self.df_stock['买入数量'][self.df_stock['证券代码'] == code] += num
+                self.df_stock.at[index, '库存数量'] = self.df_stock.iloc[index]['库存数量'] + num
+                self.df_stock.at[index, '买入数量'] = self.df_stock.iloc[index]['买入数量'] + num
         else:
             #第一次买入
             self.df_stock.loc[len(self.df_stock)] = row
@@ -189,10 +189,11 @@ class LocalAcount(AccountDelegate):
             self._insertChengJiaoRecorde(code, price, num, date, 1)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")	
-                self._updateStockChengBen(code, price, num, bSell)
+                index = self.df_stock[self.df_stock['证券代码'] == code].index[0]
+                self._updateStockChengBen(code, price, num, bSell,index)
                 #更新数量
-                self.df_stock['可卖数量'][self.df_stock['证券代码'] == code] -= num
-                self.df_stock['库存数量'][self.df_stock['证券代码'] == code] -= num
+                self.df_stock.at[index, '可卖数量'] = self.df_stock.iloc[index]['可卖数量'] - num
+                self.df_stock.at[index, '库存数量'] = self.df_stock.iloc[index]['库存数量'] - num
                 self._insertZhiJing(code, price, num, bSell, date)
                 #如果卖空了，删除记录
                 if int(self.df_stock['库存数量'][self.df_stock['证券代码'] == code]) == 0:

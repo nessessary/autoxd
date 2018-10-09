@@ -104,7 +104,11 @@ class BackTestPolicy:
                 if self.mode & self.enum.hisdat_mode == self.enum.hisdat_mode:
                     if hasattr(strategy, 'OnFirstRun'):
                         strategy.data.set_code(code, start_day, ts[0])
-                        strategy.OnFirstRun()                
+                        strategy.OnFirstRun()         
+                if hasattr(strategy, 'OnCalcTech'):
+                    df_five = self.panel_fiveminHisdat[code] if self.panel_fiveminHisdat is not None else None
+                    df_fenshi = self.dict_fenshi[code] if self.dict_fenshi is not None else None
+                    strategy.OnCalcTech(self.panel_hisdat[code], df_five, df_fenshi)
     def _TravlTick(self, day):
         ts = [[570,690],[779,900]]
         ts = list(range(570,690)) + list(range(779, 900+1))
