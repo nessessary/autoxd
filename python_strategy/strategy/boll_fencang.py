@@ -17,6 +17,7 @@ agl.tic()
 
 class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
     """基于日线的boll分仓, 基本指标使用日线Boll以及日线Four"""
+      
     def setParams(self, *args, **kwargs):
         self.base_num =	100		#第一次买卖的数量    
         self.fenchang = [[-0.05,0.05, 0],
@@ -30,7 +31,6 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                             #跌幅， 当前资金占比 
         self.base_four = [-0.4, 0.3]		#第一次买卖的技术指标阀值
         self.first_price = 0
-        self.calc_tech = {}
         if sys.version > '3':
             for k, v in kwargs.items():
                 setattr(self, k, v)

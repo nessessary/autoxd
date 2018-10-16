@@ -9,7 +9,7 @@
 """
 from __future__ import print_function
 import sys
-import qjjy
+import boll_fencang
 import pd_help
 import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so, pattern_recognition as pr
 if sys.version > '3':
@@ -25,7 +25,7 @@ import numpy as np
 import talib
 from pypublish import publish
 
-class Strategy_Boll_Pre(qjjy.Strategy):
+class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
     """boll分仓"""
     class enum:
         """保存上一次的交易状态"""
@@ -72,6 +72,12 @@ class Strategy_Boll_Pre(qjjy.Strategy):
         account_mgr = ac.AccountMgr(account, price, code)
         num = ac.ShouShu(account_mgr.total_money()*self.lowerhold/price)
         #account._buy(code, price, num, self.getCurTime())    
+    def OnCalcTech(self, df_hisdat, df_five_hisdat, df_fenshi):
+        self.calc_tech['four'] = stock.FOUR(df_hisdat['c'])
+        self.calc_tech['boll'] = stock.TDX_BOLL(df_five_hisdat['c'])
+        highs, lows, closes = df_five_hisdat['h'], df_five_hisdat['l'], df_five_hisdat['c']
+        self.calc_tech['adx'] = stock.TDX_ADX(highs, lows, closes)        
+
     def Run(self):
         """
         """
@@ -96,17 +102,15 @@ class Strategy_Boll_Pre(qjjy.Strategy):
         account_mgr = ac.AccountMgr(account, price, code)
         trade_num = ac.ShouShu(account_mgr.init_money()*self.trade_num_use_money_percent/price)
 
-        # 信号计算
-        four = stock.FOUR(df_hisdat['c'])[-1]
-        upper, middle, lower = stock.TDX_BOLL(df_five_hisdat['c'])
-        highs, lows, closes = df_five_hisdat['h'], df_five_hisdat['l'], df_five_hisdat['c']
-        adx = stock.TDX_ADX(highs, lows, closes)
-        adx = adx[-1]
+        # 指标计算
+        index = len(df_five_hisdat)
+        four = self.getCalcTech('four', len(closes))[-1]
+        upper, middle, lower = self.getCalcTech('boll', index)
+        adx = self.getCalcTech('adx', index)[-1]
         self._log('boll : %.2f,%.2f,%.2f'%(upper[-1], middle[-1],lower[-1]))
         boll_w = abs(upper[-1]-lower[-1])/middle[-1]*100
-        zz_up = stock.ZigZag(upper[-60:], percent=.1)
-        zz_low = stock.ZigZag(lower[-60:], percent=0.1)
-
+        #zz_up = stock.ZigZag(upper[-60:], percent=.1)
+        #zz_low = stock.ZigZag(lower[-60:], percent=0.1)
         boll_poss = [
             upper[-1],
          (upper[-1] - middle[-1])/2+middle[-1],

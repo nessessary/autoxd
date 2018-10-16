@@ -42,6 +42,7 @@ class Strategy:
         #使用系统初始化的交易账户, 不使用该句将不能调用交易账号
         self._setAccount(live_policy.enum.account_tc,'tdx', '')
         self._recordClassMember()
+        self.calc_tech = {}
     def _setAccount(self, account_type, user, pwd):
         #注意， 现在只能支持一个账户
         if self.data != None:
