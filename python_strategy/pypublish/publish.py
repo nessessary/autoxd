@@ -6,7 +6,7 @@
 
 import numpy as np
 import pylab as pl
-import sys,os,agl
+import sys,os,agl,codecs
 
 """模仿matlab的publish, 不用怀疑，只是最简单的模拟
 在当前工作目录中生成一个html\name\name.html
@@ -27,6 +27,13 @@ class Publish:
         explicit: 弹出页面是否使用显式调用
         is_run_shell: bool 是否跑生成后的start
         """
+        #os_platform
+        self.platform_id = 2
+        if sys.platform == 'win32':
+            self.platform_id = 0
+        if sys.platform == 'darwin':
+            self.platform_id = 1
+            
         info = publishinfo()
         name = os.path.basename(info[0])
         name = name.replace('.py','')
@@ -48,12 +55,15 @@ class Publish:
         
         self.name = name 
         #当前目录
-        self.path = os.getcwd() + "\\html\\"
+        self.path = os.getcwd() + "/html/"
         if not os.path.isdir("html"):
             os.mkdir("html")
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
-        self.logfile = open(self.redirect_fname, "w")
+        if self.platform_id == 0:
+            self.logfile = open(self.redirect_fname, "w")
+        else:
+            self.logfile = codecs.open(self.redirect_fname,'w', encoding='utf_16')
         self.oldstdout = sys.stdout
         sys.stdout = self.logfile
         
@@ -74,7 +84,10 @@ class Publish:
         
         self.logfile.close()
         sys.stdout = self.oldstdout
-        f = open(self.redirect_fname, "r")
+        if self.platform_id == 0:
+            f = open(self.redirect_fname, "r")
+        else:
+            f = codecs.open(self.redirect_fname, 'r', encoding='utf_16')
         output = f.read()
         f.close()
         
@@ -88,13 +101,18 @@ class Publish:
         
         #写入html
         fname = self.path+self.name+str(os.getpid())+'.html'
-        f = open(fname,'w')
+        if self.platform_id == 0:
+            f = open(fname,'w')
+        else:
+            f = codecs.open(fname, 'w', encoding='utf_16')
         f.write(self.t_html)
         f.close()
         
         #打开html
         if self.is_run_shell:
-            command = 'start ' + fname
+            cmds = ['start', 'open', 'x-www-browser']
+            command = cmds[self.platform_id]
+            command += ' ' + fname
             os.system(command)
         
     
@@ -196,6 +214,7 @@ def example():
     #不发布把该行注销
     pl = Publish()
     print('test python html publish.')
+    print(u'测试')
     for i in range(2):
         pl.figure(i)
         pl.plot(np.arange(0,10*(i+1)))

@@ -39,8 +39,12 @@ mpl.rcParams['font.serif'] = [FontStyle.YAHEI]
 #plt.plot(x,y)
 #plt.show()
 def getFont():
-    return fm.FontProperties(fname="c:/windows/fonts/simsun.ttc")
-
+    if sys.platform == 'win32':
+        return fm.FontProperties(fname="c:/windows/fonts/simsun.ttc")
+    elif sys.platform == 'darwin':
+        return fm.FontProperties(fname="/Library/Fonts/华文黑体.ttf")
+    else:
+        return fm.FontProperties(fname="")  #如果您找到了可用的字体文件， 别忘了通知作者， 写issue
 
 #
 #----------------------------------------------------------------------
