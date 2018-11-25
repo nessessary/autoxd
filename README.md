@@ -30,8 +30,7 @@ autoxd v0.4 ªÿ≤‚øÚº‹
 	python five_chengben.py
 ```
 
-   <br>
-   ![image](https://github.com/nessessary/autoxd/raw/master/pics/five.png)
+   <img src="https://github.com/nessessary/autoxd/raw/master/pics/five.png"></img>
 
 
 - “¿¿µ
