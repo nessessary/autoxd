@@ -15,7 +15,7 @@ autoxd v0.4 回测框架
   * v0.4 大幅优化速度
   * v0.3 python3支持
 
-- 例子
+- 日线例子
 
 ```
 	python boll_fencang.py
@@ -24,12 +24,14 @@ autoxd v0.4 回测框架
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)
 
+- 5分钟例子
 
 ```
 	python five_chengben.py
 ```
 
-	![image](https://github.com/nessessary/autoxd/raw/master/pics/five.png)
+   <br>
+   ![image](https://github.com/nessessary/autoxd/raw/master/pics/five.png)
 
 
 - 依赖
