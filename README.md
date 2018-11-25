@@ -24,6 +24,14 @@ autoxd v0.4 回测框架
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)
 
+
+```
+	python five_chengben.py
+```
+
+	![image](https://github.com/nessessary/autoxd/raw/master/pics/five.png)
+
+
 - 依赖
 1. redis
 	window可以去[网盘](https://pan.baidu.com/s/1pMoB83h) 下载一个, 调用里面的bat即可安装
