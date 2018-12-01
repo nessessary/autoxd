@@ -140,7 +140,12 @@ class Publish:
         pl.bar(*args, **kwargs)
     def barh(self, *args, **kwargs):
         pl.barh(*args, **kwargs)
-
+    def imshow(self, X, cmap=None, norm=None, aspect=None, interpolation=None, alpha=None,
+           vmin=None, vmax=None, origin=None, extent=None, shape=None,
+           filternorm=1, filterrad=4.0, imlim=None, resample=None, url=None,
+           hold=None, data=None, **kwargs):
+        pl.imshow(X, cmap, norm, aspect, interpolation, alpha, vmin, vmax, origin, extent, shape, filternorm, filterrad,
+                  imlim, resample, url, hold, data, **kwargs)
     def scatter(self, x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None,
                 vmax=None, alpha=None, linewidths=None, verts=None, hold=None,
                 **kwargs):
@@ -209,6 +214,16 @@ class Publish:
         
     def show(self):
         self.save()
+    
+    def RePublish(self, report):
+        """按表格发布
+        report_content: list
+        """
+        import pandas as pd
+        from policy_report import df_to_html_table
+        df = pd.DataFrame(report)
+        self.reset(df_to_html_table(df))
+        self.publish()
         
 def example():
     #不发布把该行注销

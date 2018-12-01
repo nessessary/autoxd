@@ -1074,7 +1074,7 @@ class DataSources:
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
-                    df = datasource_fn(code)
+                    df = datasource_fn(code, 'd')
                 df = df.ix[start_day:end_day]
                 #复权
                 df_fenhong = getFenHong(code)
@@ -1094,7 +1094,7 @@ class DataSources:
                 if DataSources.data_mode == DataSources.datafrom.livedata:
                     df = LiveData().getFiveMinHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
-                    df = datasource_fn(code)
+                    df = datasource_fn(code, '5')
             df = df.ix[start_day:end_day]
             #复权
             df_fenhong = getFenHong(code)

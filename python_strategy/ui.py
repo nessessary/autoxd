@@ -152,6 +152,8 @@ def _DrawVLine(pl, i, ts):
     """画一个短竖线, i在ts中的索引"""
     i = int(i)
     pl.plot([i,i], [ts[i]-ts[i]*0.1, ts[i]+ts[i]*0.1], 'r')
+def DrawHLine(pl, v, n, clr='r'):
+    pl.plot([0, n], [v, v], clr)
 def DrawClosesAndVolumes(pl, closes, volumes, zz=None, avg=None, trade_index=None,\
                          title=None, closes_dp=None, closes_bankuai=None):
     """画closes，非df模式，

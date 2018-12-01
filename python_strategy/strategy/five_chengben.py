@@ -22,6 +22,7 @@ import datetime
 import pandas as pd
 import numpy as np
 import talib
+from stock import DataSources
 from pypublish import publish
 
 class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
@@ -244,6 +245,17 @@ class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
 def Run(codes, task_id=0):
     #agl.LOG('sdf中')
     #codes = ['300033']
+    def fnSample(code, dtype='5'):
+        import warp_pytdx as tdx
+        if dtype=='5':
+            df = tdx.getFive(code)
+            df = df.sort_index()
+            return df
+        if dtype=='d':
+            df = tdx.getHisdat(code)
+            df = df.sort_index()
+            return df
+    
     def setParams(s):
         if 0: s = Strategy_Boll
         s.setParams(
@@ -253,6 +265,8 @@ def Run(codes, task_id=0):
                                   start_day='2018-11-1', end_day='',
                                   #start_day='2017-12-2', end_day='2017-12-13', 
                                   mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode,
+                                  datasource_mode=DataSources.datafrom.custom,
+                                  datasource_fn=fnSample
                                   )
 
 def main_run():        
@@ -260,7 +274,7 @@ def main_run():
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
     agl.startDebug()
     if agl.IsDebug():
-        codes = [jx.HYGY]
+        codes = [jx.ZCKJ.b]
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":

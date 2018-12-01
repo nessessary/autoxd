@@ -42,11 +42,10 @@ autoxd v0.4 回测框架
 
 - 使用
 
-1. 数据源,使用下面两种方式加载; 注意,已使用ths分红表进行了前复权<br>
-   1) 使用[客户端](https://pan.baidu.com/s/1pMoB83h) 下载数据, 编制config.ini填写需要下载的代码,
-      下载后放置到redis里, 见datasource_mode=stock.DataSources.datafrom.livedata
-   2) 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
+1. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
+      使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
+      5分钟线使用的是pytdx的例子
 
 2. 调用
 ```python
