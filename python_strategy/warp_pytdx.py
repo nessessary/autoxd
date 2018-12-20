@@ -1,9 +1,13 @@
 #coding:utf8
 
 """pytdx test"""
-
+from __future__ import print_function
+import sys
 from pytdx.hq import TdxHq_API as tdx
-import stock_pinyin as jx
+if sys.version > '3':
+    import stock_pinyin3 as jx
+else:
+    import stock_pinyin as jx
 import stock
 import pandas as pd
 
@@ -12,7 +16,10 @@ def create():
     global g_api;
     if g_api == None:
         g_api = tdx()
-        g_api.connect('119.147.212.81', 7709)
+        b = g_api.connect('119.147.212.81', 7709)
+        if not b:
+            #换一个ip， list见通达信目录的connect.cfg
+            g_api.connect('202.130.235.189', 7709)
     return g_api
 
 def getFive(code):
@@ -34,7 +41,7 @@ def getHisdat(code):
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
 def test():
-    print getFive(jx.HWWH)
+    print(getFive(jx.HWWH))
     
 #test()
 

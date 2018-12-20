@@ -12,11 +12,16 @@ import redis, pickle
 
 """保存对象至redis"""
 
-g_redis = 0
+g_redis = None
 def createRedis():
     global g_redis
-    if g_redis == 0:
-        g_redis = redis.Redis(host='localhost', port=6379, db=0) 
+    if g_redis is None:
+        try:
+            g_redis = redis.Redis(host='localhost', port=6379, db=0) 
+            g_redis.info()
+        except:
+            #把myredis.com写入hosts
+            g_redis = redis.Redis(host='myredis.com', port=6379, db=0) 
     return g_redis
 def gen_keyname(fn):
     """根据函数堆栈来确定函数名称, 当使用内嵌函数时， 模块为父函数的名称
@@ -40,7 +45,6 @@ def get_obj(key):
             o = pickle.loads(o)
     except:
         return None
-        o = _get_obj_at_2(key)
     return o
 def get_Bin(key):
     r = createRedis()
@@ -113,34 +117,6 @@ class enum:
     KEY_HISDAT_NO_FUQUAN = 'stock.hisdat.nofuquan'  #保存未复权的hisdat
         
 
-#因为2和3的pickle流不通用， 虽然代码可以使用一份， 但用2导出到redis的流在3里不认， 两者自行使用没有问题
-#使用json作为中间流来处理df的存储
-def _get_obj_at_2(key):
-    """在3中获取2序列化到redis的值"""
-    #先使用2获取pickle流
-    exe2_path = "C:\\ProgramData\\Anaconda2\\python.exe"
-    if not os.path.exists(exe2_path):
-        exe2_path = "c:\\anaconda2\\python.exe"
-    cmd = exe2_path + ' -c "import myredis;myredis._convert_obj_to_json_for_3(\'' + key + '\')"'
-    key += '.json'
-    if  key in getKeys():
-        df = get_Bin(key)
-        return df
-    import subprocess
-    p = subprocess.Popen(cmd)
-    p.wait()
-    #print(cmd)
-    s = get_Bin(key)
-    df = pd.read_json(s)
-    return df
-def _convert_obj_to_json_for_3(key):
-    """从redis中取出并转化为json再次存入, 并修改key为key.json"""
-    df = get_obj(key)
-    if 0: df = pd.DataFrame()
-    s = df.to_json()
-    key = key + '.json'
-    set_str(key, s)
-
 def dump_redis(host, key='*'):
     """从目标redis倾倒数据到当前redis"""
     db_host = redis.Redis(host=host, port=6379, db=0)
@@ -163,10 +139,6 @@ class mytest(unittest.TestCase):
     def test_obj2(self):
         keys = getKeys()
         print(get_obj(keys[2]))
-    def _test_convert_at_3(self):
-        code = '300033'
-        df = _get_obj_at_2(code)
-        print(df)
     def _test_dump(self):
         dump_redis(host='192.168.3.4', key='')
     
