@@ -38,14 +38,22 @@ autoxd v0.4 回测框架
 	window可以去[网盘](https://pan.baidu.com/s/1pMoB83h) 下载一个, 调用里面的bat即可安装
 2. 支持py2及py3 windows; macos支持py3， linux未知
 3. 推荐使用wingide， 可直接加载wpr项目文件
-4. 用pip install -r requirement.txt安装相关依赖包
+4. 用pip install -r requirements.txt安装相关依赖包
+
+- 安装
+  * 安装Anaconda
+  * 下载autoxd, git clone https://github.com/nessessary/autoxd.git
+  * 执行pip install -r requirements.txt
+  * 如遇到不能用pip安装的包， 请执行搜索安装，估计只有一个pyH需要手动安装的
+  * 安装redis
+  * 跑python_strategy/strategy/five_changben.py, 策略都放在该目录
 
 - 使用
 
 1. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
-      使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
+      * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
-      5分钟线使用的是pytdx的例子
+      * 5分钟线使用的是pytdx的例子
 
 2. 调用
 ```python

@@ -24,7 +24,7 @@ from PIL import Image
 from sklearn.utils import shuffle
 import traceback
 import pprint
-
+from sklearn.cluster import KMeans
 def getFunctionName():
     """得到当前调用的函数名称"""
     stack = traceback.extract_stack()
@@ -171,6 +171,15 @@ def GetSortedArrayIndexs(a, num=-1):
 
 def array_equal(a1,a2):
     return (a1[np.isnan(a1)==False] == a2[np.isnan(a2)==False]).all()
+def array_val_to_pos(a, v):
+    """由值取下标 
+    agl.array_val_to_pos(np.array([1,2,3]),3)
+    =>2
+    return: int 数组下标"""
+    assert(type(a) == np.ndarray)
+    pos = np.where(a == v)
+    return pos[0][0]
+    
 def array_reverse(a):
     """数组倒序"""
     return np.fliplr([a])[0]
@@ -860,6 +869,9 @@ def df_concat(df1, l):
 def df_remove_col(df, cols):
     """df删除列 return: df"""
     return df.drop(cols, axis=1)
+def df_allow_copy(df):
+    df.is_copy=False
+    return df
 def df_get_str(feild, is_utf=True):
     """把df某个feild转换为字符串
     feild : 从df中取出的字符串字段
@@ -971,7 +983,11 @@ def df_get_pre_date(df, date):
                 break
     return d
 def where(con, a, b):
-    """条件选择， con条件， 同c的con ? a : b"""
+    """条件选择， con条件， 同c的con ? a : b
+    (1) variable = a if exper else b
+    (2) variable = (exper and [b] or [c])[0]
+    (3) variable = exper and b or c
+    """
     if con is None:
         return b
     if con:
@@ -1021,6 +1037,47 @@ def ClustList(n_clusters, X):
     l = k.cluster_centers_[:,1]
     l.sort()
     return l
+
+def ClustList2(n, X):
+    """获取聚类后的最大结果
+    return: [(percent, v),...], result_v
+    """
+    from sklearn.cluster import KMeans
+    results_n = np.zeros((len(X),2))
+    results_n[:,0] = 1
+    results_n[:,1] = np.array(X)
+    #用kmeans聚类
+    k = KMeans(n_clusters=n)
+    k.fit(results_n)    
+    result = k.cluster_centers_
+    total = len(X)
+    for label in np.unique(k.labels_):
+        c = float(len(k.labels_[k.labels_== label]))/total
+        #print(c)
+        result[label, 0] = c
+    #按百分比排序，大的在前面
+    #print(result)
+    max_index = GetSortedArrayIndexs(result[:,0])[0]
+    #result.sort()
+    #print(result[max_index, 1])
+    return result, result[max_index, 1]
+    
+def ClustMatrix(n, m):
+    """n: int 聚类数量
+    m: np.ndarray 二维
+    return: [(percent, v),...], result_v
+    """
+    #用kmeans聚类
+    k = KMeans(n_clusters=n)
+    k.fit(m)    
+    result = k.cluster_centers_
+    total = len(X)
+    for label in np.unique(k.labels_):
+        c = float(len(k.labels_[k.labels_== label]))/total
+        result[label, 0] = c
+    #按百分比排序，大的在前面
+    max_index = GetSortedArrayIndexs(result[:,0])[0]
+    return result, result[max_index, 1]
 
 def MD5(s):
     import hashlib   

@@ -23,10 +23,14 @@ def createRedis():
             #把myredis.com写入hosts
             g_redis = redis.Redis(host='myredis.com', port=6379, db=0) 
     return g_redis
-def gen_keyname(fn):
+def gen_keyname(fname, fn):
     """根据函数堆栈来确定函数名称, 当使用内嵌函数时， 模块为父函数的名称
+    fname: __file__
+    fn: ptr fn指针
     return: str 模块名.函数名"""
-    return fn.__module__ + '.' + fn.__name__
+    fname = os.path.basename(fname)
+    fname = fname.split('.')[0]
+    return fname + '.' + fn.__name__
 
 def set_str(key, s):
     r = createRedis()

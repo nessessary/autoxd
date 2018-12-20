@@ -19,6 +19,7 @@ import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
 import grabThsWebStockInfo
+import warp_pytdx as tdx
 from pypublish import publish
 #pl = publish.Publish()
 
@@ -1256,6 +1257,12 @@ def TDX_BOLL2(closes):
     df = df.fillna(value=0)
     w = abs(df['upper']-df['lower'])/df['mid']*100
     return upper, mid, lower,w
+def TDX_BOLL_df(df):
+    upper, mid, lower = TDX_BOLL(df['c'])
+    df['boll_up'] = upper
+    df['boll_mid'] = mid
+    df['boll_lower'] = lower
+    return df
 #波动率指标
 def ATR(highs, lows, closes):
     """真实波幅"""
