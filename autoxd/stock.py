@@ -7,7 +7,7 @@ from __future__ import print_function
 import os,sys
 import help,agl,ui,myenum,myredis
 if sys.version > '3':
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
 else:
     import stock_pinyin as jx
 import pyprind

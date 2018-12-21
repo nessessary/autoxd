@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import stock, ui
 if sys.version > '3':
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
 else:
     import stock_pinyin as jx
 import pylab as pl

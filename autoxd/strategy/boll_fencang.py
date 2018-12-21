@@ -7,7 +7,7 @@ import pandas as pd, pylab as pl
 import boll_pramid
 import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
 if sys.version > '3':
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
 else:
     import stock_pinyin as jx
 import os,warnings

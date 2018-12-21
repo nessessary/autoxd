@@ -23,23 +23,23 @@ def df_to_html_table(df, color='white', df_img_col_indexs=[-1]):
     page = pyh.PyH('report')
     mytab = page << pyh.table()
     for i in range(len(df)):
-	mytr = mytab << pyh.tr(style="background-color:%s"%(color))
-	v = df.iloc[i][:np.min(df_img_col_indexs)]
-	if v.name == 0 and len(v.tolist()) == 1:
-	    v = v[0]
-	s = str(v)
-	if not agl.is_utf8(s):	#命令行时会碰到需要转码的情况
-	    try:
-		s = s.decode('gb2312').encode('utf8')
-	    except:
-		pass    
-	mytr << pyh.td('<pre>%s</pre>' % (s))	
-	for j in df_img_col_indexs:
-	    mytr << pyh.td('Row %i, column <img src="%s"/>' % (i, os.path.basename(df.iloc[i][df.columns[j]])))	
+        mytr = mytab << pyh.tr(style="background-color:%s"%(color))
+        v = df.iloc[i][:np.min(df_img_col_indexs)]
+        if v.name == 0 and len(v.tolist()) == 1:
+            v = v[0]
+        s = str(v)
+        if not agl.is_utf8(s):	#命令行时会碰到需要转码的情况
+            try:
+                s = s.decode('gb2312').encode('utf8')
+            except:
+                pass    
+        mytr << pyh.td('<pre>%s</pre>' % (s))	
+        for j in df_img_col_indexs:
+            mytr << pyh.td('Row %i, column <img src="%s"/>' % (i, os.path.basename(df.iloc[i][df.columns[j]])))	
     return page.render()
 def main(args):
-    print "end"
-    
+    pass
+
 if __name__ == "__main__":
     try:
         args = sys.argv[1:]

@@ -5,6 +5,7 @@
 # QQ: 1764462457
 
 #把主目录放到路径中， 这样可以支持不同目录中的库
+from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
@@ -74,11 +75,11 @@ class mytest(unittest.TestCase):
         self.assertEqual(stock.getKlineLastDay(), d)
         
         df = stock.LiveData().getFiveMinHisdat(code)
-        print df
+        print(df)
     
 def main(args):
     a = agl.tic_toc()
-    print 'save fenshi to redis, predict 1 hour'
+    print('save fenshi to redis, predict 1 hour')
     getAllFenshi()
     #print "end"
     

@@ -5,7 +5,7 @@ from __future__ import print_function
 import sys
 from pytdx.hq import TdxHq_API as tdx
 if sys.version > '3':
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
 else:
     import stock_pinyin as jx
 import stock

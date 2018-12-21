@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 if sys.version > '3':
     from bs4 import BeautifulSoup
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
     from urllib import request
 else:
     from BeautifulSoup import BeautifulSoup

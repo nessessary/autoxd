@@ -13,7 +13,7 @@ import boll_fencang
 import pd_help
 import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so
 if sys.version > '3':
-    import stock_pinyin3 as jx
+    from stock_pinyin3 import stock_pinyin3 as jx
 else:
     import stock_pinyin as jx
 from backtest_runner import BackTestPolicy

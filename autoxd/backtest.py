@@ -5,6 +5,7 @@
 # QQ: 1764462457
 
 #把主目录放到路径中， 这样可以支持不同目录中的库
+from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
@@ -64,31 +65,31 @@ class MarketOnClosePortfolio(Portfolio):
     initial_capital - The amount in cash at the start of the portfolio."""
 
     def __init__(self, symbol, bars, signals, initial_capital=100000.0):
-	self.symbol = symbol        
-	self.bars = bars
-	self.signals = signals
-	self.initial_capital = float(initial_capital)
-	self.positions = self.generate_positions()
-	
+        self.symbol = symbol        
+        self.bars = bars
+        self.signals = signals
+        self.initial_capital = float(initial_capital)
+        self.positions = self.generate_positions()
+
     def generate_positions(self):
-	positions = pd.DataFrame(index=self.signals.index).fillna(0.0)
-	positions[self.symbol] = 100*self.signals['signal']   # This strategy buys 100 shares
-	return positions
-		    
+        positions = pd.DataFrame(index=self.signals.index).fillna(0.0)
+        positions[self.symbol] = 100*self.signals['signal']   # This strategy buys 100 shares
+        return positions
+
     def backtest_portfolio(self):
-	portfolio = self.positions*self.bars['c']
-	pos_diff = self.positions.diff()
+        portfolio = self.positions*self.bars['c']
+        pos_diff = self.positions.diff()
 
-	portfolio['holdings'] = (self.positions*self.bars['c']).sum(axis=1)
-	portfolio['cash'] = self.initial_capital - (pos_diff*self.bars['c']).sum(axis=1).cumsum()
+        portfolio['holdings'] = (self.positions*self.bars['c']).sum(axis=1)
+        portfolio['cash'] = self.initial_capital - (pos_diff*self.bars['c']).sum(axis=1).cumsum()
 
-	portfolio['total'] = portfolio['cash'] + portfolio['holdings']
-	portfolio['returns'] = portfolio['total'].pct_change()
-	return portfolio    
+        portfolio['total'] = portfolio['cash'] + portfolio['holdings']
+        portfolio['returns'] = portfolio['total'].pct_change()
+        return portfolio    
 
 def main(args):
-    print "end"
-    
+    print("end")
+
 if __name__ == "__main__":
     try:
         args = sys.argv[1:]
