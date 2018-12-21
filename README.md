@@ -1,21 +1,21 @@
-autoxd v0.4 »Ø²â¿ò¼Ü
+autoxd v0.4 å›æµ‹æ¡†æ¶
 ------
 
-¼òµ¥¿ì½İµÄA¹É»Ø²â»·¾³£¬ ÊÊºÏ±àĞ´T+0²ßÂÔ
+ç®€å•å¿«æ·çš„Aè‚¡å›æµ‹ç¯å¢ƒï¼Œ é€‚åˆç¼–å†™T+0ç­–ç•¥
 
-- ÌØĞÔ
-  * Ê¹ÓÃpandas±àĞ´²ßÂÔ
-  * ½á¹û¿ÉÒÔÔÚÒ³ÃæÏÔÊ¾£¬ ÀàËÆmatlabµÄpublish
-  * ²¢ĞĞÖ´ĞĞ²ßÂÔ
-  * ±¾µØÕË»§£¬ Ä£ÄâÊµÅÌ½»Ò×Ï¸½Ú£¬ Ö§³ÖT+0£¬ ½»Ò×³É±¾¼ÆËã
-  * ×Ô´´FOURÖ¸±ê£¬ ¼òµ¥¼ÆËã¶à¿Õ
+- ç‰¹æ€§
+  * ä½¿ç”¨pandasç¼–å†™ç­–ç•¥
+  * ç»“æœå¯ä»¥åœ¨é¡µé¢æ˜¾ç¤ºï¼Œ ç±»ä¼¼matlabçš„publish
+  * å¹¶è¡Œæ‰§è¡Œç­–ç•¥
+  * æœ¬åœ°è´¦æˆ·ï¼Œ æ¨¡æ‹Ÿå®ç›˜äº¤æ˜“ç»†èŠ‚ï¼Œ æ”¯æŒT+0ï¼Œ äº¤æ˜“æˆæœ¬è®¡ç®—
+  * è‡ªåˆ›FOURæŒ‡æ ‡ï¼Œ ç®€å•è®¡ç®—å¤šç©º
 
-- ±ä¸ü
-  * v0.4.1 Ö§³Ömacos
-  * v0.4 ´ó·ùÓÅ»¯ËÙ¶È
-  * v0.3 python3Ö§³Ö
+- å˜æ›´
+  * v0.4.1 æ”¯æŒmacos
+  * v0.4 å¤§å¹…ä¼˜åŒ–é€Ÿåº¦
+  * v0.3 python3æ”¯æŒ
 
-- ÈÕÏßÀı×Ó
+- æ—¥çº¿ä¾‹å­
 
 ```
 	python boll_fencang.py
@@ -24,7 +24,7 @@ autoxd v0.4 »Ø²â¿ò¼Ü
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result.png)<br>
    ![image](https://github.com/nessessary/autoxd/raw/master/pics/autoxd_backtest_result_kline.png)
 
-- 5·ÖÖÓÀı×Ó
+- 5åˆ†é’Ÿä¾‹å­
 
 ```
 	python five_chengben.py
@@ -33,34 +33,37 @@ autoxd v0.4 »Ø²â¿ò¼Ü
    <img src="https://github.com/nessessary/autoxd/raw/master/pics/five.png"></img>
 
 
-- ÒÀÀµ
+- ä¾èµ–
 1. redis
-	window¿ÉÒÔÈ¥[ÍøÅÌ](https://pan.baidu.com/s/1pMoB83h) ÏÂÔØÒ»¸ö, µ÷ÓÃÀïÃæµÄbat¼´¿É°²×°
-2. Ö§³Öpy2¼°py3 windows; macosÖ§³Öpy3£¬ linuxÎ´Öª
-3. ÍÆ¼öÊ¹ÓÃwingide£¬ ¿ÉÖ±½Ó¼ÓÔØwprÏîÄ¿ÎÄ¼ş
-4. ÓÃpip install -r requirements.txt°²×°Ïà¹ØÒÀÀµ°ü
+	windowå¯ä»¥å»[ç½‘ç›˜](https://pan.baidu.com/s/1pMoB83h) ä¸‹è½½ä¸€ä¸ª, è°ƒç”¨é‡Œé¢çš„batå³å¯å®‰è£…
+2. æ”¯æŒpy2åŠpy3 windows; macosæ”¯æŒpy3ï¼Œ linuxæœªçŸ¥
+3. æ¨èä½¿ç”¨wingideï¼Œ å¯ç›´æ¥åŠ è½½wpré¡¹ç›®æ–‡ä»¶
+4. ç”¨pip install -r requirements.txtå®‰è£…ç›¸å…³ä¾èµ–åŒ…
 
-- °²×°
-  * °²×°Anaconda
-  * ÏÂÔØautoxd, git clone https://github.com/nessessary/autoxd.git
-  * Ö´ĞĞpip install -r requirements.txt
-  * ÈçÓöµ½²»ÄÜÓÃpip°²×°µÄ°ü£¬ ÇëÖ´ĞĞËÑË÷°²×°£¬¹À¼ÆÖ»ÓĞÒ»¸öpyHĞèÒªÊÖ¶¯°²×°µÄ
-  * °²×°redis
-  * ÅÜpython_strategy/strategy/five_changben.py, ²ßÂÔ¶¼·ÅÔÚ¸ÃÄ¿Â¼
+- å®‰è£…
+  * å®‰è£…Anaconda
+  * ä¸‹è½½autoxd, git clone https://github.com/nessessary/autoxd.git
+  * æ‰§è¡Œpip install -r requirements.txt
+  * å¦‚é‡åˆ°ä¸èƒ½ç”¨pipå®‰è£…çš„åŒ…ï¼Œ è¯·æ‰§è¡Œæœç´¢å®‰è£…ï¼Œä¼°è®¡åªæœ‰ä¸€ä¸ªpyHéœ€è¦æ‰‹åŠ¨å®‰è£…çš„
+  ```
+  pip install git+https://github.com/hanxiaomax/pyh.git
+  ```
+  * å®‰è£…redis
+  * è·‘python_strategy/strategy/five_changben.py, ç­–ç•¥éƒ½æ”¾åœ¨è¯¥ç›®å½•
 
-- Ê¹ÓÃ
+- ä½¿ç”¨
 
-1. Êı¾İÔ´,Ê¹ÓÃ×Ô¶¨ÒåµÄÊı¾İ; ×¢Òâ,ÒÑÊ¹ÓÃths·Öºì±í½øĞĞÁËÇ°¸´È¨<br>
-      * Ê¹ÓÃ×Ô¶¨ÒåµÄµÚÈı·½Êı¾İÔ´£¬ ÒÑÊµÏÖÁËÒ»¸öµ÷ÓÃtushareµÄÀı×Ó,
+1. æ•°æ®æº,ä½¿ç”¨è‡ªå®šä¹‰çš„æ•°æ®; æ³¨æ„,å·²ä½¿ç”¨thsåˆ†çº¢è¡¨è¿›è¡Œäº†å‰å¤æƒ<br>
+      * ä½¿ç”¨è‡ªå®šä¹‰çš„ç¬¬ä¸‰æ–¹æ•°æ®æºï¼Œ å·²å®ç°äº†ä¸€ä¸ªè°ƒç”¨tushareçš„ä¾‹å­,
       datasource_mode=stock.DataSources.datafrom.custom
-      * 5·ÖÖÓÏßÊ¹ÓÃµÄÊÇpytdxµÄÀı×Ó
+      * 5åˆ†é’Ÿçº¿ä½¿ç”¨çš„æ˜¯pytdxçš„ä¾‹å­
 
-2. µ÷ÓÃ
+2. è°ƒç”¨
 ```python
-    #ÉèÖÃ²ßÂÔ²ÎÊı
+    #è®¾ç½®ç­–ç•¥å‚æ•°
   def setParams(s):
   	s.setParams(trade_num = 300,
-                      pl=publish.Publish()	#·¢²¼ÖÁÒ³Ãæ, ×¢ÊÍÔò²»·¢²¼
+                      pl=publish.Publish()	#å‘å¸ƒè‡³é¡µé¢, æ³¨é‡Šåˆ™ä¸å‘å¸ƒ
                       )
   backtest_policy.test_strategy(codes, BollFenCangKline, setParams, mode=myenum.hisdat_mode,
                                 start_day='2017-4-10', end_day='2018-9-15',
