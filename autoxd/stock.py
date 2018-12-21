@@ -798,9 +798,22 @@ def getHisdatDf(code, is_fuquan=True , is_Trunover=False):
         df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
 
-def getFiveHisdatDf(code, start_day='', end_day=''):
-    """return: df col('ohlcu')"""
-    return mysql.getFiveHisdat(code,start_day,end_day)
+def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
+    """
+    method: mysql , tdx, local
+    return: df col('ohlcu')"""
+    if method == 'mysql':
+        return mysql.getFiveHisdat(code,start_day,end_day)
+    if method == 'tdx':
+        return tdx.getFive(code)
+    if method == 'local':
+        fname = 'C:/chromium/src/autoxd3/python/cnn_boll/datasources/'
+        fname += code + '.csv'
+        df = pd.read_csv(fname)
+        df.index = pd.DatetimeIndex( df[df.columns[0]])
+        return df
+    if method == 'live':
+        return LiveData().getFiveMinHisdat(code)
 def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
@@ -812,7 +825,7 @@ def GetCodeName(code):
     if code=='510050':
         return '50ETF'
     #从拼音文件里获取中文名称
-    fname = os.path.dirname(__file__) +'/stock_pinyin3.py'
+    fname = os.path.dirname(__file__) +'/stock_pinyin3/stock_pinyin3.py'
     fname = os.path.abspath(fname)
     name = ''
     f = open(fname)

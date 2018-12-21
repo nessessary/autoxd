@@ -11,7 +11,7 @@ setup (
     author="Kang Wang",
     url="https://github.com/nessessary/autoxd.git",
     license="BSD 3",
-    py_modules=['autoxd'],
-    packages= find_packages(),
+    #py_modules=['autoxd'],
+    packages= find_packages(exclude=('stock_pinyin3',)),
 
 )

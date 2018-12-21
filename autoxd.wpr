@@ -20,4 +20,7 @@ proj.directory-list = [{'dirloc': loc('.'),
                         'recursive': True,
                         'watch_for_changes': True}]
 proj.file-type = 'shared'
+proj.launch-config = {loc('setup.py'): ('project',
+        (u'install',
+         ''))}
 proj.main-file = loc('strategy/boll_fencang.py')
