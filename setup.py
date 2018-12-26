@@ -12,11 +12,12 @@ else:
 setup (
     name = 'autoxd',
     version = '0.4.1',
-    description="backtest framework",
-    author="Kang Wang",
+    description ="backtest framework",
+    author = "Kang Wang",
+    email = "1764462457@qq.com",
     url="https://github.com/nessessary/autoxd.git",
-    license="BSD 3",
+    license = "BSD 3",
     #py_modules=['autoxd'],
     packages= find_packages(exclude=myexclude),
-
+    data_files = [('autoxd/pypublish',['autoxd/pypublish/test.html'])]
 )

@@ -6,15 +6,9 @@
 
 from __future__ import print_function
 import os
-def AddPath():
-    from sys import path
-    mysourcepath = os.getenv('AUTOXD_PYTHON')
-    if not mysourcepath in path:
-        path.append(mysourcepath)    
-AddPath()
 import numpy as np
 import pandas as pd
-import help,myenum,myredis
+from autoxd import help,myenum,myredis
 import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math,time, datetime,dateutil,gzip
 if sys.version > '3':
     import _pickle as cPickle

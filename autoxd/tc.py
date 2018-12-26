@@ -448,7 +448,7 @@ class mytest(unittest.TestCase):
     def _test_Buy(self):
         Buy('300033', 47.5, 100)
     def _test_tushare_hq(self):
-        import stock_pinyin as jx
+        from autoxd import stock_pinyin as jx
         code = jx.KYWL
         hq(code)
 

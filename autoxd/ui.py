@@ -17,24 +17,24 @@ import matplotlib
 import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
-import stock
+from autoxd import stock
 if sys.version > '3':
-    from stock_pinyin3 import stock_pinyin3 as jx
+    from autoxd.pinyin import stock_pinyin3 as jx
 else:
-    import stock_pinyin as jx
-import agl
+    from autoxd import stock_pinyin as jx
+from autoxd import agl
 #x = [1,2,3,4,5,6]
 #y = [10,20,3,20,39,4]
 
 #动态设置中文字体
-import matplotlib as mpl
-class FontStyle:
-    KAITI = 'KaiTi'
-    YAHEI = 'Microsoft YaHei'
-    FANGSONG = 'FangSong'
-    HEITI = 'SimHei'
-mpl.rcParams['font.sans-serif'] = [FontStyle.YAHEI]
-mpl.rcParams['font.serif'] = [FontStyle.YAHEI]
+#import matplotlib as mpl
+#class FontStyle:
+    #KAITI = 'KaiTi'
+    #YAHEI = 'Microsoft YaHei'
+    #FANGSONG = 'FangSong'
+    #HEITI = 'SimHei'
+#mpl.rcParams['font.sans-serif'] = [FontStyle.YAHEI]
+#mpl.rcParams['font.serif'] = [FontStyle.YAHEI]
 
 #plt.plot(x,y)
 #plt.show()

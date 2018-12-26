@@ -3,11 +3,11 @@ from __future__ import print_function
 import sys
 if sys.version > '3':
     from bs4 import BeautifulSoup
-    from stock_pinyin3 import stock_pinyin3 as jx
+    from autoxd.pinyin import stock_pinyin3 as jx
     from urllib import request
 else:
     from BeautifulSoup import BeautifulSoup
-    import stock_pinyin as jx
+    from autoxd import stock_pinyin as jx
     import urllib2 as request
 import pandas as pd    
 import numpy as np

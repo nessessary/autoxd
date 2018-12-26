@@ -5,10 +5,10 @@ from __future__ import print_function
 import sys
 from pytdx.hq import TdxHq_API as tdx
 if sys.version > '3':
-    from stock_pinyin3 import stock_pinyin3 as jx
+    from autoxd.pinyin import stock_pinyin3 as jx
 else:
-    import stock_pinyin as jx
-import stock
+    from autoxd import stock_pinyin as jx
+from autoxd import stock
 import pandas as pd
 
 g_api = None
@@ -23,6 +23,7 @@ def create():
     return g_api
 
 def getFive(code):
+    """return: df"""
     api = create()
     market = stock.IsShangHai(code)
     data = api.get_security_bars(category=0, market=market, code=code, start=0, count=800)

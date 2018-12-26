@@ -5,11 +5,11 @@
 # QQ: 1764462457
 from __future__ import print_function
 import os,sys
-import help,agl,ui,myenum,myredis
+from autoxd import help,agl,ui,myenum,myredis
 if sys.version > '3':
-    from stock_pinyin3 import stock_pinyin3 as jx
+    from autoxd.pinyin import stock_pinyin3 as jx
 else:
-    import stock_pinyin as jx
+    from autoxd import stock_pinyin as jx
 import pyprind
 import time,datetime, dateutil,copy, warnings, unittest,struct, itertools,pickle,re
 import talib
@@ -18,9 +18,9 @@ import numpy as np
 import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
-import grabThsWebStockInfo
-import warp_pytdx as tdx
-from pypublish import publish
+from autoxd import grabThsWebStockInfo
+from autoxd import warp_pytdx as tdx
+from autoxd.pypublish import publish
 #pl = publish.Publish()
 
 def get_codes(flag=myenum.all, n=100):

@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 import stock, ui
 if sys.version > '3':
-    from stock_pinyin3 import stock_pinyin3 as jx
+    from autoxd.pinyin import stock_pinyin3 as jx
 else:
-    import stock_pinyin as jx
+    from autoxd import stock_pinyin as jx
 import pylab as pl
 import math
 import myredis
@@ -91,7 +91,7 @@ def pearson(x, y):
 
 #识别boll上轨
 def recog_boll(pl, report_list):
-    import stock_pinyin as jx
+    from autoxd import stock_pinyin as jx
     codes = [jx.HCGD, jx.HYGY]
     codes = stock.get_codes(stock.myenum.randn, 2)
     #import tushare_handle as th
