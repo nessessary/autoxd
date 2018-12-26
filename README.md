@@ -54,16 +54,20 @@ autoxd v0.4 回测框架
   pip install git+https://github.com/hanxiaomax/pyh.git
   ```
   * 安装redis
-  * 跑python_strategy/strategy/five_changben.py, 策略都放在该目录
+  * 跑python_strategy/strategy/five_chengben.py, 策略都放在该目录
 
 - 使用
 
-1. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
+1. 从strategy目录复制five_chengben.py改名为自己的策略名称, 定义参数  setParams函数
+  实现策略 Run函数
+
+
+2. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
       * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
       * 5分钟线使用的是pytdx的例子
 
-2. 调用
+3. 调用
 ```python
     #设置策略参数
   def setParams(s):
