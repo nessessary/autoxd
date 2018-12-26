@@ -12,7 +12,7 @@ def AddPath():
     mysourcepath = os.path.abspath('..')
     if not mysourcepath in path:
         path.append(mysourcepath)    
-AddPath()
+#AddPath()
 
 """区间交易法, 交易时对即时zz进行判断， 同时配合区间
 当区间触发时， 并不急于下单， 而是需要继续观察下跌或上涨情况， 同时要观察大盘及板块的情况
@@ -22,11 +22,12 @@ AddPath()
 import numpy as np
 import pandas as pd
 import sys, traceback, time
-import live_policy, agl, pd_help, stock,help
-import backtest_policy
-import backtest_runner
-import myenum, ui
-from pypublish.publish import *
+from autoxd import live_policy, agl, stock,help
+import pd_help
+from autoxd import backtest_policy
+from autoxd import backtest_runner
+from autoxd import myenum, ui
+from autoxd.pypublish.publish import *
 
 class Strategy:
     def __init__(self, data, is_backtesting=False, mode=0):

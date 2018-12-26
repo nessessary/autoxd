@@ -825,7 +825,7 @@ def GetCodeName(code):
     if code=='510050':
         return '50ETF'
     #从拼音文件里获取中文名称
-    fname = os.path.dirname(__file__) +'/stock_pinyin3/stock_pinyin3.py'
+    fname = os.path.dirname(__file__) +'/pinyin/stock_pinyin3.py'
     fname = os.path.abspath(fname)
     name = ''
     f = open(fname)

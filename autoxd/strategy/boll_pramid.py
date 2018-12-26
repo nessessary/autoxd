@@ -14,20 +14,20 @@
 import sys
 import qjjy
 import pd_help
-import myredis, agl, help, stock, backtest_policy, ui, account as ac, sign_observation as so
+from autoxd import myredis, agl, help, stock, backtest_policy, ui, account as ac, sign_observation as so
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
 else:
     from autoxd import stock_pinyin as jx
 
-from backtest_runner import BackTestPolicy
+from autoxd.backtest_runner import BackTestPolicy
 if sys.platform == 'win32':
-    import tc
+    from autoxd import tc
 import datetime
 import pandas as pd
 import numpy as np
 import talib
-from pypublish import publish
+from autoxd.pypublish import publish
 
 class Strategy_Boll_Pre(qjjy.Strategy):
     """boll分仓"""

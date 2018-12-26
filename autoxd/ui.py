@@ -17,7 +17,7 @@ import matplotlib
 import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
-from autoxd import stock
+#from autoxd import stock
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
 else:
@@ -425,7 +425,7 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     pl.close()
 def testShowTradeResult():
     import backtest
-
+    from autoxd import stock
     code = '600100'
     bars = stock.Guider(code).ToDataFrame()
     bars = bars.ix['2014':]

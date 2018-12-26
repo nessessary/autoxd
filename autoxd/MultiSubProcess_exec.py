@@ -14,7 +14,7 @@ def AddPath():
     strategy_path = mysourcepath+"\\strategy"
     if strategy_path not in path:
         path.append(strategy_path)
-AddPath()
+#AddPath()
 import numpy as np
 import pandas as pd
 import sys, myredis

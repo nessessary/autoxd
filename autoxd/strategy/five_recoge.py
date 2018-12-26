@@ -11,20 +11,20 @@ from __future__ import print_function
 import sys
 import boll_fencang
 import pd_help
-import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so
+from autoxd import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
 else:
     from autoxd import stock_pinyin as jx
-from backtest_runner import BackTestPolicy
+from autoxd.backtest_runner import BackTestPolicy
 #import tushare as ts
 import datetime
 import pandas as pd
 import numpy as np
 import talib
-from stock import DataSources
-from pypublish import publish
-import pattern_recognition as pr
+from autoxd.stock import DataSources
+from autoxd.pypublish import publish
+from autoxd import pattern_recognition as pr
 
 class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
     """boll分仓"""
@@ -265,7 +265,7 @@ def Run(codes, task_id=0):
     #agl.LOG('sdf中')
     #codes = ['300033']
     def fnSample(code, dtype='5'):
-        import warp_pytdx as tdx
+        from autoxd import warp_pytdx as tdx
         if dtype=='5':
             df = tdx.getFive(code)
             df = df.sort_index()

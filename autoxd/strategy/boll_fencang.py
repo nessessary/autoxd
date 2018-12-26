@@ -5,13 +5,13 @@ import sys
 import numpy as np
 import pandas as pd, pylab as pl
 import boll_pramid
-import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
+from autoxd import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
 else:
     from autoxd import stock_pinyin as jx
 import os,warnings
-from stock import DataSources
+from autoxd.stock import DataSources
 
 agl.tic()
 
@@ -161,7 +161,7 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
 
 #测试策略， 为了并行计算， 需要使用这种格式的函数定义		    
 def Run(codes='', task_id=0):
-    from pypublish import publish
+    from autoxd.pypublish import publish
     def fnSample(code, dtype=''):
         import tushare as ts
         df = ts.get_hist_data(code)[['high','low','open','close','volume']]

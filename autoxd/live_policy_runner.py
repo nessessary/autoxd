@@ -15,7 +15,7 @@ def AddPath():
     strategy_path = mysourcepath+"\\strategy"
     if strategy_path not in path:
         path.append(strategy_path)        
-AddPath()
+#AddPath()
 """在线策略入口"""
 import numpy as np
 import sys, copy, traceback

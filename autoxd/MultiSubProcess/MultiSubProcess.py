@@ -11,7 +11,7 @@ def AddPath():
     add_path = getMainDir()
     if not add_path in path:
         path.append(add_path)
-AddPath()
+#AddPath()
 import numpy as np
 import pandas as pd
 import sys, subprocess, math

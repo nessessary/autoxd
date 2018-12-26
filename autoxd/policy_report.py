@@ -6,7 +6,7 @@ def AddPath():
     mysourcepath = os.getenv('AUTOXD_PYTHON')
     if not mysourcepath in path:
         path.append(mysourcepath)    
-AddPath()
+#AddPath()
 import numpy as np
 import pandas as pd
 import sys

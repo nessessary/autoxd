@@ -23,4 +23,4 @@ proj.file-type = 'shared'
 proj.launch-config = {loc('setup.py'): ('project',
         (u'install',
          ''))}
-proj.main-file = loc('strategy/boll_fencang.py')
+proj.main-file = loc('autoxd/strategy/boll_fencang.py')
