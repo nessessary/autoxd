@@ -11,8 +11,8 @@ import os
 """在线策略入口"""
 import numpy as np
 import sys
-import agl,stock,help,ui
-import backtest_policy
+from autoxd import agl,stock,help,ui
+from autoxd import backtest_policy
 import pylab as pl
 
 _ISRUNING = False       #查询是否回测状态

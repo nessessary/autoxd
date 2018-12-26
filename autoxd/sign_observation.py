@@ -4,7 +4,7 @@
 import traceback
 import numpy as np
 import pandas as pd
-import myredis,agl
+from autoxd import myredis,agl
 is_allow = False
 key_prefix = 'so._getFunctionArgs.'
 

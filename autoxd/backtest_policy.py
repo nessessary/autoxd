@@ -10,7 +10,7 @@ import os
 import numpy as np
 import pandas as pd
 import sys, datetime
-import live_policy,stock,agl,help,account
+from autoxd import live_policy,stock,agl,help,account
 from dateutil.parser import parse
  
 class Backtest(live_policy.Live, account.BackTestingDelegate):
@@ -112,7 +112,7 @@ def test_strategy(codes, strategy_name, cbfn_setparams=None, mode=1, start_day='
     datasource_mode : 数据源引用地 stock.DataSource.data_mode
     datasource_fn:  函数, data_mode需要使用自定义
     """
-    import backtest_runner
+    from autoxd import backtest_runner
     if mode == 0:
         mode = backtest_runner.BackTestPolicy.enum.tick_mode
     stock.DataSources.data_mode = datasource_mode

@@ -231,7 +231,7 @@ class LocalAcount(AccountDelegate):
         assert(False)
         
     def Report(self, end_day, last_close, is_detail=False):
-        import stock,agl
+        from autoxd import stock,agl
         #成交记录
         df = self.df_ChengJiao.loc[:,['成交价格','成交数量','买卖标志','买0卖1','证券代码']]
         df.columns = ['price','num','flag','flag2','code']
@@ -348,7 +348,7 @@ class AccountMgr(object):
         df_zhijing = self.account.ZhiJing()
         return float(df_zhijing.iloc[-1]['可用'])
     def total_money(self):
-        import agl
+        from autoxd import agl
         df_zhijing = self.account.ZhiJing()
         df_stock = self.account.StockList()
         if len(df_stock) == 0:

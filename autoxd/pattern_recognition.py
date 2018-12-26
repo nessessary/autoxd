@@ -5,16 +5,16 @@ from __future__ import print_function
 import sys, os
 import numpy as np
 import pandas as pd
-import stock, ui
+from autoxd import stock, ui
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
 else:
     from autoxd import stock_pinyin as jx
 import pylab as pl
 import math
-import myredis
-import warp_pytdx as tdx
-from pypublish import publish
+from autoxd import myredis
+from autoxd import warp_pytdx as tdx
+from autoxd.pypublish import publish
 
 def horizontal(df, zhouqi_zhenfu=[45,1.2], greater=False):
     """只扫描50个周期, 振幅大于5%, 最后10个周期在1%之间波动, 且整体小于1.5%

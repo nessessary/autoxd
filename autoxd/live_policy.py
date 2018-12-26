@@ -9,7 +9,7 @@ import sys, struct, copy, traceback
 import numpy as np
 import pandas as pd
 from ctypes import *
-import help,agl,stock
+from autoxd import help,agl,stock
 import time
 
 class enum:
