@@ -45,8 +45,10 @@ autoxd v0.4 回测框架
   * 下载autoxd
   ```
   git clone https://github.com/nessessary/autoxd.git
+  cd autoxd
+  pip install -r requirements.txt
+  python setup.py install
   ```
-  * 执行pip install -r requirements.txt
   * 如遇到不能用pip安装的包， 请执行搜索安装，估计只有一个pyH需要手动安装的
   ```
   pip install git+https://github.com/hanxiaomax/pyh.git
