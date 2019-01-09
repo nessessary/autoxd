@@ -53,7 +53,7 @@ autoxd v0.4 回测框架
   python setup.py install
   ```
   * 安装redis
-  * 跑python_strategy/strategy/five_chengben.py, 策略都放在该目录
+  * 跑strategy/five_chengben.py, 策略都放在该目录
 
 - 使用
 

@@ -41,9 +41,14 @@ def main(args):
     s += 'r=%s'%(module_name)
     s += '.%s(%s, %d)'%(v[1:])
     #print(s)
+    
+    ##py3
     _locals = locals()
     r = exec(s, globals(), _locals)
     r = _locals['r']
+    ##py2
+    #exec(s)
+    
     #print(type(r))
     #print('result=',r)
     #保存结果

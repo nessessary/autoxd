@@ -186,14 +186,14 @@ def calcYinKui(price, chengben):
     return (price - chengben)/chengben
 
 def test_strategy():
-    codes = stock.get_codes(flag=myenum.randn, n=4)
     cpu_num = 2
+    codes = stock.get_codes(flag=myenum.randn, n=cpu_num)
     #codes = ['300434']
-    agl.startDebug()
-    if agl.IsDebug():
-        codes = [jx.ZCKJ.b]
-    #backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
-    exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
+    #agl.startDebug()
+    #if agl.IsDebug():
+        #codes = [jx.ZCKJ.b]
+    backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
+    #exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
     test_strategy()

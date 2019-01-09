@@ -39,8 +39,13 @@ class MultiSubProcess():
         # 根据加载路径计算import路径
         root = os.path.abspath(os.path.dirname(__file__)+'/../../')
         from_str = os.path.abspath(os.path.dirname(fname))
-        from_str = from_str.replace(root, '')[1:]
-        from_str = from_str.replace('/','.')
+        assert(root.lower() == from_str[:len(root)].lower())
+        #from_str = from_str.replace(root, '')[1:]
+        from_str = from_str[len(root)+1:]
+        if sys.platform == 'win32':
+            from_str = from_str.replace('\\','.')
+        else:
+            from_str = from_str.replace('/','.')
         bname = os.path.basename(fname)
         module = bname.split('.')[0]
         from_module = 'from %s import %s'%(from_str, module)
@@ -56,7 +61,10 @@ class MultiSubProcess():
         #保存任务表
         myredis.set_obj('multi', self.pd_task)
         cmd = sys.executable
-        cmd += ' '+getMainDir()+'/MultiSubProcess_exec.py'
+        fname = 'MultiSubProcess_exec2.py'
+        if sys.version > '3':
+            fname = 'pinyin/MultiSubProcess_exec.py'
+        cmd += ' '+getMainDir()+'/'+fname
         process = []
         for i in range(len(self.pd_task)):
             cur_cmd = cmd + ' ' + str(i)

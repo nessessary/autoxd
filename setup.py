@@ -8,7 +8,9 @@ import autoxd
 if sys.version > '3':
     myexclude=()
 else:
-    myexclude = ('stock_pinyin3',)
+    #setup.py install需要删除build等目录
+    #只能过滤掉目录，不能过滤文件
+    myexclude = ('*pinyin',)
 
 setup (
     name = 'autoxd',
