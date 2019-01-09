@@ -142,7 +142,8 @@ class mytest(unittest.TestCase):
         print(pickle.loads(r.get(key)))
     def test_obj2(self):
         keys = getKeys()
-        print(get_obj(keys[2]))
+        print(len(keys))
+        #print(get_obj(keys[2]))
     def _test_dump(self):
         dump_redis(host='192.168.3.4', key='')
     

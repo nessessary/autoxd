@@ -23,10 +23,6 @@ def prn_obj(obj):
 
 
 #
-def shell_env():
-    import os
-    os.chdir("C:\\chromium\\src\\autoxd3\\python")     
-#
 def getPythonPath():
     return os.getenv('AUTOXD_PYTHON')
 #----------------------------------------------------------------------
@@ -289,18 +285,6 @@ def array_find(a, v):
     return False
 
 
-#
-#----------------------------------------------------------------------
-def DataToMatlabCsv(a):
-    """把数据写入csv文件"""
-    all_the_text = ""
-    for s in a:
-        all_the_text += str(s)
-        all_the_text += ","
-    file_object = open('c:\\matlab_source\\stock.txt', 'w')
-    file_object.write(all_the_text)
-    file_object.close( )     
-    myprint("数据个数", len(a))
 
 #----------------------------------------------------------------------
 def SpliteDate(s, e, n):
@@ -472,46 +456,7 @@ def findMaxAnalyzeNavtiveInt(high, low):
 
     print(results[index])
 #
-#----------------------------------------------------------------------
-def ExecMatlabFunction(fn_name):
-    """
-    执行matlab函数
-    fn_name : 函数名称
-    """
 
-    t = time.time()
-    #if os.path.isfile(os.getcwd() + '\\1.txt'):
-            #os.remove(os.getcwd() + '\\1.txt')
-    #用文件
-    f_name = os.getcwd()+'\\1.txt'
-    cur_cmd = 'C:\\Program Files (x86)\\MATLAB\\R2013a\\bin\\matlab.exe'
-    cur_cmd += " "
-    cur_cmd += '-nodesktop -nosplash -nodisplay -r "'
-    cur_cmd += fn_name
-    cur_cmd += '" -logfile 1.txt'
-    p = subprocess.Popen(cur_cmd, \
-                         stdin = subprocess.PIPE,\
-                         stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
-
-
-    p.wait()
-
-    time.sleep(1)
-    b = False
-    while(1):
-        if os.path.isfile(f_name):
-            f = open(f_name,'r')
-            for line in f.xreadlines():
-                print(line)
-                if line == '----\n':
-                    b=True
-                    break
-
-            f.close()
-            if b is True:
-                break
-        time.sleep(1)
-    print2("耗时", str(time.time()-t))
 
 from contextlib import closing
 from six.moves.urllib.request import urlopen

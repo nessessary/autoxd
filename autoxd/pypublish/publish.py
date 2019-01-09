@@ -23,12 +23,22 @@ def IsPublish(pl):
     return isinstance(pl, Publish)
         
 class Publish:
-    def __init__(self, explicit=False, is_run_shell=True):
+    def __init__(self, explicit=False, is_run_shell=True, is_clear_path=False):
         """编码默认为utf8
         info: 由pushlishinfo获取的元组
         explicit: 弹出页面是否使用显式调用
         is_run_shell: bool 是否跑生成后的start
+        is_clear_path: bool 是否清空之前生成的目录文件
         """
+        #当前目录
+        self.path = os.getcwd() + "/html/"
+        if not os.path.isdir("html"):
+            os.mkdir("html")        
+        if is_clear_path:
+            #删除当前目录的文件
+            dirPath = self.path
+            agl.removeDir(dirPath)
+            
         #os_platform
         self.platform_id = 2
         if sys.platform == 'win32':
@@ -56,10 +66,7 @@ class Publish:
         f.close()
         
         self.name = name 
-        #当前目录
-        self.path = os.getcwd() + "/html/"
-        if not os.path.isdir("html"):
-            os.mkdir("html")
+
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
         if self.platform_id == 0:
@@ -80,6 +87,8 @@ class Publish:
     def __del__(self):
         if self.explicit == False:
             self.publish()
+        # 解除stdout
+        sys.stdout = self.oldstdout
     def publish(self):
         """如果执行了publish, 那么析构时就不要再执行了"""
         self.explicit = True
@@ -138,6 +147,8 @@ class Publish:
         pl.xlabel(*args, **kwargs)
     def legend(self, *args, **kwargs):
         pl.legend(*args, **kwargs)
+    def axis(self, *v, **kwargs):
+        pl.axis(*v, **kwargs)
     def bar(self, *args, **kwargs):
         pl.bar(*args, **kwargs)
     def barh(self, *args, **kwargs):

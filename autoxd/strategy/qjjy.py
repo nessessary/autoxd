@@ -6,13 +6,7 @@
 
 #把主目录放到路径中， 这样可以支持不同目录中的库
 import os
-def AddPath():
-    from sys import path
-    #mysourcepath = os.getenv('AUTOXD_PYTHON')
-    mysourcepath = os.path.abspath('..')
-    if not mysourcepath in path:
-        path.append(mysourcepath)    
-#AddPath()
+
 
 """区间交易法, 交易时对即时zz进行判断， 同时配合区间
 当区间触发时， 并不急于下单， 而是需要继续观察下跌或上涨情况， 同时要观察大盘及板块的情况
@@ -23,7 +17,7 @@ import numpy as np
 import pandas as pd
 import sys, traceback, time
 from autoxd import live_policy, agl, stock,help
-import pd_help
+from autoxd.strategy import pd_help
 from autoxd import backtest_policy
 from autoxd import backtest_runner
 from autoxd import myenum, ui

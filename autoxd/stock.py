@@ -807,7 +807,7 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
     if method == 'tdx':
         return tdx.getFive(code)
     if method == 'local':
-        fname = 'C:/chromium/src/autoxd3/python/cnn_boll/datasources/'
+        fname = 'datas/'
         fname += code + '.csv'
         df = pd.read_csv(fname)
         df.index = pd.DatetimeIndex( df[df.columns[0]])
@@ -924,16 +924,7 @@ class FenshiEx:
         closes_hisdat = Guider(code, '2012-3-1','2014-7-1').getCloses()
         print( min(closes_hisdat))
 
-    @staticmethod 
-    def to_csv(code):
-        fenshi = FenshiEx(code)
-        df = fenshi.df.resample('T', how='mean')
-        df = df[np.isnan(df['p']) == False]
-        path = "C:\\chromium\\src\\autoxd3\\matlab_src\\Automated_Trading\\%sfenshi.csv"%code 
-        df['p'] = FuQuan(df['p'])
-        df = np.array(df['p'])
-        fname = path
-        np.savetxt(fname, df)
+
 def CreateFenshiPd(code, start_day='', end_day=''):
     """return: df columns=pvb p为真实价格"""
     db = mysql.createStockDb()

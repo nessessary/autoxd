@@ -12,8 +12,7 @@
 3. 超过限额就不要做波动了
 """
 import sys
-import qjjy
-import pd_help
+from autoxd.strategy import pd_help, qjjy
 from autoxd import myredis, agl, help, stock, backtest_policy, ui, account as ac, sign_observation as so
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx

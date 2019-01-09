@@ -9,8 +9,7 @@
 """
 from __future__ import print_function
 import sys
-import boll_fencang
-import pd_help
+from autoxd.strategy import boll_fencang, pd_help
 from autoxd import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx
@@ -270,9 +269,9 @@ def Run(codes, task_id=0):
                                   )
 
 def main_run():        
-    cpu_num = 5
+    cpu_num = 2
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
-    agl.startDebug()
+    #agl.startDebug()
     if agl.IsDebug():
         codes = [jx.ZCKJ.b]
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)

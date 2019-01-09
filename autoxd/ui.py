@@ -10,7 +10,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.font_manager as fm
-import matplotlib.finance as mpf
+try:
+    import matplotlib.finance as mpf
+except:
+    import mpl_finance as mpf
 from matplotlib.pylab import date2num
 import matplotlib.dates as mdates
 import matplotlib
@@ -765,7 +768,7 @@ def draw3d(df=None, titles=None, datas=None):
             
     plt.show()
 
-class MyTest(unittest.TestCase):
+class MyTest(unittest.TestSuite):
     def _test_DrawTs(self):
         code = '300059'
         date = ['2016-1-1','2016-3-1']
@@ -786,11 +789,12 @@ class MyTest(unittest.TestCase):
     def _test_ShowTradeResult(self):
         #testShowTradeResult()
         testTradeResult_Boll()
-    def _test_AsynDrawKline(self):
-        code = '300033'
+    def test_AsynDrawKline(self):
+        from autoxd import stock
+        code = jx.ZCKJ.b
         start_day = '2017-8-25'
         #df = stock.getHisdatDataFrameFromRedis(code, start_day)
-        df = stock.getFiveHisdatDf(code, start_day=start_day)
+        df = stock.getFiveHisdatDf(code, start_day=start_day, method='tdx')
         import account
         account = account.LocalAcount(account.BackTesting())
         #随机找三个交易点
@@ -806,7 +810,7 @@ class MyTest(unittest.TestCase):
 
         plt.ioff()
         #plt.show()  #最后停在画面处， 没有的话进程结束
-    def test_3d(self):
+    def _test_3d(self):
         draw3d()
     def _test_drawKline2(self):
         code = jx.CYJM
@@ -819,4 +823,15 @@ class MyTest(unittest.TestCase):
         drawKline(pl, df, legend2=['成交量'])
 
 if __name__ == "__main__":
-    unittest.main()    
+    #unittest.main()    
+    
+    t = MyTest()
+    t.test_AsynDrawKline()
+    ##t.debug()
+    #suite = unittest.TestSuite()
+    #suite.addTest(t)
+    ##suite.debug()
+    #runner = unittest.TextTestRunner()
+    #runner.run(suite)
+    
+    

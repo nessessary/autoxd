@@ -11,6 +11,7 @@ autoxd v0.4 回测框架
   * 自创FOUR指标， 简单计算多空
 
 - 变更
+  * 见docs/changelog.txt
   * v0.4.1 支持macos
   * v0.4 大幅优化速度
   * v0.3 python3支持
@@ -47,21 +48,22 @@ autoxd v0.4 回测框架
   git clone https://github.com/nessessary/autoxd.git
   cd autoxd
   pip install -r requirements.txt
-  python setup.py install
-  ```
-  * 如遇到不能用pip安装的包， 请执行搜索安装，估计只有一个pyH需要手动安装的
-  ```
   pip install git+https://github.com/hanxiaomax/pyh.git
+  pip install git+https://github.com/matplotlib/mpl_finance.git
+  python setup.py install
   ```
   * 安装redis
   * 跑python_strategy/strategy/five_chengben.py, 策略都放在该目录
 
 - 使用
 
-1. 从strategy目录复制five_chengben.py改名为自己的策略名称, 定义参数  setParams函数
-  实现策略 Run函数
-
-
+1. 跑five_chengben.py, 定义参数  setParams函数
+  实现策略 Run函数, 修改cpu_num可以使用多进程
+  ```
+  cd strategy
+  python five_changben.py
+  ```
+  
 2. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
       * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom

@@ -100,7 +100,7 @@ def MultiProcessRun(cpu, codes, fn_name, mod):
     fn_name : 执行函数
     mod : 调用者__file__
     """
-    from MultiSubProcess import MultiSubProcess
+    from autoxd.MultiSubProcess import MultiSubProcess
     multi = MultiSubProcess.MultiSubProcess()
     multi.Map(cpu, mod, fn_name, codes)
     multi.Run()	  

@@ -4,7 +4,7 @@
 import sys
 import numpy as np
 import pandas as pd, pylab as pl
-import boll_pramid
+from autoxd.strategy import boll_pramid
 from autoxd import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
 if sys.version > '3':
     from autoxd.pinyin import stock_pinyin3 as jx

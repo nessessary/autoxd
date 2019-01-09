@@ -296,6 +296,16 @@ def get_middle_point_y_val(pts, x):
     y3 = (y2-y1)*(x3-x1) / (x2-x1) + abs(y1)
     return y3
 
+def calc_vert(start_x, start_y, end_x, end_y):
+    """return: x1, y1, x2,y2"""
+    angle = math.atan2(end_y - start_y, end_x - start_x) + 3.14159265358979323846;
+    arrow_lenght_ = 30.0;
+    arrow_degrees_ = 0.15;
+    x1 = end_x + arrow_lenght_ * math.cos(angle - arrow_degrees_);
+    y1 = end_y + arrow_lenght_ * math.sin(angle - arrow_degrees_);
+    x2 = end_x + arrow_lenght_ * math.cos(angle + arrow_degrees_);
+    y2 = end_y + arrow_lenght_ * math.sin(angle + arrow_degrees_);    
+    return x1, y1, x2,y2
 #
 #----------------------------------------------------------------------
 def swap(a,b):
@@ -1083,7 +1093,7 @@ def MD5(s):
 class Marco:
     """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
     #调试状态使用单进程
-    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\timport backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
+    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
 def main(args):
     #TestMoveFile()
