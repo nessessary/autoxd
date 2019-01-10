@@ -36,24 +36,13 @@ class MultiSubProcess():
         args: map的参数
         kwargs: 保留, 暂时未用
         return:df"""
-        # 根据加载路径计算import路径
-        root = os.path.abspath(os.path.dirname(__file__)+'/../../')
-        from_str = os.path.abspath(os.path.dirname(fname))
-        assert(root.lower() == from_str[:len(root)].lower())
-        #from_str = from_str.replace(root, '')[1:]
-        from_str = from_str[len(root)+1:]
-        if sys.platform == 'win32':
-            from_str = from_str.replace('\\','.')
-        else:
-            from_str = from_str.replace('/','.')
-        bname = os.path.basename(fname)
-        module = bname.split('.')[0]
-        from_module = 'from %s import %s'%(from_str, module)
+
+        fname = os.path.abspath(fname)
         
         #分割参数
         splitted_args = pp_func_param(None, *args, cpu=cpus)._split(*args)
         for arg in splitted_args:
-            self.pd_task = pd.concat([self.pd_task, pd.DataFrame([self.task_id, from_module, fn.__name__, arg]).T])
+            self.pd_task = pd.concat([self.pd_task, pd.DataFrame([self.task_id, fname, fn.__name__, arg]).T])
         self.task_id += 1
     def Run(self):
         self.pd_task.index = range(len(self.pd_task))
@@ -61,10 +50,9 @@ class MultiSubProcess():
         #保存任务表
         myredis.set_obj('multi', self.pd_task)
         cmd = sys.executable
-        fname = 'MultiSubProcess_exec2.py'
-        if sys.version > '3':
-            fname = 'pinyin/MultiSubProcess_exec.py'
-        cmd += ' '+getMainDir()+'/'+fname
+        fname = 'MultiSubProcess_exec.py'
+        cur_dir = os.path.abspath(os.path.dirname(__file__))
+        cmd += ' '+cur_dir+'/'+fname
         process = []
         for i in range(len(self.pd_task)):
             cur_cmd = cmd + ' ' + str(i)

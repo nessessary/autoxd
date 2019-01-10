@@ -37,7 +37,7 @@ def get_codes(flag=myenum.all, n=100):
         if len(codes)>0:
             #默认去除大盘的代码
             dapans = ['399001', '999999','399005','399002','399006','510050']
-            codes = [unicode(code) for code in codes if code not in dapans]
+            codes = [str(code) for code in codes if code not in dapans]
             #codes = filter(lambda x: x[:2] != '88', codes)
         return codes
     key = myredis.enum.KEY_CODES    #更新ths F10时删除
