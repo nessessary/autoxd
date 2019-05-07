@@ -39,6 +39,15 @@ console.toolbox = [{'autosave': False,
                     'loc': u'/Users/wangkang/Desktop/autoxd/autoxd/strategy/five_chengben.py',
                     'pseudo_tty': False,
                     'raise_panel': True,
+                    'title': None},
+                   {'autosave': False,
+                    'id': 'cmd-p0gvEFcH5xolmf2G',
+                    'io_encoding': None,
+                    'key_binding': None,
+                    'line_mode': True,
+                    'loc': u'/Users/wangkang/Desktop/autoxd/autoxd/trading_gym/trading_gym.py',
+                    'pseudo_tty': False,
+                    'raise_panel': True,
                     'title': None}]
 proj.directory-list = [{'dirloc': loc('.'),
                         'excludes': [u'autoxd/strategy/html',
@@ -48,4 +57,7 @@ proj.directory-list = [{'dirloc': loc('.'),
                         'recursive': True,
                         'watch_for_changes': True}]
 proj.file-type = 'shared'
+proj.launch-config = {loc('autoxd/cnn_boll/judge_boll_sign.py'): ('project',
+        (u'-n --nohead',
+         ''))}
 proj.main-file = loc('autoxd/trading_gym/trading_gym.py')

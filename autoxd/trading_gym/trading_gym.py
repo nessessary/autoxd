@@ -8,6 +8,7 @@ from numpy.random import randn
 #from gym.envs.classic_control import rendering
 import myplot
 from autoxd import myredis, stock, agl
+from autoxd import account
 
 id = 'autoxd-gym-v0'
 data_interval = 30
@@ -21,6 +22,7 @@ class ATgymEnv(gym.Env):
         self.index = 0
         self.viewer = None
         self.df_trade = df['trade']
+        self.code = "002304"
         #clrs = []
         #for i in range(4):
             #clr = agl.GenRandomArray(255, 3) / 255
@@ -48,18 +50,34 @@ class ATgymEnv(gym.Env):
         observation = self._get_observation()
         reward = action
         info = None
+        code = self.code
+        price = self.df['c'][self.index]
+        num = 100
+        reward_buy = self.label_buy[self.index]
+        reward_sell = self.label_sell[self.index] 
         if action == 0:
-            reward = 0
+            if reward_buy>0 or reward_sell>0:
+                reward = -1
+            else:
+                reward = 0
         if action > 0:
-            reward = self.label_buy[self.index]
+            reward = reward_buy
+            if reward_buy>0:
+                reward = 2
+            self.account.Order(0, code, price, num)
         if action < 0:
-            reward = self.label_sell[self.index]
+            reward = reward_sell
+            if reward_sell > 0:
+                reward = 2
+            self.account.Order(1, code, price, num)
         return observation, reward, done, info
 
     def reset(self):
         #print('reset')
         self.index = data_interval-1
         observation = self._get_observation()
+        backtester = account.BackTesting()
+        self.account = account.LocalAcount(backtester)
         return observation
 
     def render(self, mode='human'):
