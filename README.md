@@ -37,9 +37,8 @@ autoxd v0.4 回测框架
 - 依赖
 1. redis
 	window可以去[网盘](https://pan.baidu.com/s/1pMoB83h) 下载一个, 调用里面的bat即可安装
-2. 支持py2及py3 windows; macos支持py3， linux未知
-3. 推荐使用wingide， 可直接加载wpr项目文件
-4. 用pip install -r requirements.txt安装相关依赖包
+2. 支持py2及py3 windows; macos支持py3， linux(非图形状态下)支持py3
+3. 用pip install -r requirements.txt安装相关依赖包
 
 - 安装
   * 安装Anaconda
