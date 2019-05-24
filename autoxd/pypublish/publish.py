@@ -8,6 +8,7 @@ import numpy as np
 import pylab as pl
 import sys,os,codecs
 from autoxd import agl
+from policy_report import df_to_html_table
 
 """模仿matlab的publish, 注意在__main__中调用有可能不会触发析构, pl的绘制放入一个函数中
 在当前工作目录中生成一个html\name\name.html
@@ -247,10 +248,29 @@ def example():
         pl.figure(i)
         pl.plot(np.arange(0,10*(i+1)))
     pl.show()
+
+def example2():
+    """测试排版输出， 让单元数据在一行内"""
+    from autoxd import stock
+    import pandas as pd
+    print(example2.__doc__)
+    pl = Publish(explicit=True)
+    codes = stock.get_codes(flag=stock.myenum.randn, n=6)
+    result = []
+    for code in codes:
+        df_five = stock.getFiveHisdatDf(code, method='tdx')
+        df_five.plot()
+        pl.show()
+        pl.close()
+        img_name = pl.get_CurImgFname()
+        result.append([code, img_name, img_name])
+    df = pd.DataFrame(result)
+    pl.reset(df_to_html_table(df, df_img_col_indexs=[-2,-1]))
+    pl.publish()
     
 def main(args):
     example()
-    
+    example2()
 if __name__ == "__main__":
     args = sys.argv[1:]
     main(args)

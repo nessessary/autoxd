@@ -52,7 +52,7 @@ class ATgymEnv(gym.Env):
         info = None
         code = self.code
         price = self.df['c'][self.index]
-        num = 100
+        num = 300
         reward_buy = self.label_buy[self.index]
         reward_sell = self.label_sell[self.index] 
         if action == 0:

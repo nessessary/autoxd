@@ -1095,6 +1095,11 @@ class Marco:
     #调试状态使用单进程
     IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
+def test_post():
+    import requests
+    print(requests.__version__)
+
+    
 def main(args):
     #TestMoveFile()
 
@@ -1118,10 +1123,11 @@ def main(args):
     #Logger.Test()
     #removeDir(os.getcwd()+'/html')
     #archiveZip('tmp/my.zip', 'html')
-    a = tic_toc()
+    #a = tic_toc()
     #print(ClustList(3, [100,300,600,300,600,300,600,1200]))
     #print(ClustList(2, [200]))
-    print(IsRunAtCmd())
+    #print(IsRunAtCmd())
+    test_post()
 
 if __name__ == "__main__":
     args = sys.argv[1:]
