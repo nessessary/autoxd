@@ -28,11 +28,11 @@ def df_to_html_table(df, color='white', df_img_col_indexs=[-1]):
         if v.name == 0 and len(v.tolist()) == 1:
             v = v[0]
         s = str(v)
-        if not agl.is_utf8(s):	#命令行时会碰到需要转码的情况
-            try:
-                s = s.decode('gb2312').encode('utf8')
-            except:
-                pass    
+        #if not agl.is_utf8(s):	#命令行时会碰到需要转码的情况
+            #try:
+                #s = s.decode('gb2312').encode('utf8')
+            #except:
+                #pass    
         mytr << pyh.td('<pre>%s</pre>' % (s))	
         for j in df_img_col_indexs:
             mytr << pyh.td('Row %i, column <img src="%s"/>' % (i, os.path.basename(df.iloc[i][df.columns[j]])))	

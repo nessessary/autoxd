@@ -315,6 +315,19 @@ def swap(a,b):
     b = c
     return a, b
 
+def combin_cur_dir(cur_file, sub_dir):
+    """组合目录
+    cur_file: 当前执行文件
+    sub_dir: 当前执行文件下的子目录, 前面不带/
+    return: 绝对路径
+    """
+    cur_path = os.path.dirname(os.path.abspath(cur_file))
+    return cur_path + '/' + sub_dir
+
+def createDir(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+        
 def removeDir(dirPath):
     """删除目录下的所有文件, 但不删除当前目录"""
     if not os.path.isdir(dirPath):

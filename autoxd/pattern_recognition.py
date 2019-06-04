@@ -89,6 +89,17 @@ def pearson(x, y):
     assert(len(x) == len(y))
     return np.corrcoef(x, y)[0,1]
 
+def pearson_guiyihua(a, b):
+    """对曲线归一化后对比
+    a: np.ndarray
+    b: np.ndarray
+    return: float
+    """
+    a = stock.GuiYiHua(a-np.min(a))
+    b = stock.GuiYiHua(b - np.min(b))
+    v = pearson(a,b)
+    return v    
+
 #识别boll上轨
 def recog_boll(pl, report_list):
     from autoxd import stock_pinyin as jx
