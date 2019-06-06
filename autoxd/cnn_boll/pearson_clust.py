@@ -18,7 +18,7 @@ from autoxd import policy_report
 from PCV.clustering import hcluster
 from itertools import combinations
 from scipy.cluster.vq import *
-
+from PIL import Image
 
 g_list = []
 g_report = []   #比较的结果
@@ -108,14 +108,14 @@ def distfn(v1, v2):
     return: float
     """
     #print(v1, v2)
-    v1 = int(v1[0])
-    v2= int(v2[0])
+    #v1 = int(v1[0])
+    #v2= int(v2[0])
     #print(v1,v2)
     
     v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
     v_down = pr.pearson_guiyihua(g_list[v1][-1], g_list[v2][-1])
     dist = (v_up + v_down) / 2
-    return 1 - dist
+    return dist
 
 def myhclust():
     """尝试层次聚类"""
@@ -253,8 +253,59 @@ def myknn():
             axis('equal')
             axis('off')
     show()    
+    
+def MyKnnImpl():
+    """自行实现， 对每个元素， 分别输出70，80，90区间的集合；其实现方式不能简单的套knn和hclust
+    并不需要完整的放入集合中
+    经过测试，pearson的效果也不好， 只能使用手工打标签了
+    """
+    load_data()
+    indexs = cmp_bolls()
+    print(indexs)
+    
+    #写入本地img中
+    fname = 'img_labels/hclust_imgs'
+    agl.removeDir(fname)
+    agl.createDir(fname)
+    imlist = []
+    #for i in range(len(indexs)):
+    for i in indexs:
+        fname1 =fname + '/img_%s.png'%(i)
+        pl.figure
+        draw(g_list[i])
+        pl.savefig(fname1)
+        pl.close()
+        imlist.append(fname1)
+
+    dist_v = 0.90   #pearson相似度
+    n = len(indexs)
+    S = np.zeros([n,n])
+    for i in range(n):
+        for j in range(n):
+            S[i,j] = distfn(indexs[i], indexs[j])
+    print(S)
+    #用选择法，把各元素放到它们相近的集合内
+    for i in range(n):
+        clust = []
+        for j in range(n):
+            if S[i,j] > 0.9:
+                clust.append(j)
+        print(clust)        
+        if i<10:
+            pl.figure(figsize=(18,10))
+            for k,j in enumerate(clust):
+                im = Image.open(imlist[indexs[j]])
+                pl.subplot(4,5,k+1)
+                pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
+                pl.imshow(np.array(im))
+                pl.axis('equal')
+                pl.axis('off')
+            pl.show()
+
+            print('end')
 if __name__ == "__main__":
     #run()
-    myhclust()
+    #myhclust()
     #myknn()
     #test_kmeans()
+    MyKnnImpl()
