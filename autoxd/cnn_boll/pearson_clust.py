@@ -16,6 +16,9 @@ import numpy as np
 from pypublish import publish
 from autoxd import policy_report
 from PCV.clustering import hcluster
+from itertools import combinations
+from scipy.cluster.vq import *
+
 
 g_list = []
 g_report = []   #比较的结果
@@ -50,17 +53,19 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
     return v_up, v_down
 
 def cmp_bolls():
+    """return: (int) g_list index"""
     indexs = range(len(g_list))
     indexs = indexs[:100]
     indexs2 = agl.array_shuffle(indexs)
-    for i in indexs:
-        j = indexs2[i]
-        v = cmp_boll_two(g_list[j], g_list[i], j, i)
-        #print(agl.float_to_2(v[0]), agl.float_to_2(v[1]))
+    #for i in indexs:
+        #j = indexs2[i]
+        #v = cmp_boll_two(g_list[j], g_list[i], j, i)
+        ##print(agl.float_to_2(v[0]), agl.float_to_2(v[1]))
     return indexs2
     
 def load_data():
-    """包含"""
+    """
+    """
     codes = ['000005']
     for code in codes:
         datas = jbs.getData(code)   # from local
@@ -97,6 +102,20 @@ def run():
     #show_result(df)
     pl.reset(policy_report.df_to_html_table(df, df_img_col_indexs=[-2,-1]))
     pl.publish()
+    
+def distfn(v1, v2):
+    """距离函数, v1: id
+    return: float
+    """
+    #print(v1, v2)
+    v1 = int(v1[0])
+    v2= int(v2[0])
+    #print(v1,v2)
+    
+    v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
+    v_down = pr.pearson_guiyihua(g_list[v1][-1], g_list[v2][-1])
+    dist = (v_up + v_down) / 2
+    return 1 - dist
 
 def myhclust():
     """尝试层次聚类"""
@@ -105,39 +124,30 @@ def myhclust():
     
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
-    agl.removeDir(fname)
-    agl.createDir(fname)
+    #agl.removeDir(fname)
+    #agl.createDir(fname)
     imlist = []
     #for i in range(len(indexs)):
     for i in indexs:
-        pl.figure
-        draw(g_list[i])
         fname1 =fname + '/img_%s.png'%(i)
-        pl.savefig(fname1)
-        pl.close()
+        #pl.figure
+        #draw(g_list[i])
+        #pl.savefig(fname1)
+        #pl.close()
         imlist.append(fname1)
     
     #df = pd.DataFrame(g_report)
     # 转换一下数据
-    features = indexs
-    #把距离值放入一个id为key的字典
-    dict_distance = {}
-    for v in g_report:
-        ni,nj = v[2:4]
-        dict_distance[ni,nj] = (v[0]+v[1])/2
+    features = [np.array([i]) for i in indexs]
+    #features = indexs
         
-    def distfn(v1, v2):
-        """距离函数, v1: id
-        return: float
-        """
-        #print(v1, v2)
-        v1 = v1.max()
-        v2= v2.max()
-        #使用负值是因为底层使用更小的数来判断最小值
-        #判断最接近1的值
-        if (v1,v2) in dict_distance.keys():
-            return 1-dict_distance[v1,v2]
-        return 10
+    #把距离值放入一个id为key的字典
+    #dict_distance = {}
+    #for v in g_report:
+        #ni,nj = v[2:4]
+        #dict_distance[ni,nj] = (v[0]+v[1])/2
+        
+
     tree = hcluster.hcluster(features, distfcn=distfn)
     clusters = tree.extract_clusters(0.3 * tree.distance)
     #for c in clusters:
@@ -193,8 +203,58 @@ def myhclust():
     #for c in clusters:
         #elements = c.get_cluster_elements()
         #print(len(elements), )        
-        
+
+def myknn():
+    load_data()
+    indexs = cmp_bolls()
+    
+    #写入本地img中
+    fname = 'img_labels/hclust_imgs'
+    agl.removeDir(fname)
+    agl.createDir(fname)
+    imlist = []
+    #for i in range(len(indexs)):
+    for i in indexs:
+        pl.figure
+        draw(g_list[i])
+        fname1 =fname + '/img_%s.png'%(i)
+        pl.savefig(fname1)
+        pl.close()
+        imlist.append(fname1)
+
+    n = len(indexs)
+    # 计算距离矩阵
+    S = np.array([[ distfn(indexs[i], indexs[j])
+    for i in range(n) ] for j in range(n)], 'f')
+    # 创建拉普拉斯矩阵
+    rowsum = np.sum(S,axis=0)
+    D = np.diag(1 / np.sqrt(rowsum))
+    I = np.identity(n)
+    L = I - np.dot(D, np.dot(S,D))
+    # 计算矩阵L 的特征向量
+    U,sigma,V = np.linalg.svd(L)
+    k = 5
+    # 从矩阵L 的前k 个特征向量（eigenvector）中创建特征向量（feature vector）
+    # 叠加特征向量作为数组的列
+    
+    features = np.array(V[:k]).T
+    # k-means 聚类
+    features = whiten(features)
+    centroids,distortion = kmeans(features,k)
+    code,distance = vq(features,centroids)
+    # 绘制聚类簇
+    for c in range(k):
+        ind = np.where(code==c)[0]
+        figure()
+        for i in range(np.minimum(len(ind),39)):
+            im = Image.open(imlist[ind[i]])
+            subplot(4,10,i+1)
+            imshow(array(im))
+            axis('equal')
+            axis('off')
+    show()    
 if __name__ == "__main__":
     #run()
     myhclust()
+    #myknn()
     #test_kmeans()

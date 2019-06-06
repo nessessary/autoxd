@@ -16,4 +16,6 @@
 /autoxd/trading_gym/html
 /autoxd/trading_gym/model
 
-
+/autoxd/cnn_boll/html
+/autoxd/cnn_boll/img_labels
+/autoxd/cnn_boll/output_img
