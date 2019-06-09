@@ -19,6 +19,7 @@ from PCV.clustering import hcluster
 from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
+from autoxd import myredis
 
 g_list = []
 g_report = []   #比较的结果
@@ -114,7 +115,8 @@ def distfn(v1, v2):
     
     v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
     v_down = pr.pearson_guiyihua(g_list[v1][-1], g_list[v2][-1])
-    dist = (v_up + v_down) / 2
+    #dist = (v_up + v_down) / 2
+    dist = v_up
     return dist
 
 def myhclust():
@@ -263,19 +265,31 @@ def MyKnnImpl():
     indexs = cmp_bolls()
     print(indexs)
     
+    use_redis = 1
+    key = myredis.gen_keyname(__file__, MyKnnImpl)
+    if not use_redis:
+        myredis.delkey(key)
+    else:
+        #用redis保存
+        indexs = myredis.createRedisVal(key, indexs).get()
+    print(indexs)
+    
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
-    agl.removeDir(fname)
-    agl.createDir(fname)
+    if not use_redis:
+        agl.removeDir(fname)
+        agl.createDir(fname)
     imlist = []
     #for i in range(len(indexs)):
     for i in indexs:
-        fname1 =fname + '/img_%s.png'%(i)
-        pl.figure
-        draw(g_list[i])
-        pl.savefig(fname1)
-        pl.close()
+        fname1 =fname + '/img_%s.png'%(indexs[i])
+        if not use_redis:
+            pl.figure
+            draw(g_list[indexs[i]])
+            pl.savefig(fname1)
+            pl.close()
         imlist.append(fname1)
+
 
     dist_v = 0.90   #pearson相似度
     n = len(indexs)
@@ -288,13 +302,16 @@ def MyKnnImpl():
     for i in range(n):
         clust = []
         for j in range(n):
-            if S[i,j] > 0.9:
+            if S[i,j] > 0.95:
+                if i==0:
+                    print(S[i,j])
                 clust.append(j)
-        print(clust)        
-        if i<10:
+        if i<10 and len(clust)>2:
+            print(clust)        
+            #print(i, len(clust))
             pl.figure(figsize=(18,10))
             for k,j in enumerate(clust):
-                im = Image.open(imlist[indexs[j]])
+                im = Image.open(imlist[j])
                 pl.subplot(4,5,k+1)
                 pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
                 pl.imshow(np.array(im))
