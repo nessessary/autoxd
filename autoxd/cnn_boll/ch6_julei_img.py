@@ -7,6 +7,7 @@ from matplotlib.pyplot import *
 from numpy import *
 
 img_path = '/img_labels/imgs/'
+#img_path = '/img_labels/'
 img_path = os.path.dirname(os.path.abspath(__file__)) + img_path
 # create a list of images
 path = '../data/sunsets/flickr-sunsets-small/'

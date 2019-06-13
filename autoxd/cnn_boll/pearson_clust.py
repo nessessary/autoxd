@@ -20,6 +20,7 @@ from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
 from autoxd import myredis
+import time
 
 g_list = []
 g_report = []   #比较的结果
@@ -56,8 +57,9 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
 def cmp_bolls():
     """return: (int) g_list index"""
     indexs = range(len(g_list))
-    indexs = indexs[:100]
-    indexs2 = agl.array_shuffle(indexs)
+    indexs = indexs[:50]
+    indexs2 = indexs
+    #indexs2 = agl.array_shuffle(indexs)
     #for i in indexs:
         #j = indexs2[i]
         #v = cmp_boll_two(g_list[j], g_list[i], j, i)
@@ -105,7 +107,9 @@ def run():
     pl.publish()
     
 def distfn(v1, v2):
-    """距离函数, v1: id
+    """距离函数, v1: id, g_list的id
+    还是加上上下之间的距离， 以最近点的距离作为距离
+    (up + down)/2 - up_down_distance*a
     return: float
     """
     #print(v1, v2)
@@ -115,8 +119,16 @@ def distfn(v1, v2):
     
     v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
     v_down = pr.pearson_guiyihua(g_list[v1][-1], g_list[v2][-1])
-    #dist = (v_up + v_down) / 2
-    dist = v_up
+    up_down_distance_0 = g_list[v1][0] - g_list[v1][1]
+    up_down_distance_1 = g_list[v2][0] - g_list[v2][1]
+    up_down_distance_0 = up_down_distance_0[np.isnan(up_down_distance_0) == False]
+    up_down_distance_1 = up_down_distance_1[np.isnan(up_down_distance_1) == False]
+    up_down_distance_0 = np.min(up_down_distance_0)
+    up_down_distance_1 = np.min(up_down_distance_1)
+    up_down_distance = np.abs(up_down_distance_0 - up_down_distance_1)
+    a = 3
+    dist = (v_up + v_down) / 2 - up_down_distance * a
+    #dist = v_up
     return dist
 
 def myhclust():
@@ -206,74 +218,76 @@ def myhclust():
         #elements = c.get_cluster_elements()
         #print(len(elements), )        
 
-def myknn():
-    load_data()
-    indexs = cmp_bolls()
+#def myknn():
+    #load_data()
+    #indexs = cmp_bolls()
     
-    #写入本地img中
-    fname = 'img_labels/hclust_imgs'
-    agl.removeDir(fname)
-    agl.createDir(fname)
-    imlist = []
-    #for i in range(len(indexs)):
-    for i in indexs:
-        pl.figure
-        draw(g_list[i])
-        fname1 =fname + '/img_%s.png'%(i)
-        pl.savefig(fname1)
-        pl.close()
-        imlist.append(fname1)
+    ##写入本地img中
+    #fname = 'img_labels/hclust_imgs'
+    #agl.removeDir(fname)
+    #agl.createDir(fname)
+    #imlist = []
+    ##for i in range(len(indexs)):
+    #for i in indexs:
+        #pl.figure
+        #draw(g_list[i])
+        #fname1 =fname + '/img_%s.png'%(i)
+        #pl.savefig(fname1)
+        #pl.close()
+        #imlist.append(fname1)
 
-    n = len(indexs)
-    # 计算距离矩阵
-    S = np.array([[ distfn(indexs[i], indexs[j])
-    for i in range(n) ] for j in range(n)], 'f')
-    # 创建拉普拉斯矩阵
-    rowsum = np.sum(S,axis=0)
-    D = np.diag(1 / np.sqrt(rowsum))
-    I = np.identity(n)
-    L = I - np.dot(D, np.dot(S,D))
-    # 计算矩阵L 的特征向量
-    U,sigma,V = np.linalg.svd(L)
-    k = 5
-    # 从矩阵L 的前k 个特征向量（eigenvector）中创建特征向量（feature vector）
-    # 叠加特征向量作为数组的列
+    #n = len(indexs)
+    ## 计算距离矩阵
+    #S = np.array([[ distfn(indexs[i], indexs[j])
+    #for i in range(n) ] for j in range(n)], 'f')
+    ## 创建拉普拉斯矩阵
+    #rowsum = np.sum(S,axis=0)
+    #D = np.diag(1 / np.sqrt(rowsum))
+    #I = np.identity(n)
+    #L = I - np.dot(D, np.dot(S,D))
+    ## 计算矩阵L 的特征向量
+    #U,sigma,V = np.linalg.svd(L)
+    #k = 5
+    ## 从矩阵L 的前k 个特征向量（eigenvector）中创建特征向量（feature vector）
+    ## 叠加特征向量作为数组的列
     
-    features = np.array(V[:k]).T
-    # k-means 聚类
-    features = whiten(features)
-    centroids,distortion = kmeans(features,k)
-    code,distance = vq(features,centroids)
-    # 绘制聚类簇
-    for c in range(k):
-        ind = np.where(code==c)[0]
-        figure()
-        for i in range(np.minimum(len(ind),39)):
-            im = Image.open(imlist[ind[i]])
-            subplot(4,10,i+1)
-            imshow(array(im))
-            axis('equal')
-            axis('off')
-    show()    
+    #features = np.array(V[:k]).T
+    ## k-means 聚类
+    #features = whiten(features)
+    #centroids,distortion = kmeans(features,k)
+    #code,distance = vq(features,centroids)
+    ## 绘制聚类簇
+    #for c in range(k):
+        #ind = np.where(code==c)[0]
+        #figure()
+        #for i in range(np.minimum(len(ind),39)):
+            #im = Image.open(imlist[ind[i]])
+            #subplot(4,10,i+1)
+            #imshow(array(im))
+            #axis('equal')
+            #axis('off')
+    #show()    
     
 def MyKnnImpl():
     """自行实现， 对每个元素， 分别输出70，80，90区间的集合；其实现方式不能简单的套knn和hclust
     并不需要完整的放入集合中
-    经过测试，pearson的效果也不好， 只能使用手工打标签了
+    经过测试，聚类效果比pca等好
     """
+    pl = publish.Publish()
+
     load_data()
     indexs = cmp_bolls()
     print(indexs)
     
     use_redis = 1
-    key = myredis.gen_keyname(__file__, MyKnnImpl)
-    if not use_redis:
-        myredis.delkey(key)
-    else:
-        #用redis保存
-        indexs = myredis.createRedisVal(key, indexs).get()
-    print(indexs)
-    
+    #key = myredis.gen_keyname(__file__, MyKnnImpl)
+    #if not use_redis:
+        #myredis.delkey(key)
+    #else:
+        ##用redis保存
+        #indexs = myredis.createRedisVal(key, indexs).get()
+    #print(indexs)
+
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
     if not use_redis:
@@ -282,13 +296,15 @@ def MyKnnImpl():
     imlist = []
     #for i in range(len(indexs)):
     for i in indexs:
-        fname1 =fname + '/img_%s.png'%(indexs[i])
+        fname1 =fname + '/img_%s.png'%(i)
         if not use_redis:
             pl.figure
-            draw(g_list[indexs[i]])
+            draw(g_list[i])
             pl.savefig(fname1)
             pl.close()
         imlist.append(fname1)
+    if use_redis == 0:
+        return
 
 
     dist_v = 0.90   #pearson相似度
@@ -296,20 +312,22 @@ def MyKnnImpl():
     S = np.zeros([n,n])
     for i in range(n):
         for j in range(n):
-            S[i,j] = distfn(indexs[i], indexs[j])
+            S[i,j] = distfn(i, j)
     print(S)
     #用选择法，把各元素放到它们相近的集合内
     for i in range(n):
         clust = []
         for j in range(n):
-            if S[i,j] > 0.95:
-                if i==0:
-                    print(S[i,j])
+            if S[i,j] > 0.78:
+                print(S[i,j],)
                 clust.append(j)
-        if i<10 and len(clust)>2:
-            print(clust)        
+        if i>20 and len(clust)>3 and len(clust)<20:
+            print(i, clust)        
             #print(i, len(clust))
-            pl.figure(figsize=(18,10))
+            if not publish.IsPublish(pl):
+                pl.figure(figsize=(10,8))
+            else:
+                pl.figure
             for k,j in enumerate(clust):
                 im = Image.open(imlist[j])
                 pl.subplot(4,5,k+1)
@@ -318,8 +336,11 @@ def MyKnnImpl():
                 pl.axis('equal')
                 pl.axis('off')
             pl.show()
-
             print('end')
+            #time.sleep(5)
+            pl.close()
+    pl.publish()
+            
 if __name__ == "__main__":
     #run()
     #myhclust()

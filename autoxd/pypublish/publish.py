@@ -67,6 +67,7 @@ class Publish:
         f.close()
         
         self.name = name 
+        self.fig_num = 1
 
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
@@ -128,10 +129,24 @@ class Publish:
             os.system(command)
         
     
-    def figure(self, id=1):
-        fig = pl.figure(id)
+    def figure(self, num=None,  # autoincrement if None, else integer from 1-N
+               figsize=None,  # defaults to rc figure.figsize
+               dpi=None,  # defaults to rc figure.dpi
+               facecolor=None,  # defaults to rc figure.facecolor
+               edgecolor=None,  # defaults to rc figure.edgecolor
+               frameon=True,
+               FigureClass=pl.Figure,
+               **kwargs
+               ):    
+    #def figure(self, id=1):
+        #num = self.fig_num
+        fig = pl.figure(num, figsize, dpi, facecolor, edgecolor, frameon, FigureClass, **kwargs)
+        #fig = pl.gcf()
         self.figs.append(fig)
+        #self.fig_num += 1
         return fig
+    def subplots_adjust(self, *args, **kwargs):    
+        return pl.subplots_adjust(*args, **kwargs)
     def gcf(self):
         return pl.gcf()
     def text(self, x, y, s, fontdict=None, withdash=False, **kwargs):
