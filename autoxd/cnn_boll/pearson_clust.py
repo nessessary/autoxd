@@ -15,12 +15,23 @@ import matplotlib.pyplot as pl
 import numpy as np
 from pypublish import publish
 from autoxd import policy_report
-from PCV.clustering import hcluster
+#from PCV.clustering import hcluster
+import hcluster_person as hcluster
 from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
 from autoxd import myredis
 import time
+from itertools import combinations
+from sklearn.cluster import KMeans
+from scipy.cluster import hierarchy
+
+import scipy
+import scipy.cluster.hierarchy as sch
+from scipy.cluster.vq import vq,kmeans,whiten
+import numpy as np
+import matplotlib.pylab as plt
+
 
 g_list = []
 g_report = []   #比较的结果
@@ -54,10 +65,10 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
         g_report.append([v_up, v_down, id1, id2, fimg1, fimg2])    
     return v_up, v_down
 
-def cmp_bolls():
+def cmp_bolls(n):
     """return: (int) g_list index"""
     indexs = range(len(g_list))
-    indexs = indexs[:50]
+    indexs = indexs[:n]
     indexs2 = indexs
     #indexs2 = agl.array_shuffle(indexs)
     #for i in indexs:
@@ -112,9 +123,11 @@ def distfn(v1, v2):
     (up + down)/2 - up_down_distance*a
     return: float
     """
+    assert(type(v1[0]) == np.int64)
+    assert(type(v2[0]) == np.int64)
     #print(v1, v2)
-    #v1 = int(v1[0])
-    #v2= int(v2[0])
+    v1 = int(v1[0])
+    v2= int(v2[0])
     #print(v1,v2)
     
     v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
@@ -128,13 +141,18 @@ def distfn(v1, v2):
     up_down_distance = np.abs(up_down_distance_0 - up_down_distance_1)
     a = 3
     dist = (v_up + v_down) / 2 - up_down_distance * a
+    #if dist < 0:
+        #dist = 0.01
     #dist = v_up
+    dist = 1-dist
+    assert(not np.isnan(dist))
     return dist
 
 def myhclust():
     """尝试层次聚类"""
     load_data()
-    indexs = cmp_bolls()
+    indexs = cmp_bolls(1000)
+    print(indexs)
     
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
@@ -161,33 +179,44 @@ def myhclust():
         #ni,nj = v[2:4]
         #dict_distance[ni,nj] = (v[0]+v[1])/2
         
-
+    #在100样本下， 使用0.2比较合适
     tree = hcluster.hcluster(features, distfcn=distfn)
-    clusters = tree.extract_clusters(0.3 * tree.distance)
+    clusters = tree.extract_clusters(0.2 * tree.distance)
     #for c in clusters:
         #elements = c.get_cluster_elements()
         #print(len(elements), elements)        
         #if len(elements)>3:
             #for index in elements:
                 #draw(g_list[index])            
-    for c in clusters:
-        elements = c.get_cluster_elements()
-        nbr_elements = len(elements)
-        if nbr_elements > 3:
-            print(elements)
-            pl.figure(figsize=(10,5))
-            for i, p in enumerate(elements):
-                pl.subplot(4, 5, i + 1)
-                pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
-                #im = array(Image.open(imlist[elements[p]]))
-                #imshow(im)
-                draw(g_list[p])
-                
-            pl.show()
+    print('clusters num=', len(clusters))
+    def ShowResult():
+        for j,c in enumerate(clusters):
+            elements = c.get_cluster_elements()
+            nbr_elements = len(elements)
+            if nbr_elements > 20:
+                print(j, elements)
+                pl.figure(figsize=(20,10))
+                for i, p in enumerate(elements):
+                    pl.subplot(max(4,int(np.ceil(len(elements)/5)) ), 5, i + 1)
+                    #pl.subplot(4, 5, i + 1)
+                    pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
+                    #im = array(Image.open(imlist[elements[p]]))
+                    #imshow(im)
+                    draw(g_list[p])
+                    
+                pl.show()
     
-    hcluster.draw_dendrogram(tree,imlist,filename='./sunset.png')                
-    
-    
+    #hcluster.draw_dendrogram(tree,imlist,filename='./sunset.png')                
+    def combine_clusters():
+        """合并一些相近的集合"""
+        #watch 
+        for i, j in combinations(clusters, 2):
+            i = i.get_cluster_elements()
+            j = j.get_cluster_elements()
+            d = distfn(np.array([i[0]]), np.array([j[0]]))
+            print(len(i), len(j), d)
+    #combine_clusters()    
+    ShowResult()
     print('end')
         
 #def test_kmeans():
@@ -267,13 +296,28 @@ def myhclust():
             #axis('equal')
             #axis('off')
     #show()    
+
+def calcCenterId(clusters):
+    """找到集合里中心的点
+    clusters: list id的集合
+    return: id"""
+    avgs = []
+    for i in clusters:
+        s = 0
+        for j in clusters:
+            if i != j:
+                s += distfn(i, j)
+        v = s / (len(clusters)-1)
+        avgs.append(v)
+    pos = agl.array_val_to_pos(np.array(avgs), np.max(avgs))
+    print('max_pos = %d, %.2f'%(pos, avgs[pos]))
     
 def MyKnnImpl():
     """自行实现， 对每个元素， 分别输出70，80，90区间的集合；其实现方式不能简单的套knn和hclust
     并不需要完整的放入集合中
     经过测试，聚类效果比pca等好
     """
-    pl = publish.Publish()
+    #pl = publish.Publish()
 
     load_data()
     indexs = cmp_bolls()
@@ -313,37 +357,118 @@ def MyKnnImpl():
     for i in range(n):
         for j in range(n):
             S[i,j] = distfn(i, j)
-    print(S)
+    #print(S)
+    
+    def IsInClust(i, clusts):
+        is_in_clusts = False
+        for clust1 in clusts:
+            if i in clust1:
+                is_in_clusts = True
+                break
+        return is_in_clusts
+    
     #用选择法，把各元素放到它们相近的集合内
+    clusts = []
     for i in range(n):
+        if IsInClust(i, clusts):
+            continue
         clust = []
         for j in range(n):
-            if S[i,j] > 0.78:
-                print(S[i,j],)
-                clust.append(j)
-        if i>20 and len(clust)>3 and len(clust)<20:
-            print(i, clust)        
-            #print(i, len(clust))
-            if not publish.IsPublish(pl):
-                pl.figure(figsize=(10,8))
-            else:
-                pl.figure
-            for k,j in enumerate(clust):
-                im = Image.open(imlist[j])
-                pl.subplot(4,5,k+1)
-                pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
-                pl.imshow(np.array(im))
-                pl.axis('equal')
-                pl.axis('off')
-            pl.show()
-            print('end')
-            #time.sleep(5)
-            pl.close()
-    pl.publish()
+            if S[i,j] > 0.8:
+                #print(S[i,j],)
+                if not IsInClust(j, clusts):
+                    clust.append(j)
+        print(i,clust)
+        clusts.append(clust)
+        if len(clust)>=4:
+            calcCenterId(clust)
+
+    def split_min_and_combo_to_max(clusts):
+        """分拆小的集合， 合并到大的集合"""
+        pass
+        
+        #if i>20 and len(clust)>3 and len(clust)<20:
+            #print(i, clust)        
+            ##print(i, len(clust))
+            #if not publish.IsPublish(pl):
+                #pl.figure(figsize=(10,8))
+            #else:
+                #pl.figure
+            #for k,j in enumerate(clust):
+                #im = Image.open(imlist[j])
+                #pl.subplot(4,5,k+1)
+                #pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
+                #pl.imshow(np.array(im))
+                #pl.axis('equal')
+                #pl.axis('off')
+            #pl.show()
+            #print('end')
+            ##time.sleep(5)
+            #pl.close()
+    #pl.publish()
             
+    
+class MyHCluster:
+    """调用scipy的层次聚类
+    鉴于层次算法也是需要计算合并后的平均值的，不计算平均值， 给两个图形进行合并，合并成新的图形后再与所有的图形重新比较一次， 再选取最优值合并， 重复这个过程
+    """
+    def __init__(self):
+        load_data()
+    def _show(self, cluster_ids):
+        pl.figure(figsize=(10,5))
+        for i, p in enumerate(cluster_ids):
+            pl.subplot(4, 5, i + 1)
+            pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
+            draw(g_list[p])
+        pl.show()
+    def _comboBoll(self, id1, id2):
+        pass
+    
+    def clust_person(self):
+        points = []
+        for i in range(100):
+            points.append(np.array([i]))
+        points = np.array(points)
+        disMat = sch.distance.pdist(points, distfn)
+        disMat[np.isnan(disMat)==True] = 0
+        print(disMat)
+        Z=sch.linkage(disMat,method='average') 
+        cluster= sch.fcluster(Z, t=1, criterion='inconsistent') 
+        print("Original cluster by hierarchy clustering:\n",cluster)            
+        max_clust = np.max(cluster)
+        for i in range(max_clust):
+            i = i+1
+            cluster_ids = np.where(cluster == i)[0]
+            print(cluster_ids)
+            self._show(cluster_ids)
+        print('')
+    def sample(self):
+        
+        points=scipy.randn(20,1)  
+        print(points)
+        
+        #1. 层次聚类
+        #生成点与点之间的距离矩阵,这里用的欧氏距离:
+        #disMat = sch.distance.pdist(points,'euclidean') 
+        #print(disMat)
+        def _distfn(u,v):
+            return np.sqrt((u-v)**2).sum()
+        disMat = sch.distance.pdist(points, _distfn)
+        print(disMat)
+        #进行层次聚类:
+        Z=sch.linkage(disMat,method='average') 
+        #将层级聚类结果以树状图表示出来并保存为plot_dendrogram.png
+        P=sch.dendrogram(Z)
+        plt.savefig('plot_dendrogram.png')
+        #根据linkage matrix Z得到聚类结果:
+        cluster= sch.fcluster(Z, t=1, criterion='inconsistent') 
+        
+        print("Original cluster by hierarchy clustering:\n",cluster)            
 if __name__ == "__main__":
     #run()
-    #myhclust()
+    myhclust()
     #myknn()
     #test_kmeans()
-    MyKnnImpl()
+    #MyKnnImpl()
+    #MyHCluster().sample()
+    #MyHCluster().clust_person()

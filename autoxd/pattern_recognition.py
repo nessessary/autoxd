@@ -12,7 +12,7 @@ else:
     from autoxd import stock_pinyin as jx
 import pylab as pl
 import math
-from autoxd import myredis
+from autoxd import myredis,agl
 from autoxd import warp_pytdx as tdx
 from autoxd.pypublish import publish
 
@@ -95,6 +95,10 @@ def pearson_guiyihua(a, b):
     b: np.ndarray
     return: float
     """
+    #如果有nan，用附近的值填充
+    a = agl.arrary_fillna(a)    
+    b = agl.arrary_fillna(b)
+    
     a = stock.GuiYiHua(a-np.min(a))
     b = stock.GuiYiHua(b - np.min(b))
     v = pearson(a,b)

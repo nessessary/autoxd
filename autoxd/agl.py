@@ -162,9 +162,16 @@ def GetSortedArrayIndexs(a, num=-1):
         i = len(a)-i-1
         b.append(a[i][0])
     return b
+def arrary_fillna(t1):
+    """用平均值填充"""
+    temp_col = t1
+    #print(temp_col)
+    nan_num =np.count_nonzero(temp_col!=temp_col) #判断该列存在不为0的数个数
+    if( nan_num != 0 ):
+        temp_not_nan_col = temp_col[temp_col==temp_col]
+        temp_col[np.isnan(temp_col)] = temp_not_nan_col.mean()
+    return t1
 
-def array_equal(a1,a2):
-    return (a1[np.isnan(a1)==False] == a2[np.isnan(a2)==False]).all()
 def array_val_to_pos(a, v):
     """由值取下标 
     agl.array_val_to_pos(np.array([1,2,3]),3)

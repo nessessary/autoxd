@@ -8,7 +8,7 @@ import numpy as np
 import pylab as pl
 import sys,os,codecs
 from autoxd import agl
-from policy_report import df_to_html_table
+from autoxd.pypublish.policy_report import df_to_html_table
 
 """模仿matlab的publish, 注意在__main__中调用有可能不会触发析构, pl的绘制放入一个函数中
 在当前工作目录中生成一个html\name\name.html
