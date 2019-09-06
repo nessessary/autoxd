@@ -32,10 +32,34 @@ from scipy.cluster.vq import vq,kmeans,whiten
 import numpy as np
 import matplotlib.pylab as plt
 
+import psutil
+
 
 g_list = []
 g_report = []   #比较的结果
-#pl = publish.Publish(explicit=True)
+#pl = publish.Publish(explicit=False)
+
+# 读取样本
+g_num = 400
+def modify_num_base_cpuinfo():
+    global g_num
+    #cpu 核心数量
+    cpu_num = psutil.cpu_count()
+    print('cpu_num:', cpu_num)
+    #cpu_ratio = psutil.cpu_times()
+    #print('cpu_tims: ', cpu_ratio)
+    machine_user_name = psutil.users()[0].name
+    print(machine_user_name)
+    if cpu_num == 4 and machine_user_name == 'wangkang':
+        #it's mac
+        g_num = 1000
+    if cpu_num == 3 and machine_user_name == 'root':
+        #docker
+        g_num = 800
+    if cpu_num >= 8:
+        #remote home
+        g_num = 10000
+modify_num_base_cpuinfo()        
 
 def draw(b):
     boll_up, boll_mid, boll_low = b
@@ -151,7 +175,7 @@ def distfn(v1, v2):
 def myhclust():
     """尝试层次聚类"""
     load_data()
-    indexs = cmp_bolls(1000)
+    indexs = cmp_bolls(g_num)
     print(indexs)
     
     #写入本地img中
@@ -203,8 +227,11 @@ def myhclust():
                     #im = array(Image.open(imlist[elements[p]]))
                     #imshow(im)
                     draw(g_list[p])
-                    
+                    imgname = 'html/%i.png'%(j)
+                    pl.savefig(imgname)
                 pl.show()
+                #pl.clf()
+                #pl.close()
     
     #hcluster.draw_dendrogram(tree,imlist,filename='./sunset.png')                
     def combine_clusters():

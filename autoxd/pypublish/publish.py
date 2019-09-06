@@ -149,6 +149,8 @@ class Publish:
         return pl.subplots_adjust(*args, **kwargs)
     def gcf(self):
         return pl.gcf()
+    def clf(self):
+        pl.clf()
     def text(self, x, y, s, fontdict=None, withdash=False, **kwargs):
         pl.text(x, y, s, fontdict, withdash, **kwargs)
     def plot(self, *args, **kwargs):
@@ -203,7 +205,8 @@ class Publish:
                 fname = self.path + self.name + "_" + sPid + '_' + str(len(self.imgs)) + ".png"
             self.imgs.append(fname)            
             self.cur_img_fname = fname
-            pl.savefig(fname, dpi=70)
+            self.figs[-1].savefig(fname, dpi=70)
+            #pl.savefig(fname, dpi=70)
     def get_CurImgFname(self):
         return self.cur_img_fname
     def attach_imgs(self, new_imgs_html):

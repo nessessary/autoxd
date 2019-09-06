@@ -65,7 +65,9 @@ def drawBoll(pl,closes, boll_up, boll_mid, boll_low):
     pl.axis('off')
 class data_sources():
     def loadData(self, code):
-        return stock.getFiveHisdatDf(code, method='local')
+        data_path = 'datasources/'
+        data_path = agl.combin_cur_dir(__file__, data_path)
+        return stock.getFiveHisdatDf(code, method='path', path=data_path)
     def loadCodes(self):
         data_path = 'datasources/'
         data_path = agl.combin_cur_dir(__file__, data_path)

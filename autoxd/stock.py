@@ -798,9 +798,9 @@ def getHisdatDf(code, is_fuquan=True , is_Trunover=False):
         df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
 
-def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
+def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
     """
-    method: mysql , tdx, local
+    method: mysql , tdx, local, path
     return: df col('ohlcu')"""
     if method == 'mysql':
         return mysql.getFiveHisdat(code,start_day,end_day)
@@ -814,6 +814,13 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
         return df
     if method == 'live':
         return LiveData().getFiveMinHisdat(code)
+    if method == 'path':
+        fname = code + '.csv'
+        fname = os.path.join(path, fname)
+        df = pd.read_csv(fname)
+        df.index = pd.DatetimeIndex( df[df.columns[0]])
+        return df
+        
 def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
