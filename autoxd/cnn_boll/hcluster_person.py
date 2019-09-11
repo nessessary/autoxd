@@ -92,7 +92,7 @@ def hcluster(features,distfcn=L2dist):
     
     # cache of distance calculations
     distances = {}
-    
+    distances2 = {}
     # initialize with each row as a cluster 
     node = [ClusterLeafNode(array(f),id=i) for i,f in enumerate(features)]
     
@@ -102,7 +102,7 @@ def hcluster(features,distfcn=L2dist):
         # loop through every pair looking for the smallest distance
         for ni,nj in combinations(node,2):
             if (ni,nj) not in distances: 
-                distances[ni,nj] = distfcn(ni.vec,nj.vec)
+                distances2[ni.vec[0], nj.vec[0]] = distances[ni,nj] = distfcn(ni.vec,nj.vec)
                 
             d = distances[ni,nj]
             assert(not isnan(d))
@@ -122,7 +122,7 @@ def hcluster(features,distfcn=L2dist):
         node.remove(nj)
         node.append(new_node)
     
-    return node[0]
+    return node[0], distances2
 
 
 from PIL import Image,ImageDraw

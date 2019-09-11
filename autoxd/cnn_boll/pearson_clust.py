@@ -33,7 +33,7 @@ import numpy as np
 import matplotlib.pylab as plt
 
 import psutil
-
+from autoxd import multi_run
 
 g_list = []
 g_report = []   #比较的结果
@@ -52,10 +52,10 @@ def modify_num_base_cpuinfo():
     print(machine_user_name)
     if cpu_num == 4 and machine_user_name == 'wangkang':
         #it's mac
-        g_num = 1000
+        g_num = 200
     if cpu_num == 3 and machine_user_name == 'root':
         #docker
-        g_num = 800
+        g_num = 2000
     if cpu_num >= 8:
         #remote home
         g_num = 10000
@@ -172,10 +172,33 @@ def distfn(v1, v2):
     assert(not np.isnan(dist))
     return dist
 
-def myhclust():
+def calc_center(clust_elements, distances):
+    """计算中心点
+    clust_elements: list 传入一个聚类集合的元素列表(indexs)
+    distances: dict 全部元素的距离矩阵， 用indexs取两个index之间的距离 , key=(i,j)
+    return: index
+    """
+    assert(len(clust_elements)>1)
+    avgs = []
+    for i in clust_elements:
+        s = 0
+        for j in clust_elements:
+            if i != j:
+                if (i,j) in distances.keys():
+                    s += distances[i,j]
+                else:
+                    s += distances[j,i]
+        v = s / (len(clust_elements)-1)
+        avgs.append(v)
+    pos = agl.array_val_to_pos(np.array(avgs), np.max(avgs))
+    print('max_pos = %d, %.2f'%(clust_elements[pos], avgs[pos]))
+    pass
+
+def myhclust(indexs):
     """尝试层次聚类"""
-    load_data()
-    indexs = cmp_bolls(g_num)
+    if len(g_list) == 0:
+        load_data()
+    #indexs = cmp_bolls(g_num)
     print(indexs)
     
     #写入本地img中
@@ -204,7 +227,7 @@ def myhclust():
         #dict_distance[ni,nj] = (v[0]+v[1])/2
         
     #在100样本下， 使用0.2比较合适
-    tree = hcluster.hcluster(features, distfcn=distfn)
+    tree , distances = hcluster.hcluster(features, distfcn=distfn)
     clusters = tree.extract_clusters(0.2 * tree.distance)
     #for c in clusters:
         #elements = c.get_cluster_elements()
@@ -243,9 +266,26 @@ def myhclust():
             d = distfn(np.array([i[0]]), np.array([j[0]]))
             print(len(i), len(j), d)
     #combine_clusters()    
+    #计算中心点
+    for j,c in enumerate(clusters):
+        elements = c.get_cluster_elements()
+        if(len(elements)>1):
+            calc_center(elements, distances)    
     ShowResult()
     print('end')
-        
+
+def test_myhclust():
+    load_data()
+    indexs = cmp_bolls(g_num)
+    myhclust(indexs)
+    
+def test_multi_myhclust():
+    load_data()
+    total_len = len(g_list)
+    indexs = range(total_len)[:800]
+    #myhclust(indexs)
+    multi_run.run_fn(myhclust, indexs)
+    
 #def test_kmeans():
     #pl = None
     #from scipy.cluster.vq import *
@@ -326,8 +366,8 @@ def myhclust():
 
 def calcCenterId(clusters):
     """找到集合里中心的点
-    clusters: list id的集合
-    return: id"""
+    clusters: list clust id的集合, indexs
+    return: 数据源索引 index"""
     avgs = []
     for i in clusters:
         s = 0
@@ -493,7 +533,10 @@ class MyHCluster:
         print("Original cluster by hierarchy clustering:\n",cluster)            
 if __name__ == "__main__":
     #run()
-    myhclust()
+    t = agl.tic_toc()
+    #myhclust()
+    #test_myhclust()
+    test_multi_myhclust()
     #myknn()
     #test_kmeans()
     #MyKnnImpl()
