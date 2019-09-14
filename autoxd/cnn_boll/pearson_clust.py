@@ -33,7 +33,7 @@ import numpy as np
 import matplotlib.pylab as plt
 
 import psutil
-from autoxd import multi_run
+from autoxd.MultiSubProcess import MultiSubProcess
 
 g_list = []
 g_report = []   #比较的结果
@@ -276,7 +276,7 @@ def myhclust(indexs):
 
 def test_myhclust():
     load_data()
-    indexs = cmp_bolls(g_num)
+    indexs = range(len(g_list))[300:900]
     myhclust(indexs)
     
 def test_multi_myhclust():
@@ -284,7 +284,7 @@ def test_multi_myhclust():
     total_len = len(g_list)
     indexs = range(total_len)[:800]
     #myhclust(indexs)
-    multi_run.run_fn(myhclust, indexs)
+    MultiSubProcess.run_fn(myhclust, indexs, __file__)
     
 #def test_kmeans():
     #pl = None
@@ -535,8 +535,8 @@ if __name__ == "__main__":
     #run()
     t = agl.tic_toc()
     #myhclust()
-    #test_myhclust()
-    test_multi_myhclust()
+    test_myhclust()
+    #test_multi_myhclust()
     #myknn()
     #test_kmeans()
     #MyKnnImpl()

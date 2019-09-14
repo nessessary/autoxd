@@ -74,7 +74,7 @@ class MultiSubProcess():
             df_result = pd.DataFrame([])
             for i in df[df[0]==task_id].index:
                 r = myredis.get_obj(getResultName(i))
-                assert(isinstance(r, pd.DataFrame))
+                assert(isinstance(r, pd.DataFrame) or r is None)
                 df_result = pd.concat([df_result, r])
             result.append(df_result)
         return result
@@ -123,19 +123,38 @@ class pp_func_param:
                 self.cpu -= 1
         return r
         
-def test(a, task_id):
+def test(a):
     print('pid=',os.getpid(), a)
     return pd.DataFrame(a)
-def test2(b, task_id):
+def test2(b):
     print('test2', b)
     return pd.DataFrame(b)
 def main(args):
+    strs = ['adb','adf','dsfasd','adsf','dsf','sdf']
     multi = MultiSubProcess()
-    multi.Map(3,__file__, test, list(range(100)))
+    #multi.Map(3,__file__, test, list(range(100)))
+    multi.Map(3,__file__, test, strs)
     multi.Map(1, __file__, test2, list(range(20)))
     multi.Run()
     df1, df2 = multi.Reduce()
     print(df1)
+
+#快捷执行
+def run_fn(fn,args,mod,cpu_num=0):
+    """多进程执行, 并行
+    fn : 执行函数, Run(codes='', task_id=0)
+    args: fn使用的参数
+    mod: 模块名称， 必须有 __file__
+    cpu_num: 分割参数， 任务数
+    return: fn执行的结果
+    """
+    if cpu_num == 0:
+        cpu_num = os.cpu_count()
+    multi = MultiSubProcess()
+    multi.Map(cpu_num, mod,  fn, args)
+    multi.Run()	  
+    return multi.Reduce()
+
     
 if __name__ == "__main__":
     try:

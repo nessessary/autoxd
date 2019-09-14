@@ -51,7 +51,7 @@ def main(args):
     # 获取import模块名
     #module.fn
     s += 'r=%s'%(module_name)
-    s += '.%s(%s, %d)'%(v[1:])
+    s += '.%s(%s)'%(v[1:-1])
     #print(s)
     
     if sys.version > '3':
