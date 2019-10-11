@@ -36,11 +36,11 @@ def getFunctionDoc():
     pass
 def tic():
     """开始计时"""
-    globals()['tt'] = time.clock()
+    globals()['tt'] = time.time()
 
 def toc():
     """计时结束"""
-    sec = time.clock()-globals()['tt']
+    sec = time.time()-globals()['tt']
     minutie = sec/60.0
     hour = minutie / 60.0
     a = datetime.timedelta(seconds = sec)

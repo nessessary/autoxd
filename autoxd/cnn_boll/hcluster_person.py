@@ -86,7 +86,7 @@ def L1dist(v1,v2):
     return sum(abs(v1-v2))
 
 
-def hcluster(features,distfcn=L2dist):
+def hcluster(features, datas, distfcn=L2dist):
     """ Cluster the rows of features using 
         hierarchical clustering. """
     
@@ -102,7 +102,7 @@ def hcluster(features,distfcn=L2dist):
         # loop through every pair looking for the smallest distance
         for ni,nj in combinations(node,2):
             if (ni,nj) not in distances: 
-                distances2[ni.vec[0], nj.vec[0]] = distances[ni,nj] = distfcn(ni.vec,nj.vec)
+                distances2[ni.vec[0], nj.vec[0]] = distances[ni,nj] = distfcn(ni.vec,nj.vec, datas)
                 
             d = distances[ni,nj]
             assert(not isnan(d))

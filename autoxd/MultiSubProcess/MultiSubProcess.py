@@ -143,7 +143,7 @@ def main(args):
 def run_fn(fn,args,mod,cpu_num=0):
     """多进程执行, 并行
     fn : 执行函数, Run(codes='', task_id=0)
-    args: fn使用的参数
+    args: fn使用的参数, 只能传数组
     mod: 模块名称， 必须有 __file__
     cpu_num: 分割参数， 任务数
     return: fn执行的结果

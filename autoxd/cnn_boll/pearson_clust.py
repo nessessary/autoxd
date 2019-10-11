@@ -4,8 +4,14 @@
 1. 引入已实现的数据加载
 2. 对单副图进行pearson比较
 3. 比较的结果作为knn的距离
+并行处理
+1. 在虚拟机docker里， 样本不能设置的过大， 单个进程处理4000会引起内存错误， 3000太慢， 可能2000正好
+2. 找到聚类后的中心点， 作为该集合的代表， 记录在原始数据中的索引， 再把这些中心点做一次聚类， 最后根据图形来设置编号label
+3. 测试数据源的分段， 一次处理掉全部的数据， 分段抛入执行， 记录数据偏移
+4. 产生的数据集需要带上一个id， 带上时间， 数值
 """
 from __future__ import print_function
+import os
 import pandas as pd
 import judge_boll_sign as jbs
 from autoxd import pattern_recognition as pr
@@ -35,7 +41,6 @@ import matplotlib.pylab as plt
 import psutil
 from autoxd.MultiSubProcess import MultiSubProcess
 
-g_list = []
 g_report = []   #比较的结果
 #pl = publish.Publish(explicit=False)
 
@@ -55,7 +60,7 @@ def modify_num_base_cpuinfo():
         g_num = 200
     if cpu_num == 3 and machine_user_name == 'root':
         #docker
-        g_num = 2000
+        g_num = 2000*cpu_num
     if cpu_num >= 8:
         #remote home
         g_num = 10000
@@ -89,21 +94,11 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
         g_report.append([v_up, v_down, id1, id2, fimg1, fimg2])    
     return v_up, v_down
 
-def cmp_bolls(n):
-    """return: (int) g_list index"""
-    indexs = range(len(g_list))
-    indexs = indexs[:n]
-    indexs2 = indexs
-    #indexs2 = agl.array_shuffle(indexs)
-    #for i in indexs:
-        #j = indexs2[i]
-        #v = cmp_boll_two(g_list[j], g_list[i], j, i)
-        ##print(agl.float_to_2(v[0]), agl.float_to_2(v[1]))
-    return indexs2
-    
 def load_data():
+    """加载数据
+    return: list
     """
-    """
+    l = []
     codes = ['000005']
     for code in codes:
         datas = jbs.getData(code)   # from local
@@ -112,7 +107,8 @@ def load_data():
             continue
         if jbs.IsSide(df['c'].values, upper, lower, middle):
             for index in range(100, len(df) - jbs.g_scope_len):
-                g_list.append(getBolls(index, datas))
+                l.append(getBolls(index, datas))
+    return l
 
 def getBolls(index, datas):
     """画5分钟线的boll图
@@ -131,17 +127,8 @@ def getBolls(index, datas):
     #c = jbs.th.filter_close(df['h'].values[index_s:index], df['l'].values[index_s:index], m[index_s:index])
     return u[index_s:index], m[index_s:index], l[index_s:index]
 
-def run():
-    """输出两两比较后的列表"""
-    load_data()
-    print(len(g_list))
-    cmp_bolls()
-    df = pd.DataFrame(g_report)
-    #show_result(df)
-    pl.reset(policy_report.df_to_html_table(df, df_img_col_indexs=[-2,-1]))
-    pl.publish()
-    
-def distfn(v1, v2):
+   
+def distfn(v1, v2, l):
     """距离函数, v1: id, g_list的id
     还是加上上下之间的距离， 以最近点的距离作为距离
     (up + down)/2 - up_down_distance*a
@@ -154,10 +141,10 @@ def distfn(v1, v2):
     v2= int(v2[0])
     #print(v1,v2)
     
-    v_up = pr.pearson_guiyihua(g_list[v1][0], g_list[v2][0])
-    v_down = pr.pearson_guiyihua(g_list[v1][-1], g_list[v2][-1])
-    up_down_distance_0 = g_list[v1][0] - g_list[v1][1]
-    up_down_distance_1 = g_list[v2][0] - g_list[v2][1]
+    v_up = pr.pearson_guiyihua(l[v1][0], l[v2][0])
+    v_down = pr.pearson_guiyihua(l[v1][-1], l[v2][-1])
+    up_down_distance_0 = l[v1][0] - l[v1][1]
+    up_down_distance_1 = l[v2][0] - l[v2][1]
     up_down_distance_0 = up_down_distance_0[np.isnan(up_down_distance_0) == False]
     up_down_distance_1 = up_down_distance_1[np.isnan(up_down_distance_1) == False]
     up_down_distance_0 = np.min(up_down_distance_0)
@@ -191,29 +178,31 @@ def calc_center(clust_elements, distances):
         v = s / (len(clust_elements)-1)
         avgs.append(v)
     pos = agl.array_val_to_pos(np.array(avgs), np.max(avgs))
-    print('max_pos = %d, %.2f'%(clust_elements[pos], avgs[pos]))
-    pass
+    #print('max_pos = %d, %.2f'%(clust_elements[pos], avgs[pos]))
+    return clust_elements[pos]
 
 def myhclust(indexs):
     """尝试层次聚类"""
-    if len(g_list) == 0:
-        load_data()
-    #indexs = cmp_bolls(g_num)
-    print(indexs)
+    offset = indexs[0]
+    l = load_data()
+    print("num=%d, total_num = %d"%(len(indexs), len(l)))
+    l = l[indexs[0]:indexs[-1]]
+    indexs = range(indexs[-1]-indexs[0])
+    assert(len(indexs) == len(l))
     
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
     #agl.removeDir(fname)
     #agl.createDir(fname)
-    imlist = []
-    #for i in range(len(indexs)):
-    for i in indexs:
-        fname1 =fname + '/img_%s.png'%(i)
-        #pl.figure
-        #draw(g_list[i])
-        #pl.savefig(fname1)
-        #pl.close()
-        imlist.append(fname1)
+    #imlist = []
+    ##for i in range(len(indexs)):
+    #for i in indexs:
+        #fname1 =fname + '/img_%s.png'%(i)
+        ##pl.figure
+        ##draw(g_list[i])
+        ##pl.savefig(fname1)
+        ##pl.close()
+        #imlist.append(fname1)
     
     #df = pd.DataFrame(g_report)
     # 转换一下数据
@@ -227,7 +216,7 @@ def myhclust(indexs):
         #dict_distance[ni,nj] = (v[0]+v[1])/2
         
     #在100样本下， 使用0.2比较合适
-    tree , distances = hcluster.hcluster(features, distfcn=distfn)
+    tree , distances = hcluster.hcluster(features, l, distfcn=distfn)
     clusters = tree.extract_clusters(0.2 * tree.distance)
     #for c in clusters:
         #elements = c.get_cluster_elements()
@@ -241,7 +230,8 @@ def myhclust(indexs):
             elements = c.get_cluster_elements()
             nbr_elements = len(elements)
             if nbr_elements > 20:
-                print(j, elements)
+                center_index = calc_center(elements, distances)
+                print(j, center_index, elements)
                 pl.figure(figsize=(20,10))
                 for i, p in enumerate(elements):
                     pl.subplot(max(4,int(np.ceil(len(elements)/5)) ), 5, i + 1)
@@ -249,8 +239,8 @@ def myhclust(indexs):
                     pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
                     #im = array(Image.open(imlist[elements[p]]))
                     #imshow(im)
-                    draw(g_list[p])
-                    imgname = 'html/%i.png'%(j)
+                    draw(l[p])
+                    imgname = 'html/%i_%s.png'%(j+offset, str(os.getpid()) )
                     pl.savefig(imgname)
                 pl.show()
                 #pl.clf()
@@ -266,25 +256,22 @@ def myhclust(indexs):
             d = distfn(np.array([i[0]]), np.array([j[0]]))
             print(len(i), len(j), d)
     #combine_clusters()    
-    #计算中心点
-    for j,c in enumerate(clusters):
-        elements = c.get_cluster_elements()
-        if(len(elements)>1):
-            calc_center(elements, distances)    
+    ##计算中心点
+    #for j,c in enumerate(clusters):
+        #elements = c.get_cluster_elements()
+        #if(len(elements)>1):
+            #calc_center(elements, distances)    
     ShowResult()
     print('end')
 
 def test_myhclust():
-    load_data()
-    indexs = range(len(g_list))[300:900]
-    myhclust(indexs)
+    a = range(900)
+    a = a[300:600]
+    myhclust(a)
     
 def test_multi_myhclust():
-    load_data()
-    total_len = len(g_list)
-    indexs = range(total_len)[:800]
-    #myhclust(indexs)
-    MultiSubProcess.run_fn(myhclust, indexs, __file__)
+    a = range(g_num)
+    MultiSubProcess.run_fn(myhclust, a, __file__)
     
 #def test_kmeans():
     #pl = None
@@ -377,7 +364,7 @@ def calcCenterId(clusters):
         v = s / (len(clusters)-1)
         avgs.append(v)
     pos = agl.array_val_to_pos(np.array(avgs), np.max(avgs))
-    print('max_pos = %d, %.2f'%(pos, avgs[pos]))
+    #print('max_pos = %d, %.2f'%(pos, avgs[pos]))
     
 def MyKnnImpl():
     """自行实现， 对每个元素， 分别输出70，80，90区间的集合；其实现方式不能简单的套knn和hclust
@@ -533,12 +520,13 @@ class MyHCluster:
         print("Original cluster by hierarchy clustering:\n",cluster)            
 if __name__ == "__main__":
     #run()
-    t = agl.tic_toc()
-    #myhclust()
+    agl.tic()
     test_myhclust()
     #test_multi_myhclust()
+    
     #myknn()
     #test_kmeans()
     #MyKnnImpl()
     #MyHCluster().sample()
     #MyHCluster().clust_person()
+    agl.toc()
