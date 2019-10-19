@@ -4,23 +4,23 @@ ZXHZ='000099' #中信海直
 GJNY='000096' #广聚能源
 TJJT = Enum('TJJT', 'a#天健集团 b#太极集团')
 TJJT._member_map_._OrderedDict__update({'a':'000090'})#天健集团
-RJGF='002192' #融捷股份
+RJGF = Enum('RJGF', 'a#融捷股份 b#润建股份')
+RJGF._member_map_._OrderedDict__update({'a':'002192'})#融捷股份
 CLGF = Enum('CLGF', 'a#畅联股份 b#春兰股份 c#常铝股份')
 CLGF._member_map_._OrderedDict__update({'a':'603648'})#畅联股份
 KHZY='603139' #康惠制药
 HLSJ='603138' #海量数据
-XGGF = Enum('XGGF', 'a#新钢股份 b#厦工股份 c#旭光股份')
+XGGF = Enum('XGGF', 'a#新钢股份 b#旭光股份')
 XGGF._member_map_._OrderedDict__update({'a':'600782'})#新钢股份
 TMH='603136' #天目湖
 SHHG='603131' #上海沪工
-FRYY='600781' #辅仁药业
+STFR='600781' #ST辅仁
 TYKJ = Enum('TYKJ', 'a#碳元科技 b#同有科技')
 TYKJ._member_map_._OrderedDict__update({'a':'603133'})#碳元科技
-JJGF = Enum('JJGF', 'a#劲嘉股份 b#锦江股份')
+JJGF = Enum('JJGF', 'a#劲嘉股份 b#交建股份')
 JJGF._member_map_._OrderedDict__update({'a':'002191'})#劲嘉股份
 FZDJ='002196' #方正电机
-STFG = Enum('STFG', 'a#ST凡谷 b#ST抚钢')
-STFG._member_map_._OrderedDict__update({'a':'002194'})#ST凡谷
+WHFG='002194' #武汉凡谷
 ESSW='002195' #二三四五
 DFZQ='600958' #东方证券
 JXN = Enum('JXN', 'a#金信诺 b#金新农')
@@ -40,27 +40,29 @@ XTKJ._member_map_._OrderedDict__update({'a':'300259'})#新天科技
 XYCZ='300568' #星源材质
 LKYY = Enum('LKYY', 'a#鲁抗医药 b#灵康药业')
 LKYY._member_map_._OrderedDict__update({'a':'600789'})#鲁抗医药
-STWL='300494' #盛天网络
+FLT='601865' #福莱特
 MSST='300495' #美尚生态
 ZKCD='300496' #中科创达
 FXGF = Enum('FXGF', 'a#富祥股份 b#凤形股份 c#福星股份')
 FXGF._member_map_._OrderedDict__update({'a':'300497'})#富祥股份
-XDXHG='603733' #仙鹤股份
+XHGF = Enum('XHGF', 'a#仙鹤股份 b#新化股份 c#兴化股份')
+XHGF._member_map_._OrderedDict__update({'a':'603733'})#仙鹤股份
 THKJ = Enum('THKJ', 'a#通合科技 b#泰豪科技')
 THKJ._member_map_._OrderedDict__update({'a':'300491'})#通合科技
 SDSJ='300492' #山鼎设计
 RXKJ='300493' #润欣科技
-WSGF = Enum('WSGF', 'a#温氏股份 b#沃施股份 c#万顺股份 d#万盛股份')
+WSGF = Enum('WSGF', 'a#温氏股份 b#沃施股份 c#万盛股份')
 WSGF._member_map_._OrderedDict__update({'a':'300498'})#温氏股份
-GLGF = Enum('GLGF', 'a#高澜股份 b#高乐股份')
+GLGF = Enum('GLGF', 'a#高澜股份 b#国联股份 c#高乐股份')
 GLGF._member_map_._OrderedDict__update({'a':'300499'})#高澜股份
+WLSW='603739' #蔚蓝生物
 TJKJ = Enum('TJKJ', 'a#泰晶科技 b#天玑科技 c#同济科技')
 TJKJ._member_map_._OrderedDict__update({'a':'603738'})#泰晶科技
 AXYY='603229' #奥翔药业
 JWDZ='603228' #景旺电子
 ZLZK='000157' #中联重科
 ZHG='000507' #珠海港
-YHJK='000150' #宜华健康
+ZBTX='603220' #中贝通信
 HTGF = Enum('HTGF', 'a#恒通股份 b#洪涛股份 c#华泰股份 d#华统股份 e#哈投股份 f#华铁股份')
 HTGF._member_map_._OrderedDict__update({'a':'603223'})#恒通股份
 JMZY='603222' #济民制药
@@ -73,6 +75,7 @@ JHJ='603919' #金徽酒
 WZJT='600368' #五洲交通
 HLKJ='603917' #合力科技
 SBT='603916' #苏博特
+GMGF='603915' #国茂股份
 FYYY='000153' #丰原药业
 JLT = Enum('JLT', 'a#佳力图 b#金莱特 c#金力泰')
 JLT._member_map_._OrderedDict__update({'a':'603912'})#佳力图
@@ -84,6 +87,7 @@ LKDQ='603355' #莱克电气
 CTWY='300689' #澄天伟业
 SJZY='603357' #设计总院
 HLJG='603356' #华菱精工
+WEYY='603351' #威尔药业
 KCKJ='603826' #坤彩科技
 HYLZ='603825' #华扬联众
 LG='000528' #柳工
@@ -91,22 +95,22 @@ LKGF='603829' #洛凯股份
 KLD = Enum('KLD', 'a#柯利达 b#康隆达')
 KLD._member_map_._OrderedDict__update({'a':'603828'})#柯利达
 DZST='603359' #东珠生态
-STTH='000912' #ST天化
+LTH='000912' #泸天化
 JXTY='600362' #江西铜业
 WKZB='600390' #五矿资本
 NBYS='600366' #宁波韵升
 FHGG='002743' #富煌钢构
 AKD='600933' #爱柯迪
 PDKG='002938' #鹏鼎控股
-CCZQ='002939' #新股
+CCZQ='002939' #长城证券
 GXGD = Enum('GXGD', 'a#广西广电 b#国星光电')
 GXGD._member_map_._OrderedDict__update({'a':'600936'})#广西广电
 HFKJ = Enum('HFKJ', 'a#航发科技 b#浩丰科技')
 HFKJ._member_map_._OrderedDict__update({'a':'600391'})#航发科技
 TADZ='002935' #天奥电子
 ZZYH='002936' #郑州银行
-XRKJ = Enum('XRKJ', 'a#新股 b#欣锐科技')
-XRKJ._member_map_._OrderedDict__update({'a':'002937'})#新股
+XRKJ = Enum('XRKJ', 'a#兴瑞科技 b#欣锐科技')
+XRKJ._member_map_._OrderedDict__update({'a':'002937'})#兴瑞科技
 HCZH='002930' #宏川智慧
 GHKJ = Enum('GHKJ', 'a#光华科技 b#光弘科技')
 GHKJ._member_map_._OrderedDict__update({'a':'002741'})#光华科技
@@ -126,11 +130,12 @@ HPGF = Enum('HPGF', 'a#华平股份 b#厚普股份')
 HPGF._member_map_._OrderedDict__update({'a':'300074'})#华平股份
 SZZT='300075' #数字政通
 XJZY='002332' #仙琚制药
-LPSJ='002333' #罗普斯金
+STLP='002333' #ST罗普
 LJJT='601188' #龙江交通
 WTKJ = Enum('WTKJ', 'a#皖通科技 b#闻泰科技')
 WTKJ._member_map_._OrderedDict__update({'a':'002331'})#皖通科技
-RRL='002336' #人人乐
+STRL = Enum('STRL', 'a#ST人乐 b#ST荣联')
+STRL._member_map_._OrderedDict__update({'a':'002336'})#ST人乐
 SXKJ='002337' #赛象科技
 YWT='002334' #英威腾
 KHHS='002335' #科华恒盛
@@ -139,14 +144,15 @@ JCDZ = Enum('JCDZ', 'a#积成电子 b#精测电子')
 JCDZ._member_map_._OrderedDict__update({'a':'002339'})#积成电子
 ZGTJ='601186' #中国铁建
 NBZB='600857' #宁波中百
-ZTNY='600856' #中天能源
+STZT='600856' #ST中天
 HTCF='600855' #航天长峰
 CLGF._member_map_._OrderedDict__update({'b':'600854'})#春兰股份
 LJGF = Enum('LJGF', 'a#龙建股份 b#隆基股份 c#利君股份')
 LJGF._member_map_._OrderedDict__update({'a':'600853'})#龙建股份
-HXGF = Enum('HXGF', 'a#海欣股份 b#海峡股份 c#华鑫股份 d#华西股份 e#红相股份')
+HXGF = Enum('HXGF', 'a#海欣股份 b#海峡股份 c#华鑫股份 d#海星股份 e#华西股份 f#红相股份')
 HXGF._member_map_._OrderedDict__update({'a':'600851'})#海欣股份
 HDDN='600850' #华东电脑
+GGGF='002749' #国光股份
 WFJ='600859' #王府井
 YZGF = Enum('YZGF', 'a#银座股份 b#元祖股份')
 YZGF._member_map_._OrderedDict__update({'a':'600858'})#银座股份
@@ -162,11 +168,11 @@ LSW='300104' #乐视网
 LYJS = Enum('LYJS', 'a#龙源技术 b#龙元建设')
 LYJS._member_map_._OrderedDict__update({'a':'300105'})#龙源技术
 QZGD='300102' #乾照光电
-DGLJ='300103' #达刚路机
-SLGF = Enum('SLGF', 'a#双林股份 b#胜利股份 c#苏利股份 d#圣龙股份 e#深冷股份 f#索菱股份 g#三垒股份 h#神力股份')
+DGKG = Enum('DGKG', 'a#达刚路机 b#东莞控股')
+DGKG._member_map_._OrderedDict__update({'a':'300103'})#达刚路机
+SLGF = Enum('SLGF', 'a#双林股份 b#胜利股份 c#苏利股份 d#圣龙股份 e#深冷股份 f#神力股份')
 SLGF._member_map_._OrderedDict__update({'a':'300100'})#双林股份
-ZXKJ = Enum('ZXKJ', 'a#振芯科技 b#中新科技')
-ZXKJ._member_map_._OrderedDict__update({'a':'300101'})#振芯科技
+ZXKJ='300101' #振芯科技
 TSGF = Enum('TSGF', 'a#天顺股份 b#天山股份')
 TSGF._member_map_._OrderedDict__update({'a':'002800'})#天顺股份
 WGGF='002801' #微光股份
@@ -174,7 +180,7 @@ HHXC='002802' #洪汇新材
 JHGF = Enum('JHGF', 'a#吉宏股份 b#江海股份 c#巨化股份 d#君禾股份 e#金花股份 f#京汉股份')
 JHGF._member_map_._OrderedDict__update({'a':'002803'})#吉宏股份
 FYGF='002805' #丰元股份
-HFGF = Enum('HFGF', 'a#华锋股份 b#华发股份 c#惠发股份 d#宏发股份 e#华纺股份')
+HFGF = Enum('HFGF', 'a#华锋股份 b#辉丰股份 c#华发股份 d#宏发股份 e#华纺股份')
 HFGF._member_map_._OrderedDict__update({'a':'002806'})#华锋股份
 JYYH = Enum('JYYH', 'a#江阴银行 b#久远银海')
 JYYH._member_map_._OrderedDict__update({'a':'002807'})#江阴银行
@@ -194,7 +200,7 @@ GTJT = Enum('GTJT', 'a#广田集团 b#国泰集团')
 GTJT._member_map_._OrderedDict__update({'a':'002482'})#广田集团
 RBGF='002483' #润邦股份
 BYGT='600581' #八一钢铁
-WLDQ='600580' #卧龙电气
+WLDQ='600580' #卧龙电驱
 HYGC='600583' #海油工程
 TDKJ='600582' #天地科技
 HLSN='600585' #海螺水泥
@@ -205,30 +211,30 @@ BHGF._member_map_._OrderedDict__update({'b':'002246'})#北化股份
 JLWH='002247' #聚力文化
 BJJT='002244' #滨江集团
 AYSC='002245' #澳洋顺昌
-JYGF = Enum('JYGF', 'a#九阳股份 b#嘉寓股份 c#金圆股份 d#集友股份 e#九有股份 f#健友股份 g#精艺股份 h#交运股份 i#金鹰股份')
+JYGF = Enum('JYGF', 'a#九阳股份 b#嘉寓股份 c#金圆股份 d#集友股份 e#健友股份 f#精艺股份 g#交运股份 h#金鹰股份')
 JYGF._member_map_._OrderedDict__update({'a':'002242'})#九阳股份
 TCLX='002243' #通产丽星
-WHGF = Enum('WHGF', 'a#威华股份 b#围海股份 c#维宏股份')
+WHGF = Enum('WHGF', 'a#威华股份 b#维宏股份')
 WHGF._member_map_._OrderedDict__update({'a':'002240'})#威华股份
 GEGF = Enum('GEGF', 'a#歌尔股份 b#国恩股份')
 GEGF._member_map_._OrderedDict__update({'a':'002241'})#歌尔股份
 DZJT='600611' #大众交通
-STYD = Enum('STYD', 'a#ST毅达 b#ST椰岛')
-STYD._member_map_._OrderedDict__update({'a':'600610'})#ST毅达
+STYD='600610' #ST毅达
 SQZY='600613' #神奇制药
 LFX='600612' #老凤祥
-FHGF = Enum('FHGF', 'a#丰华股份 b#凤凰股份')
-FHGF._member_map_._OrderedDict__update({'a':'600615'})#丰华股份
-PQKJ='600614' #鹏起科技
+FHGF = Enum('FHGF', 'a#ST丰华 b#凤凰股份')
+FHGF._member_map_._OrderedDict__update({'a':'600615'})#ST丰华
+STPQ='600614' #ST鹏起
 GXNY='600617' #国新能源
 JFJY = Enum('JFJY', 'a#金枫酒业 b#佳发教育')
 JFJY._member_map_._OrderedDict__update({'a':'600616'})#金枫酒业
-HLGF = Enum('HLGF', 'a#海立股份 b#华立股份 c#汉缆股份 d#恒力股份 e#海亮股份 f#华联股份 g#辉隆股份 h#恒林股份')
+HLGF = Enum('HLGF', 'a#海立股份 b#华立股份 c#汉缆股份 d#海亮股份 e#华联股份 f#辉隆股份 g#恒林股份')
 HLGF._member_map_._OrderedDict__update({'a':'600619'})#海立股份
 LJHG='600618' #氯碱化工
 JXKJ = Enum('JXKJ', 'a#吉鑫科技 b#巨星科技')
 JXKJ._member_map_._OrderedDict__update({'a':'601218'})#吉鑫科技
 BYYS='601212' #白银有色
+TNZG='300569' #天能重工
 GTJA='601211' #国泰君安
 JZJT='601216' #君正集团
 SCLQ='600039' #四川路桥
@@ -256,8 +262,9 @@ HFAL='002064' #华峰氨纶
 DHRJ='002065' #东华软件
 QGGF='601326' #秦港股份
 GJZQ='600109' #国金证券
-YSJT='600108' #亚盛集团
-YDGF = Enum('YDGF', 'a#永鼎股份 b#怡达股份 c#永东股份 d#韵达股份 e#银都股份')
+YSJT = Enum('YSJT', 'a#亚盛集团 b#因赛集团')
+YSJT._member_map_._OrderedDict__update({'a':'600108'})#亚盛集团
+YDGF = Enum('YDGF', 'a#永鼎股份 b#怡达股份 c#运达股份 d#永东股份 e#韵达股份 f#银都股份')
 YDGF._member_map_._OrderedDict__update({'a':'600105'})#永鼎股份
 SQJT='600104' #上汽集团
 MEY='600107' #美尔雅
@@ -266,11 +273,12 @@ MXDL='600101' #明星电力
 TFGF='600100' #同方股份
 QSZY='600103' #青山纸业
 JRJ='000402' #金融街
-STSH='000403' #ST生化
+ZXSH='000403' #振兴生化
 XJDQ = Enum('XJDQ', 'a#许继电气 b#信捷电气')
 XJDQ._member_map_._OrderedDict__update({'a':'000400'})#许继电气
 JDSN='000401' #冀东水泥
-STZY='600321' #ST正源
+STZY = Enum('STZY', 'a#ST正源 b#ST准油')
+STZY._member_map_._OrderedDict__update({'a':'600321'})#ST正源
 SLGF._member_map_._OrderedDict__update({'b':'000407'})#胜利股份
 CHHY='000404' #长虹华意
 TFFZ='600322' #天房发展
@@ -288,7 +296,7 @@ KMMY='002661' #克明面业
 JWGF = Enum('JWGF', 'a#京威股份 b#佳沃股份')
 JWGF._member_map_._OrderedDict__update({'a':'002662'})#京威股份
 PBGF='002663' #普邦股份
-SLLT='601058' #赛轮金宇
+SLLT='601058' #赛轮轮胎
 AMDQ='002668' #奥马电器
 KDXC='002669' #康达新材
 TQLY='002466' #天齐锂业
@@ -296,11 +304,11 @@ ELS='002467' #二六三
 ZYHL='002464' #众应互联
 HGTX='002465' #海格通信
 JST='002462' #嘉事堂
-HDGF = Enum('HDGF', 'a#沪电股份 b#海德股份 c#红豆股份 d#杭电股份 e#华鼎股份 f#海达股份 g#华帝股份 h#宏达股份')
+HDGF = Enum('HDGF', 'a#沪电股份 b#海德股份 c#红豆股份 d#杭电股份 e#海达股份 f#华帝股份 g#宏达股份')
 HDGF._member_map_._OrderedDict__update({'a':'002463'})#沪电股份
 GFLY='002460' #赣锋锂业
 ZJPJ='002461' #珠江啤酒
-JBFZ='000897' #津滨发展
+STJB='000897' #ST津滨
 STKD='002468' #申通快递
 SWGC='002469' #三维工程
 HBGF = Enum('HBGF', 'a#恒邦股份 b#鸿博股份 c#华宝股份 d#恒宝股份')
@@ -315,45 +323,48 @@ KZGF='603037' #凯众股份
 QZGF='603030' #全筑股份
 ADL='603031' #安德利
 DXJY='603032' #德新交运
-SWGF = Enum('SWGF', 'a#三维股份 b#顺威股份 c#生物股份 d#明星电缆')
+SWGF = Enum('SWGF', 'a#三维股份 b#顺威股份 c#生物股份 d#尚纬股份')
 SWGF._member_map_._OrderedDict__update({'a':'603033'})#三维股份
 DYZN='300670' #大烨智能
 FMDZ='300671' #富满电子
 GKW='300672' #国科微
 PDGF='300673' #佩蒂股份
-YXKJ = Enum('YXKJ', 'a#新股 b#银信科技 c#银禧科技')
-YXKJ._member_map_._OrderedDict__update({'a':'300674'})#新股
+YXKJ = Enum('YXKJ', 'a#宇信科技 b#银信科技 c#银禧科技')
+YXKJ._member_map_._OrderedDict__update({'a':'300674'})#宇信科技
 JKY = Enum('JKY', 'a#建科院 b#健康元')
 JKY._member_map_._OrderedDict__update({'a':'300675'})#建科院
 HDJY='300676' #华大基因
 YKYL='300677' #英科医疗
 ZKXX='300678' #中科信息
 DLJS='300679' #电连技术
-YHGF = Enum('YHGF', 'a#盐湖股份 b#洋河股份 c#意华股份')
-YHGF._member_map_._OrderedDict__update({'a':'000792'})#盐湖股份
+STYH='000792' #ST盐湖
 HWCM='000793' #华闻传媒
 THJK='000790' #泰合健康
 GSDT='000791' #甘肃电投
 KSLY='000796' #凯撒旅游
-ZGWY='000797' #中国武夷
+ZGWY = Enum('ZGWY', 'a#中国武夷 b#中国外运')
+ZGWY._member_map_._OrderedDict__update({'a':'000797'})#中国武夷
 YLH='000795' #英洛华
 ZSYY = Enum('ZSYY', 'a#中水渔业 b#众生药业')
 ZSYY._member_map_._OrderedDict__update({'a':'000798'})#中水渔业
 JGJ='000799' #酒鬼酒
 DLYY = Enum('DLYY', 'a#大连友谊 b#大理药业')
 DLYY._member_map_._OrderedDict__update({'a':'000679'})#大连友谊
-SKS='603737' #三棵树
+STWL='300494' #盛天网络
 ZGHD='601985' #中国核电
 ZGYH = Enum('ZGYH', 'a#中国银行 b#中国银河')
 ZGYH._member_map_._OrderedDict__update({'a':'601988'})#中国银行
 ZGZG='601989' #中国重工
-SCWA='000022' #深赤湾A
+JYT='601908' #京运通
 MHGF='002234' #民和股份
 ZYHF='601866' #中远海发
+HRKJ = Enum('HRKJ', 'a#虹软科技 b#和仁科技 c#华软科技')
+HRKJ._member_map_._OrderedDict__update({'a':'688088'})#虹软科技
 HZKJ = Enum('HZKJ', 'a#华自科技 b#合纵科技')
 HZKJ._member_map_._OrderedDict__update({'a':'300490'})#华自科技
 TLA='000025' #特力A
 RDYL='603108' #润达医疗
+FYDA='000026' #飞亚达A
 DAGF='300635' #达安股份
 CYGF='603100' #川仪股份
 HJSD='603101' #汇嘉时代
@@ -373,18 +384,21 @@ JSXN='603693' #江苏新能
 GPGF='300632' #光莆股份
 AJSP = Enum('AJSP', 'a#安记食品 b#安井食品')
 AJSP._member_map_._OrderedDict__update({'a':'603696'})#安记食品
+YYSP='603697' #有友食品
 HTGC='603698' #航天工程
 CFGX='601869' #长飞光纤
 KLYL='300633' #开立医疗
+HRKJ._member_map_._OrderedDict__update({'b':'300550'})#和仁科技
 RFGD='300241' #瑞丰光电
 FLD='300240' #飞力达
 RFGC='300243' #瑞丰高材
-JYKJ = Enum('JYKJ', 'a#佳云科技 b#金溢科技 c#精研科技 d#金亚科技')
+JYKJ = Enum('JYKJ', 'a#佳云科技 b#嘉元科技 c#金溢科技 d#精研科技 e#金亚科技')
 JYKJ._member_map_._OrderedDict__update({'a':'300242'})#佳云科技
 TJKJ._member_map_._OrderedDict__update({'b':'300245'})#天玑科技
 DAZD='300244' #迪安诊断
-LJJK='300247' #乐金健康
-BLT='300246' #宝莱特
+RJJK='300247' #融捷健康
+BLT = Enum('BLT', 'a#宝莱特 b#铂力特')
+BLT._member_map_._OrderedDict__update({'a':'300246'})#宝莱特
 YMK='300249' #依米康
 XKP='300248' #新开普
 WSGF._member_map_._OrderedDict__update({'b':'300483'})#沃施股份
@@ -392,13 +406,13 @@ WFSW='300482' #万孚生物
 PYHC='300481' #濮阳惠成
 GLKJ = Enum('GLKJ', 'a#光力科技 b#国立科技')
 GLKJ._member_map_._OrderedDict__update({'a':'300480'})#光力科技
-LXKJ = Enum('LXKJ', 'a#蓝晓科技 b#露笑科技 c#朗新科技')
+LXKJ = Enum('LXKJ', 'a#蓝晓科技 b#露笑科技 c#乐鑫科技 d#朗新科技')
 LXKJ._member_map_._OrderedDict__update({'a':'300487'})#蓝晓科技
 DJZN='300486' #东杰智能
 SSYY='300485' #赛升药业
 LHHT='300484' #蓝海华腾
 ZGKC='601858' #中国科传
-XRHJ='000598' #兴蓉环境
+GHT='300638' #广和通
 ZFGF = Enum('ZFGF', 'a#中飞股份 b#中房股份 c#兆丰股份')
 ZFGF._member_map_._OrderedDict__update({'a':'300489'})#中飞股份
 HFGJ='300488' #恒锋工具
@@ -411,16 +425,17 @@ AAJG='603580' #艾艾精工
 JCQD='603583' #捷昌驱动
 GNHJ='603588' #高能环境
 KZJ='603589' #口子窖
-CHGF = Enum('CHGF', 'a#醋化股份 b#晨化股份 c#彩虹股份 d#川恒股份 e#茶花股份 f#长海股份')
+CHGF = Enum('CHGF', 'a#醋化股份 b#晨化股份 c#彩虹股份 d#川恒股份 e#长海股份 f#茶花股份')
 CHGF._member_map_._OrderedDict__update({'a':'603968'})#醋化股份
 YLGF = Enum('YLGF', 'a#银龙股份 b#应流股份 c#英联股份 d#玉龙股份 e#跃岭股份 f#云铝股份 g#元力股份 h#伊利股份 i#银轮股份 j#永利股份')
 YLGF._member_map_._OrderedDict__update({'a':'603969'})#银龙股份
 HZXC='603186' #华正新材
 DLYY._member_map_._OrderedDict__update({'b':'603963'})#大理药业
 KLJD='603960' #克来机电
+HRLL='603187' #海容冷链
 FLTK='603966' #法兰泰克
-YBGF = Enum('YBGF', 'a#ST亚邦 b#银邦股份')
-YBGF._member_map_._OrderedDict__update({'a':'603188'})#ST亚邦
+ZCWL='603967' #中创物流
+STYB='603188' #ST亚邦
 JDJT='600383' #金地集团
 WDRJ='603189' #网达软件
 CHFH='000520' #长航凤凰
@@ -432,11 +447,12 @@ CXYY='603367' #辰欣药业
 LYGF = Enum('LYGF', 'a#柳药股份 b#凌云股份 c#朗源股份 d#龙韵股份')
 LYGF._member_map_._OrderedDict__update({'a':'603368'})#柳药股份
 JSY='603369' #今世缘
+RJSW='688068' #热景生物
 HLXM='600375' #华菱星马
-RJTX='002929' #润建通信
+RJGF._member_map_._OrderedDict__update({'b':'002929'})#润建股份
 HXHK='002928' #华夏航空
 HNYY='600929' #湖南盐业
-XYF='000902' #新洋丰
+XAYH='600928' #西安银行
 RDGF='002923' #润都股份
 YGE = Enum('YGE', 'a#伊戈尔 b#雅戈尔')
 YGE._member_map_._OrderedDict__update({'a':'002922'})#伊戈尔
@@ -470,10 +486,11 @@ HSJT = Enum('HSJT', 'a#皇氏集团 b#汉商集团')
 HSJT._member_map_._OrderedDict__update({'a':'002329'})#皇氏集团
 XPGF='002328' #新朋股份
 JDZB='000856' #冀东装备
-ZGGK = Enum('ZGGK', 'a#中国高科 b#中公高科')
-ZGGK._member_map_._OrderedDict__update({'a':'600730'})#中国高科
+HTZQ = Enum('HTZQ', 'a#红塔证券 b#海通证券 c#GDR华泰证券')
+HTZQ._member_map_._OrderedDict__update({'a':'601236'})#红塔证券
+JYKJ._member_map_._OrderedDict__update({'b':'688388'})#嘉元科技
 SHWM='600822' #上海物贸
-SMGF = Enum('SMGF', 'a#世茂股份 b#神马股份')
+SMGF = Enum('SMGF', 'a#世茂股份 b#三美股份 c#神马股份')
 SMGF._member_map_._OrderedDict__update({'a':'600823'})#世茂股份
 SDGF = Enum('SDGF', 'a#隧道股份 b#申达股份 c#宋都股份')
 SDGF._member_map_._OrderedDict__update({'a':'600820'})#隧道股份
@@ -508,25 +525,26 @@ HRYY = Enum('HRYY', 'a#华仁药业 b#恒瑞医药 c#红日药业')
 HRYY._member_map_._OrderedDict__update({'a':'300110'})#华仁药业
 SWKJ='300113' #顺网科技
 WXZK='300112' #万讯自控
+JSZN='300083' #劲胜智能
 ZXJT='601066' #中信建投
 RPSW='300119' #瑞普生物
 DFRS='300118' #东方日升
 AKGF='300082' #奥克股份
-KLHB='002499' #科林环保
+STKL='002499' #ST科林
 HLGF._member_map_._OrderedDict__update({'c':'002498'})#汉缆股份
 RSSH='002493' #荣盛石化
 HJDX='002492' #恒基达鑫
 TDHL='002491' #通鼎互联
 SDML='002490' #山东墨龙
-YHJT='002497' #雅化集团
-STHF='002496' #ST辉丰
-JLGF = Enum('JLGF', 'a#佳隆股份 b#金轮股份 c#锦龙股份 d#聚龙股份')
+YHJT = Enum('YHJT', 'a#雅化集团 b#友好集团')
+YHJT._member_map_._OrderedDict__update({'a':'002497'})#雅化集团
+HFGF._member_map_._OrderedDict__update({'b':'002496'})#辉丰股份
+JLGF = Enum('JLGF', 'a#佳隆股份 b#金雷股份 c#金轮股份 d#锦龙股份 e#聚龙股份')
 JLGF._member_map_._OrderedDict__update({'a':'002495'})#佳隆股份
 HSGF = Enum('HSGF', 'a#华斯股份 b#华升股份 c#哈森股份 d#宏盛股份 e#和胜股份')
 HSGF._member_map_._OrderedDict__update({'a':'002494'})#华斯股份
 SHTY='603330' #上海天洋
-STSD = Enum('STSD', 'a#ST升达 b#三特索道')
-STSD._member_map_._OrderedDict__update({'a':'002259'})#ST升达
+STSD='002259' #ST升达
 LEHX='002258' #利尔化学
 HLZG='002255' #海陆重工
 THXC = Enum('THXC', 'a#泰和新材 b#台华新材')
@@ -539,12 +557,14 @@ CDZS='002253' #川大智胜
 SHLS='002252' #上海莱士
 XSJ='600628' #新世界
 HJJT='600629' #华建集团
+XLJK = Enum('XLJK', 'a#仙乐健康 b#信隆健康')
+XLJK._member_map_._OrderedDict__update({'a':'300791'})#仙乐健康
 FDFH='600624' #复旦复华
 SDGF._member_map_._OrderedDict__update({'b':'600626'})#申达股份
 TCGF='600620' #天宸股份
 HXGF._member_map_._OrderedDict__update({'c':'600621'})#华鑫股份
 GDJB='600622' #光大嘉宝
-HYJT = Enum('HYJT', 'a#华谊集团 b#华阳集团')
+HYJT = Enum('HYJT', 'a#华谊集团 b#汉宇集团 c#华阳集团')
 HYJT._member_map_._OrderedDict__update({'a':'600623'})#华谊集团
 DCKJ='601208' #东材科技
 WHCC='300089' #文化长城
@@ -561,16 +581,14 @@ QXGF = Enum('QXGF', 'a#奇信股份 b#全信股份')
 QXGF._member_map_._OrderedDict__update({'a':'002781'})#奇信股份
 SFHW='002780' #三夫户外
 WCZD='600704' #物产中大
-JYJT = Enum('JYJT', 'a#建艺集团 b#金隅集团 c#建研集团')
+JYJT = Enum('JYJT', 'a#建艺集团 b#金隅集团')
 JYJT._member_map_._OrderedDict__update({'a':'002789'})#建艺集团
 LYYY='002788' #鹭燕医药
 SZGD='002079' #苏州固锝
 TYZY='002078' #太阳纸业
 CCYS='002071' #长城影视
-STZH='002070' #ST众和
-RKGF = Enum('RKGF', 'a#软控股份 b#睿康股份')
-RKGF._member_map_._OrderedDict__update({'a':'002073'})#软控股份
-KRD='002072' #凯瑞德
+RKGF='002073' #软控股份
+STKR='002072' #ST凯瑞
 SGGF = Enum('SGGF', 'a#沙钢股份 b#曙光股份 c#首钢股份')
 SGGF._member_map_._OrderedDict__update({'a':'002075'})#沙钢股份
 GXGK='002074' #国轩高科
@@ -582,6 +600,8 @@ TYGF = Enum('TYGF', 'a#天药股份 b#天宇股份 c#天邑股份 d#通用股份
 TYGF._member_map_._OrderedDict__update({'a':'600488'})#天药股份
 ZJHJ = Enum('ZJHJ', 'a#中金黄金 b#中金环境')
 ZJHJ._member_map_._OrderedDict__update({'a':'600489'})#中金黄金
+ZGGH = Enum('ZGGH', 'a#中国广核 b#中国国航')
+ZGGH._member_map_._OrderedDict__update({'a':'003816'})#中国广核
 XYZC = Enum('XYZC', 'a#襄阳轴承 b#新亚制程')
 XYZC._member_map_._OrderedDict__update({'a':'000678'})#襄阳轴承
 LYGF._member_map_._OrderedDict__update({'b':'600480'})#凌云股份
@@ -590,7 +610,7 @@ ZGDL='600482' #中国动力
 FNGF='600483' #福能股份
 SLS = Enum('SLS', 'a#三力士 b#塞力斯')
 SLS._member_map_._OrderedDict__update({'a':'002224'})#三力士
-XWJT='600485' #信威集团
+STXW='600485' #ST信威
 YNHG='600486' #扬农化工
 HTGD='600487' #亨通光电
 ZQL='600138' #中青旅
@@ -611,10 +631,10 @@ DDMC='600136' #当代明诚
 LSGF._member_map_._OrderedDict__update({'b':'600137'})#浪莎股份
 YTJT = Enum('YTJT', 'a#英特集团 b#亚泰集团')
 YTJT._member_map_._OrderedDict__update({'a':'000411'})#英特集团
-SYJC='000410' #沈阳机床
+STSJ='000410' #ST沈机
 DXGD='000413' #东旭光电
 NFZY='600313' #农发种业
-BHJK='000415' #渤海金控
+BHZL='000415' #渤海租赁
 SHJH='600315' #上海家化
 HFBH='000417' #合肥百货
 MSKG='000416' #民生控股
@@ -634,11 +654,10 @@ FJJS='002679' #福建金森
 ZJGQ='002678' #珠江钢琴
 LXJM='002475' #立讯精密
 RJRJ='002474' #榕基软件
-CYNM='002477' #雏鹰农牧
 BMGF='002476' #宝莫股份
 ZCKG='002471' #中超控股
 JZD='002470' #金正大
-STSL='002473' #ST圣莱
+SLD='002473' #圣莱达
 SHCD='002472' #双环传动
 FCHB='002479' #富春环保
 CBGF = Enum('CBGF', 'a#常宝股份 b#诚邦股份')
@@ -653,11 +672,13 @@ BBDQ='600550' #保变电气
 SDCB = Enum('SDCB', 'a#时代出版 b#山东出版')
 SDCB._member_map_._OrderedDict__update({'a':'600551'})#时代出版
 YNKG='001896' #豫能控股
+BTJC='603068' #博通集成
 SCGF = Enum('SCGF', 'a#首创股份 b#上柴股份')
 SCGF._member_map_._OrderedDict__update({'a':'600008'})#首创股份
 SHJC='600009' #上海机场
 DXY='600558' #大西洋
 LBGJ='600559' #老白干酒
+ZYXY='603127' #昭衍新药
 ZYHN='600026' #中远海能
 TEGF = Enum('TEGF', 'a#天鹅股份 b#泰尔股份')
 TEGF._member_map_._OrderedDict__update({'a':'603029'})#天鹅股份
@@ -676,7 +697,7 @@ JESJ='300668' #杰恩设计
 BCKJ = Enum('BCKJ', 'a#必创科技 b#博创科技')
 BCKJ._member_map_._OrderedDict__update({'a':'300667'})#必创科技
 JFDZ='300666' #江丰电子
-FLGF = Enum('FLGF', 'a#飞鹿股份 b#锋龙股份')
+FLGF = Enum('FLGF', 'a#飞鹿股份 b#飞龙股份 c#锋龙股份')
 FLGF._member_map_._OrderedDict__update({'a':'300665'})#飞鹿股份
 PYHB='300664' #鹏鹞环保
 KLRJ='300663' #科蓝软件
@@ -699,9 +720,9 @@ GYYH='601997' #贵阳银行
 FLJT='601996' #丰林集团
 CBCM='601999' #出版传媒
 ZXYH='601998' #中信银行
-WLGF = Enum('WLGF', 'a#万林股份 b#伟隆股份 c#威龙股份 d#万里股份')
-WLGF._member_map_._OrderedDict__update({'a':'603117'})#万林股份
+WLWL='603117' #万林物流
 HQT='603116' #红蜻蜓
+HXGF._member_map_._OrderedDict__update({'d':'603115'})#海星股份
 JNKJ = Enum('JNKJ', 'a#金能科技 b#迦南科技')
 JNKJ._member_map_._OrderedDict__update({'a':'603113'})#金能科技
 KNJD='603111' #康尼机电
@@ -713,9 +734,11 @@ LJZ='600663' #陆家嘴
 SYC='600306' #商业城
 SYGF = Enum('SYGF', 'a#石英股份 b#视源股份 c#神宇股份 d#森远股份 e#圣阳股份 f#三元股份')
 SYGF._member_map_._OrderedDict__update({'a':'603688'})#石英股份
+DSD='603687' #大胜达
 LMHW='603686' #龙马环卫
 CFKJ='603685' #晨丰科技
 JHXC='603683' #晶华新材
+YGXC='603681' #永冠新材
 JCJT='603680' #今创集团
 HCD='300278' #华昌达
 HJKJ._member_map_._OrderedDict__update({'b':'300279'})#和晶科技
@@ -730,12 +753,13 @@ HJGF = Enum('HJGF', 'a#和佳股份 b#汇金股份 c#汇洁股份 d#华锦股份
 HJGF._member_map_._OrderedDict__update({'a':'300273'})#和佳股份
 KKGF='603203' #快克股份
 SHXB='603200' #上海洗霸
+RCGF='603755' #日辰股份
 HZGX='300478' #杭州高新
 SSDZ='300479' #神思电子
 SHKJ='300476' #胜宏科技
 HZKJ._member_map_._OrderedDict__update({'b':'300477'})#合纵科技
 JJW='300474' #景嘉微
-JLKJ = Enum('JLKJ', 'a#聚隆科技 b#京蓝科技')
+JLKJ = Enum('JLKJ', 'a#聚隆科技 b#京蓝科技 c#锦浪科技')
 JLKJ._member_map_._OrderedDict__update({'a':'300475'})#聚隆科技
 XYKJ._member_map_._OrderedDict__update({'b':'300472'})#新元科技
 DEGF = Enum('DEGF', 'a#德尔股份 b#道恩股份')
@@ -746,6 +770,7 @@ KCYY='603590' #康辰药业
 BTL = Enum('BTL', 'a#伯特利 b#宝泰隆')
 BTL._member_map_._OrderedDict__update({'a':'603596'})#伯特利
 DNDZ='603595' #东尼电子
+HPDL='603121' #华培动力
 GXGF='603599' #广信股份
 YLCM='603598' #引力传媒
 JCX='603979' #金诚信
@@ -759,6 +784,7 @@ SLSJ='300556' #丝路视觉
 SGGF._member_map_._OrderedDict__update({'b':'600303'})#曙光股份
 XLXX='300588' #熙菱信息
 JLCT='300589' #江龙船艇
+SMGF._member_map_._OrderedDict__update({'b':'603379'})#三美股份
 YSCN='603378' #亚士创能
 YFT = Enum('YFT', 'a#英飞特 b#英飞拓')
 YFT._member_map_._OrderedDict__update({'a':'300582'})#英飞特
@@ -778,7 +804,7 @@ DLGF._member_map_._OrderedDict__update({'a':'300054'})#鼎龙股份
 WBD = Enum('WBD', 'a#万邦达 b#万邦德')
 WBD._member_map_._OrderedDict__update({'a':'300055'})#万邦达
 SWS='300056' #三维丝
-WSGF._member_map_._OrderedDict__update({'c':'300057'})#万顺股份
+WSXC='300057' #万顺新材
 SJDL='300050' #世纪鼎利
 SWHL='300051' #三五互联
 ZQB='300052' #中青宝
@@ -820,8 +846,7 @@ XYRT='600830' #香溢融通
 DYYY='600833' #第一医药
 SHJD='600835' #上海机电
 STDT='600834' #申通地铁
-HTZQ = Enum('HTZQ', 'a#海通证券 b#华泰证券')
-HTZQ._member_map_._OrderedDict__update({'a':'600837'})#海通证券
+HTZQ._member_map_._OrderedDict__update({'b':'600837'})#海通证券
 JLSY='600836' #界龙实业
 SCCH='600839' #四川长虹
 SHJB='600838' #上海九百
@@ -834,10 +859,10 @@ CYKJ._member_map_._OrderedDict__update({'a':'002866'})#传艺科技
 ZDS='002867' #周大生
 PLYY = Enum('PLYY', 'a#盘龙药业 b#普洛药业')
 PLYY._member_map_._OrderedDict__update({'a':'002864'})#盘龙药业
-JDGF = Enum('JDGF', 'a#钧达股份 b#精达股份 c#金盾股份 d#吉电股份')
+JDGF = Enum('JDGF', 'a#钧达股份 b#佳电股份 c#精达股份 d#金盾股份 e#吉电股份')
 JDGF._member_map_._OrderedDict__update({'a':'002865'})#钧达股份
 LKSH='002868' #绿康生化
-JYKJ._member_map_._OrderedDict__update({'b':'002869'})#金溢科技
+JYKJ._member_map_._OrderedDict__update({'c':'002869'})#金溢科技
 JWHK='300120' #经纬辉开
 YGHT='300121' #阳谷华泰
 ZFSW='300122' #智飞生物
@@ -858,7 +883,8 @@ STNH='600301' #ST南化
 STDA='002260' #ST德奥
 TWXX='002261' #拓维信息
 EHYY='002262' #恩华药业
-STDN='002263' #ST东南
+STDN = Enum('STDN', 'a#ST东南 b#ST嘉陵')
+STDN._member_map_._OrderedDict__update({'a':'002263'})#ST东南
 XHD='002264' #新华都
 XYGF = Enum('XYGF', 'a#西仪股份 b#锌业股份 c#新研股份 d#星宇股份 e#锡业股份 f#兴业股份 g#星云股份')
 XYGF._member_map_._OrderedDict__update({'a':'002265'})#西仪股份
@@ -868,14 +894,16 @@ PDJQ='600639' #浦东金桥
 XHP='600638' #新黄浦
 HXDZ = Enum('HXDZ', 'a#环旭电子 b#弘信电子')
 HXDZ._member_map_._OrderedDict__update({'a':'601231'})#环旭电子
-TKGF = Enum('TKGF', 'a#桐昆股份 b#天科股份')
-TKGF._member_map_._OrderedDict__update({'a':'601233'})#桐昆股份
+TKGF='601233' #桐昆股份
 ZSWH='600633' #浙数文化
+KHSW='002022' #科华生物
 LTGF._member_map_._OrderedDict__update({'b':'600630'})#龙头股份
 DFMZ='600637' #东方明珠
 SAF='600636' #三爱富
 DZGY='600635' #大众公用
 STFK='600634' #ST富控
+ASD = Enum('ASD', 'a#埃斯顿 b#爱施德 c#爱仕达')
+ASD._member_map_._OrderedDict__update({'a':'002747'})#埃斯顿
 MNJK='002044' #美年健康
 GGDQ='002045' #国光电器
 ZYKJ = Enum('ZYKJ', 'a#轴研科技 b#正业科技 c#掌阅科技 d#卓翼科技 e#赞宇科技')
@@ -921,14 +949,14 @@ HTJD._member_map_._OrderedDict__update({'a':'000428'})#华天酒店
 YGSA='000429' #粤高速A
 ZGGF='000938' #紫光股份
 HTGF._member_map_._OrderedDict__update({'c':'600308'})#华泰股份
-HXGF._member_map_._OrderedDict__update({'d':'000936'})#华西股份
+HXGF._member_map_._OrderedDict__update({'e':'000936'})#华西股份
 XGJX='000425' #徐工机械
 XYKY='000426' #兴业矿业
 SCSM='000935' #四川双马
 JLHX='000420' #吉林化纤
-SHGF = Enum('SHGF', 'a#神火股份 b#沙河股份 c#盛弘股份 d#顺灏股份')
+SHGF = Enum('SHGF', 'a#神火股份 b#盛弘股份 c#沙河股份 d#顺灏股份')
 SHGF._member_map_._OrderedDict__update({'a':'000933'})#神火股份
-STYH = Enum('STYH', 'a#ST宜化 b#ST友好')
+STYH = Enum('STYH', 'a#ST宜化 b#ST银河')
 STYH._member_map_._OrderedDict__update({'a':'000422'})#ST宜化
 DEEJ='000423' #东阿阿胶
 ANGF='002235' #安妮股份
@@ -936,13 +964,12 @@ JHSW='002688' #金河生物
 YDZN='002689' #远大智能
 YLD='002686' #亿利达
 QZB='002687' #乔治白
-MSKJ = Enum('MSKJ', 'a#猛狮科技 b#模塑科技')
-MSKJ._member_map_._OrderedDict__update({'a':'002684'})#猛狮科技
+STMS='002684' #ST猛狮
 HDZJ='002685' #华东重机
 LZGF = Enum('LZGF', 'a#龙洲股份 b#朗姿股份')
 LZGF._member_map_._OrderedDict__update({'a':'002682'})#龙洲股份
 HDBP='002683' #宏大爆破
-STCS='002680' #ST长生
+CST='002680' #ST长生
 FDKJ='002681' #奋达科技
 RTGF._member_map_._OrderedDict__update({'b':'002440'})#闰土股份
 ZYD='002441' #众业达
@@ -950,7 +977,7 @@ LXHG = Enum('LXHG', 'a#龙星化工 b#鲁西化工')
 LXHG._member_map_._OrderedDict__update({'a':'002442'})#龙星化工
 JZGD='002443' #金洲管道
 JXKJ._member_map_._OrderedDict__update({'b':'002444'})#巨星科技
-STZN='002445' #中南文化
+STZN='002445' #ST中南
 SLTX='002446' #盛路通信
 CXKJ._member_map_._OrderedDict__update({'b':'002447'})#晨鑫科技
 ZYNP='002448' #中原内配
@@ -1004,7 +1031,7 @@ HWGF._member_map_._OrderedDict__update({'a':'000757'})#浩物股份
 HDKJ = Enum('HDKJ', 'a#汇顶科技 b#汇得科技 c#华达科技 d#华东科技')
 HDKJ._member_map_._OrderedDict__update({'a':'603160'})#汇顶科技
 KHKG='603161' #科华控股
-XZFZ='000752' #西藏发展
+STXF='000752' #ST西发
 BHLD='603167' #渤海轮渡
 GHZQ='000750' #国海证券
 RCHB='603165' #荣晟环保
@@ -1021,7 +1048,8 @@ JJWC='300724' #捷佳伟创
 YSKJ='300725' #药石科技
 XYGK='300722' #新余国科
 YPH='300723' #一品红
-HCZN='300720' #海川智能
+HCZN = Enum('HCZN', 'a#海川智能 b#瀚川智能')
+HCZN._member_map_._OrderedDict__update({'a':'300720'})#海川智能
 YDGF._member_map_._OrderedDict__update({'b':'300721'})#怡达股份
 LGGF = Enum('LGGF', 'a#乐歌股份 b#柳钢股份 c#凌钢股份')
 LGGF._member_map_._OrderedDict__update({'a':'300729'})#乐歌股份
@@ -1060,17 +1088,21 @@ WMHB='603568' #伟明环保
 CJWL='603569' #长久物流
 PLK='603566' #普莱柯
 ZBD='603567' #珍宝岛
+KBD='603786' #科博达
 XRGF = Enum('XRGF', 'a#新日股份 b#雪人股份')
 XRGF._member_map_._OrderedDict__update({'a':'603787'})#新日股份
 GNKJ='000004' #国农科技
 NBGF = Enum('NBGF', 'a#宁波高发 b#诺邦股份')
 NBGF._member_map_._OrderedDict__update({'a':'603788'})#宁波高发
 XGNJ='603789' #星光农机
+SJXY='000005' #世纪星源
+YNSX='601077' #渝农商行
 WKA='000002' #万科A
 ZGQY='601965' #中国汽研
 LLLT='601966' #玲珑轮胎
-WJYH='603323' #吴江银行
-ZGCB='601949' #中国出版
+PAYH='000001' #平安银行
+ZGCB = Enum('ZGCB', 'a#中国出版 b#中国船舶')
+ZGCB._member_map_._OrderedDict__update({'a':'601949'})#中国出版
 XSKJ = Enum('XSKJ', 'a#雄塑科技 b#兴森科技')
 XSKJ._member_map_._OrderedDict__update({'a':'300599'})#雄塑科技
 CMKJ='300598' #诚迈科技
@@ -1082,7 +1114,7 @@ YWTX='300590' #移为通信
 XLN='300593' #新雷能
 XKY='300109' #新开源
 OPKS='300595' #欧普康视
-HXXF='600340' #华夏幸福
+LJKJ='300594' #朗进科技
 JDTX='300597' #吉大通信
 XSGF._member_map_._OrderedDict__update({'b':'603305'})#旭升股份
 JCYY = Enum('JCYY', 'a#金城医药 b#济川药业')
@@ -1100,7 +1132,7 @@ SWZN='300044' #赛为智能
 FRGF = Enum('FRGF', 'a#福瑞股份 b#孚日股份 c#佛燃股份')
 FRGF._member_map_._OrderedDict__update({'a':'300049'})#福瑞股份
 HKXN='300048' #合康新能
-XGYC='002147' #新光圆成
+STXG='002147' #ST新光
 GCCL='300285' #国瓷材料
 SJK='300284' #苏交科
 FLX='300287' #飞利信
@@ -1110,7 +1142,7 @@ ZTKJ = Enum('ZTKJ', 'a#紫天科技 b#中天科技')
 ZTKJ._member_map_._OrderedDict__update({'a':'300280'})#紫天科技
 WZHF='300283' #温州宏丰
 SSJY='300282' #三盛教育
-HLGF._member_map_._OrderedDict__update({'d':'600346'})#恒力股份
+HLSH='600346' #恒力石化
 LDM='300289' #利德曼
 LMXX='300288' #朗玛信息
 ZLJT='002309' #中利集团
@@ -1121,9 +1153,11 @@ XBJS='002302' #西部建设
 QXJT='002301' #齐心集团
 TYDL='002300' #太阳电缆
 BXLQ='002307' #北新路桥
-STYW='002306' #ST云网
+STYW = Enum('STYW', 'a#ST云网 b#ST云维')
+STYW._member_map_._OrderedDict__update({'a':'002306'})#ST云网
 NGZY='002305' #南国置业
-YHGF._member_map_._OrderedDict__update({'b':'002304'})#洋河股份
+YHGF = Enum('YHGF', 'a#洋河股份 b#意华股份')
+YHGF._member_map_._OrderedDict__update({'a':'002304'})#洋河股份
 MGGF._member_map_._OrderedDict__update({'b':'600808'})#马钢股份
 SXFJ='600809' #山西汾酒
 PBS='600804' #鹏博士
@@ -1134,10 +1168,12 @@ HXSN='600801' #华新水泥
 FJSN='600802' #福建水泥
 XAGF = Enum('XAGF', 'a#新奥股份 b#新澳股份 c#新安股份')
 XAGF._member_map_._OrderedDict__update({'a':'600803'})#新奥股份
-WLGF._member_map_._OrderedDict__update({'b':'002871'})#伟隆股份
+WLGF = Enum('WLGF', 'a#伟隆股份 b#威龙股份 c#万里股份')
+WLGF._member_map_._OrderedDict__update({'a':'002871'})#伟隆股份
 XSGF._member_map_._OrderedDict__update({'c':'002870'})#香山股份
 XTYY='002873' #新天药业
-TSZY='002872' #天圣制药
+STTS = Enum('STTS', 'a#ST天圣 b#ST天首')
+STTS._member_map_._OrderedDict__update({'a':'002872'})#ST天圣
 ANE='002875' #安奈儿
 ZNZK='002877' #智能自控
 SLP='002876' #三利谱
@@ -1158,7 +1194,8 @@ QSGF._member_map_._OrderedDict__update({'a':'300132'})#青松股份
 YTZK='300131' #英唐智控
 XGD='300130' #新国都
 YAGF='002277' #友阿股份
-WMGF='002276' #万马股份
+WMGF = Enum('WMGF', 'a#万马股份 b#丸美股份')
+WMGF._member_map_._OrderedDict__update({'a':'002276'})#万马股份
 GLSJ='002275' #桂林三金
 HCHG='002274' #华昌化工
 SJGD='002273' #水晶光电
@@ -1200,7 +1237,7 @@ HDGX='002591' #恒大高新
 WKJS='600152' #维科技术
 JFGF = Enum('JFGF', 'a#建发股份 b#继峰股份')
 JFGF._member_map_._OrderedDict__update({'a':'600153'})#建发股份
-STCB='600150' #ST船舶
+ZGCB._member_map_._OrderedDict__update({'b':'600150'})#中国船舶
 HTJD._member_map_._OrderedDict__update({'b':'600151'})#航天机电
 HSGF._member_map_._OrderedDict__update({'b':'600156'})#华升股份
 YTNY='600157' #永泰能源
@@ -1220,7 +1257,8 @@ YBZY = Enum('YBZY', 'a#宜宾纸业 b#益佰制药')
 YBZY._member_map_._OrderedDict__update({'a':'600793'})#宜宾纸业
 NBHY='600798' #宁波海运
 LTGF._member_map_._OrderedDict__update({'c':'601311'})#骆驼股份
-TKGF._member_map_._OrderedDict__update({'b':'600378'})#天科股份
+HHKJ = Enum('HHKJ', 'a#昊华科技 b#恒华科技 c#海航科技 d#鸿合科技 e#华宏科技 f#宏和科技 g#辉煌科技')
+HHKJ._member_map_._OrderedDict__update({'a':'600378'})#昊华科技
 BGGF._member_map_._OrderedDict__update({'c':'600379'})#宝光股份
 LZHH='000929' #兰州黄河
 ZGGJ._member_map_._OrderedDict__update({'b':'000928'})#中钢国际
@@ -1232,9 +1270,9 @@ ZJJ='000430' #张家界
 HXJD='000921' #海信家电
 NFHT='000920' #南方汇通
 HBXG='000923' #河北宣工
-STJD='000922' #ST佳电
+JDGF._member_map_._OrderedDict__update({'b':'000922'})#佳电股份
 MSWH='002699' #美盛文化
-BSGF = Enum('BSGF', 'a#博实股份 b#宝胜股份 c#鲍斯股份 d#宝色股份 e#步森股份')
+BSGF = Enum('BSGF', 'a#博实股份 b#宝胜股份 c#鲍斯股份 d#博深股份 e#宝色股份')
 BSGF._member_map_._OrderedDict__update({'a':'002698'})#博实股份
 HSH='002695' #煌上煌
 GDKJ='002694' #顾地科技
@@ -1245,32 +1283,33 @@ JKGF._member_map_._OrderedDict__update({'a':'002691'})#冀凯股份
 MYGD='002690' #美亚光电
 SCYY = Enum('SCYY', 'a#双成药业 b#宋城演艺')
 SCYY._member_map_._OrderedDict__update({'a':'002693'})#双成药业
-RKGF._member_map_._OrderedDict__update({'b':'002692'})#睿康股份
+STYC='002692' #ST远程
 TYTL='002459' #天业通联
 YSGF = Enum('YSGF', 'a#益生股份 b#亚厦股份 c#原尚股份')
 YSGF._member_map_._OrderedDict__update({'a':'002458'})#益生股份
 QLGY='002457' #青龙管业
-OFKJ='002456' #欧菲科技
+OFG='002456' #欧菲光
 BCGF='002455' #百川股份
 SZGF='002454' #松芝股份
-HRKJ = Enum('HRKJ', 'a#华软科技 b#和仁科技')
-HRKJ._member_map_._OrderedDict__update({'a':'002453'})#华软科技
+HRKJ._member_map_._OrderedDict__update({'c':'002453'})#华软科技
 CGJT='002452' #长高集团
 MEDQ='002451' #摩恩电气
-KDX='002450' #康得新
+STKD = Enum('STKD', 'a#ST康得 b#ST凯迪')
+STKD._member_map_._OrderedDict__update({'a':'002450'})#ST康得
 HSDZ='600570' #恒生电子
 XYD='600571' #信雅达
 KEB='600572' #康恩贝
 HQPJ='600573' #惠泉啤酒
-WJWL='600575' #皖江物流
+HHNY = Enum('HHNY', 'a#淮河能源 b#昊华能源')
+HHNY._member_map_._OrderedDict__update({'a':'600575'})#淮河能源
 XYWH='600576' #祥源文化
-JDGF._member_map_._OrderedDict__update({'b':'600577'})#精达股份
+JDGF._member_map_._OrderedDict__update({'c':'600577'})#精达股份
 JNDL='600578' #京能电力
-THY='600579' #天华院
+KLS='600579' #克劳斯
 YYXC = Enum('YYXC', 'a#有研新材 b#岳阳兴长')
 YYXC._member_map_._OrderedDict__update({'a':'600206'})#有研新材
 ACGK='600207' #安彩高科
-STHK='600202' #ST哈空
+HKT='600202' #哈空调
 FRDZ='600203' #福日电子
 JSWZ='600200' #江苏吴中
 SWGF._member_map_._OrderedDict__update({'c':'600201'})#生物股份
@@ -1291,7 +1330,7 @@ CCKJ = Enum('CCKJ', 'a#长川科技 b#长城科技')
 CCKJ._member_map_._OrderedDict__update({'a':'300604'})#长川科技
 TSD='300607' #拓斯达
 JTY='300606' #金太阳
-STSW='000755' #ST三维
+SXLQ='000755' #山西路桥
 FDGF='603166' #福达股份
 ZZFZ='000753' #漳州发展
 ZRZY='000506' #中润资源
@@ -1308,29 +1347,30 @@ KCXY='300731' #科创新源
 KCXX='300730' #科创信息
 XLDL='300733' #西菱动力
 SYY='300732' #设研院
-ZHZG='600320' #振华重工
 MYDL='300739' #明阳电路
 AFSJ='300738' #奥飞数据
 JZWF='000612' #焦作万方
-LSHK='000697' #炼石有色
+LSHK='000697' #炼石航空
 BHNY='000695' #滨海能源
-STHZ='000693' #ST华泽
 HTRD='000692' #惠天热电
 YTSY='000691' #亚太实业
 BXNY='000690' #宝新能源
 SYHG = Enum('SYHG', 'a#沈阳化工 b#三友化工')
 SYHG._member_map_._OrderedDict__update({'a':'000698'})#沈阳化工
+HTGX='002023' #海特高新
 DLS='002330' #得利斯
+ZAKJ='300767' #震安科技
 JXYY='002020' #京新药业
 QZKJ='300458' #全志科技
 MKL='601828' #美凯龙
-WLGF._member_map_._OrderedDict__update({'c':'603779'})#威龙股份
+WLGF._member_map_._OrderedDict__update({'b':'603779'})#威龙股份
 QJYL='603778' #乾景园林
 HSZY = Enum('HSZY', 'a#汉森制药 b#华森制药')
 HSZY._member_map_._OrderedDict__update({'a':'002412'})#汉森制药
 XDZN='300450' #先导智能
-CYRJ='300451' #创业软件
-SHYF='300452' #山河药辅
+CYHK='300451' #创业慧康
+SHYF = Enum('SHYF', 'a#山河药辅 b#石化油服')
+SHYF._member_map_._OrderedDict__update({'a':'300452'})#山河药辅
 SXYL = Enum('SXYL', 'a#三鑫医疗 b#三星医疗')
 SXYL._member_map_._OrderedDict__update({'a':'300453'})#三鑫医疗
 SXF='300454' #深信服
@@ -1340,15 +1380,13 @@ TCLJT='000100' #TCL集团
 RSFZ='002146' #荣盛发展
 RTJK='603579' #荣泰健康
 SXXC._member_map_._OrderedDict__update({'b':'603578'})#三星新材
-SNGF = Enum('SNGF', 'a#深南股份 b#韶能股份 c#申能股份')
+SNGF = Enum('SNGF', 'a#深南股份 b#顺钠股份 c#韶能股份 d#申能股份')
 SNGF._member_map_._OrderedDict__update({'a':'002417'})#深南股份
 HJT='603577' #汇金通
-ZJZY = Enum('ZJZY', 'a#中捷资源 b#浙江震元')
-ZJZY._member_map_._OrderedDict__update({'a':'002021'})#中捷资源
-ASD = Enum('ASD', 'a#爱施德 b#埃斯顿 c#爱仕达')
-ASD._member_map_._OrderedDict__update({'a':'002416'})#爱施德
+STZJ='002021' #ST中捷
+ASD._member_map_._OrderedDict__update({'b':'002416'})#爱施德
 LTHB='603797' #联泰环保
-YYGF = Enum('YYGF', 'a#雅运股份 b#御银股份 c#永艺股份 d#豫园股份 e#银亿股份')
+YYGF = Enum('YYGF', 'a#雅运股份 b#御银股份 c#永艺股份 d#豫园股份')
 YYGF._member_map_._OrderedDict__update({'a':'603790'})#雅运股份
 MSD='603041' #美思德
 NBYH='002142' #宁波银行
@@ -1374,6 +1412,7 @@ MBH='603313' #梦百合
 DYCY='002797' #第一创业
 FAGF = Enum('FAGF', 'a#福鞍股份 b#富奥股份')
 FAGF._member_map_._OrderedDict__update({'a':'603315'})#福鞍股份
+TWSP='603317' #天味食品
 CBGF._member_map_._OrderedDict__update({'b':'603316'})#诚邦股份
 XWF='600975' #新五丰
 JMJT='600976' #健民集团
@@ -1384,6 +1423,7 @@ BSGF._member_map_._OrderedDict__update({'b':'600973'})#宝胜股份
 YHSH='600978' #宜华生活
 GAAZ='600979' #广安爱众
 TFWD='002156' #通富微电
+WPG='603956' #威派格
 DQST='603955' #大千生态
 BLKJ = Enum('BLKJ', 'a#百利科技 b#保隆科技 c#八菱科技')
 BLKJ._member_map_._OrderedDict__update({'a':'603959'})#百利科技
@@ -1393,10 +1433,10 @@ ZLGF = Enum('ZLGF', 'a#中路股份 b#棕榈股份 c#中来股份')
 ZLGF._member_map_._OrderedDict__update({'a':'600818'})#中路股份
 HBZY='600812' #华北制药
 DFJT='600811' #东方集团
-SMGF._member_map_._OrderedDict__update({'b':'600810'})#神马股份
+SMGF._member_map_._OrderedDict__update({'c':'600810'})#神马股份
 STHS='600817' #ST宏盛
 AXXT='600816' #安信信托
-XGGF._member_map_._OrderedDict__update({'b':'600815'})#厦工股份
+STXG='600815' #ST厦工
 HZJB='600814' #杭州解百
 GSBE='002848' #高斯贝尔
 WXZN='002849' #威星智能
@@ -1410,7 +1450,7 @@ TJGF._member_map_._OrderedDict__update({'b':'002843'})#泰嘉股份
 TZWH='300148' #天舟文化
 LZSW='300149' #量子生物
 WSSW='300142' #沃森生物
-XPYK='300143' #星普医科
+YKSM='300143' #盈康生命
 ZHZB = Enum('ZHZB', 'a#中环装备 b#中航资本')
 ZHZB._member_map_._OrderedDict__update({'a':'300140'})#中环装备
 HSDQ='300141' #和顺电气
@@ -1420,11 +1460,11 @@ SCYY._member_map_._OrderedDict__update({'b':'300144'})#宋城演艺
 ZJHJ._member_map_._OrderedDict__update({'b':'300145'})#中金环境
 JFKJ = Enum('JFKJ', 'a#金风科技 b#金发科技 c#吉峰科技 d#晶方科技')
 JFKJ._member_map_._OrderedDict__update({'a':'002202'})#金风科技
-HLGF._member_map_._OrderedDict__update({'e':'002203'})#海亮股份
-YTST='002200' #云投生态
+HLGF._member_map_._OrderedDict__update({'d':'002203'})#海亮股份
+STYT='002200' #ST云投
 JDXC='002201' #九鼎新材
 HLD='002206' #海利得
-STZY='002207' #ST准油
+STZY._member_map_._OrderedDict__update({'b':'002207'})#ST准油
 DLZG='002204' #大连重工
 GTGF='002205' #国统股份
 HFCJ='002208' #合肥城建
@@ -1433,10 +1473,11 @@ ZJLN='000060' #中金岭南
 XYS='300502' #新易盛
 GDZQ='601788' #光大证券
 NBJG='601789' #宁波建工
+QPL='002029' #七匹狼
 JTYH='601328' #交通银行
 DDQ='002852' #道道全
 ZGZC='601766' #中国中车
-HFGF._member_map_._OrderedDict__update({'b':'600325'})#华发股份
+HFGF._member_map_._OrderedDict__update({'c':'600325'})#华发股份
 FES='000890' #法尔胜
 DDF='600327' #大东方
 XZTL='600326' #西藏天路
@@ -1449,7 +1490,7 @@ JZHT='002515' #金字火腿
 DHZN='002512' #达华智能
 LFSH='002513' #蓝丰生化
 TQM='002510' #天汽模
-ZSJR='002511' #中顺洁柔
+ZHZG='600320' #振华重工
 XFJT='600141' #兴发集团
 LSC='300010' #立思辰
 JFKJ._member_map_._OrderedDict__update({'b':'600143'})#金发科技
@@ -1462,7 +1503,7 @@ CCYD='600148' #长春一东
 LXCT='600783' #鲁信创投
 RYJT = Enum('RYJT', 'a#如意集团 b#融钰集团')
 RYJT._member_map_._OrderedDict__update({'a':'002193'})#如意集团
-CFJC='002190' #成飞集成
+STJC='002190' #ST集成
 TBNY='600780' #通宝能源
 ZCGF._member_map_._OrderedDict__update({'b':'600787'})#中储股份
 ZTDZ='002197' #证通电子
@@ -1476,7 +1517,7 @@ JLYY='000919' #金陵药业
 STHY='000816' #ST慧业
 SSG='000058' #深赛格
 DYSX='000910' #大亚圣象
-NNTY='000911' #南宁糖业
+STNT='000911' #ST南糖
 LCGD='600363' #联创光电
 QJMT='000913' #钱江摩托
 TPGF='600365' #通葡股份
@@ -1487,12 +1528,11 @@ XXFZ='300469' #信息发展
 YNZY='002428' #云南锗业
 ZCGF._member_map_._OrderedDict__update({'c':'002429'})#兆驰股份
 KLYY='002422' #科伦药业
-ZYTG='002423' #中原特钢
-YCGF = Enum('YCGF', 'a#毅昌股份 b#元成股份')
-YCGF._member_map_._OrderedDict__update({'a':'002420'})#毅昌股份
+ZLZB='002423' #中原特钢
+STYC='002420' #ST毅昌
 DSZN='002421' #达实智能
 SLJM='002426' #胜利精密
-STYF = Enum('STYF', 'a#ST尤夫 b#ST油服')
+STYF = Enum('STYF', 'a#ST尤夫 b#ST盈方 c#ST仰帆')
 STYF._member_map_._OrderedDict__update({'a':'002427'})#ST尤夫
 GZBL='002424' #贵州百灵
 KSWH='002425' #凯撒文化
@@ -1500,7 +1540,8 @@ JMW='601566' #九牧王
 SXYL._member_map_._OrderedDict__update({'b':'601567'})#三星医疗
 AYGT='600569' #安阳钢铁
 ZZYL='600568' #中珠医疗
-SYZY='600567' #山鹰纸业
+SYZY = Enum('SYZY', 'a#山鹰纸业 b#松炀资源')
+SYZY._member_map_._OrderedDict__update({'a':'600567'})#山鹰纸业
 JCYY._member_map_._OrderedDict__update({'b':'600566'})#济川药业
 DMGF._member_map_._OrderedDict__update({'b':'600565'})#迪马股份
 FLDZ='600563' #法拉电子
@@ -1525,14 +1566,14 @@ QDGH='000590' #启迪古汉
 TYN='000591' #太阳能
 PTFZ='000592' #平潭发展
 DTRQ='000593' #大通燃气
-STDL='000893' #ST东凌
+DLGJ='000893' #ST东凌
 HTGJ='000056' #皇庭国际
-GHT='300638' #广和通
+XRHJ='000598' #兴蓉环境
 KPSW='300639' #凯普生物
 GXZQ='002736' #国信证券
 KHYY = Enum('KHYY', 'a#葵花药业 b#康弘药业')
 KHYY._member_map_._OrderedDict__update({'a':'002737'})#葵花药业
-LMGF = Enum('LMGF', 'a#利民股份 b#雷曼股份 c#徕木股份 d#联明股份')
+LMGF = Enum('LMGF', 'a#利民股份 b#徕木股份 c#联明股份')
 LMGF._member_map_._OrderedDict__update({'a':'002734'})#利民股份
 WZXC = Enum('WZXC', 'a#王子新材 b#五洲新春')
 WZXC._member_map_._OrderedDict__update({'a':'002735'})#王子新材
@@ -1546,7 +1587,8 @@ WDDY='002739' #万达电影
 GFZQ='000776' #广发证券
 ZHKJ._member_map_._OrderedDict__update({'b':'000777'})#中核科技
 XXZG='000778' #新兴铸管
-SMPS='000779' #三毛派神
+GZX='000779' #甘咨询
+GJQC='600335' #国机汽车
 DLXC='300700' #岱勒新材
 SBCG='300701' #森霸传感
 TYGF._member_map_._OrderedDict__update({'b':'300702'})#天宇股份
@@ -1555,13 +1597,12 @@ JDZY='300705' #九典制药
 ASC='300706' #阿石创
 WTGY='300707' #威唐工业
 JCGD='300708' #聚灿光电
-JYKJ._member_map_._OrderedDict__update({'c':'300709'})#精研科技
+JYKJ._member_map_._OrderedDict__update({'d':'300709'})#精研科技
 QXGF._member_map_._OrderedDict__update({'b':'300447'})#全信股份
 LKXC='300446' #乐凯新材
 KST='300445' #康斯特
 SJDQ='300444' #双杰电气
-JLFD = Enum('JLFD', 'a#金雷风电 b#金陵饭店')
-JLFD._member_map_._OrderedDict__update({'a':'300443'})#金雷风电
+JLGF._member_map_._OrderedDict__update({'b':'300443'})#金雷股份
 PLS='300442' #普丽盛
 BSGF._member_map_._OrderedDict__update({'c':'300441'})#鲍斯股份
 YDKJ='300440' #运达科技
@@ -1570,10 +1611,12 @@ HBGK='300449' #汉邦高科
 HYKJ = Enum('HYKJ', 'a#浩云科技 b#华映科技')
 HYKJ._member_map_._OrderedDict__update({'a':'300448'})#浩云科技
 ZNJS='000961' #中南建设
-STHR='600401' #ST海润
-LZJT='000513' #丽珠集团
+TNKJ='688116' #天奈科技
+LZJT = Enum('LZJT', 'a#丽珠集团 b#建研集团')
+LZJT._member_map_._OrderedDict__update({'a':'000513'})#丽珠集团
 STGF._member_map_._OrderedDict__update({'b':'603098'})#森特股份
 CBS='603099' #长白山
+NHQH='603093' #南华期货
 HSGF._member_map_._OrderedDict__update({'d':'603090'})#宏盛股份
 XJD='603096' #新经典
 YFHJ='000967' #盈峰环境
@@ -1582,11 +1625,11 @@ LYKG='000968' #蓝焰控股
 SZYA='000006' #深振业A
 QXH='000007' #全新好
 WLJJ='603326' #我乐家居
-SJXY='000005' #世纪星源
+FRKJ='603327' #福蓉科技
 DBDQ='603320' #迪贝电气
 MLDT='603321' #梅轮电梯
 CXTX='603322' #超讯通信
-PAYH='000001' #平安银行
+SNYH='603323' #苏农银行
 BGBZ='601968' #宝钢包装
 HNKY='601969' #海南矿业
 HLK='603898' #好莱客
@@ -1596,7 +1639,12 @@ SHYS='603329' #上海雅仕
 SZGT='000008' #神州高铁
 ZGBA='000009' #中国宝安
 SAGD='600703' #三安光电
+WED='688028' #沃尔德
+NWYX='688029' #南微医学
 SDJY='600702' #舍得酒业
+HCZN._member_map_._OrderedDict__update({'b':'688022'})#瀚川智能
+FBGF = Enum('FBGF', 'a#方邦股份 b#富邦股份')
+FBGF._member_map_._OrderedDict__update({'a':'688020'})#方邦股份
 STGX='600701' #ST工新
 CHGF._member_map_._OrderedDict__update({'c':'600707'})#彩虹股份
 QJWL='600706' #曲江文旅
@@ -1608,7 +1656,9 @@ NMYJ='600967' #内蒙一机
 BHZY='600966' #博汇纸业
 FCGF._member_map_._OrderedDict__update({'b':'600965'})#福成股份
 CDGJ='600969' #郴电国际
-BDJG='603331' #百达精工
+HYFZ='600968' #海油发展
+ZGWT='601698' #中国卫通
+BLT._member_map_._OrderedDict__update({'b':'688333'})#铂力特
 LAHN='601699' #潞安环能
 CQHK='601021' #春秋航空
 HYKY='601020' #华钰矿业
@@ -1638,7 +1688,7 @@ RLGF='300154' #瑞凌股份
 HTAP='300157' #恒泰艾普
 SWHB='300156' #神雾环保
 HDXC='002211' #宏达新材
-FMGJ='002210' #飞马国际
+STFM='002210' #ST飞马
 TEJ='002213' #特尔佳
 NYGF='002212' #南洋股份
 NPX='002215' #诺普信
@@ -1649,6 +1699,7 @@ SQSP='002216' #三全食品
 HKYL='002219' #恒康医疗
 TRXN='002218' #拓日新能
 SHSH='600688' #上海石化
+TLYS='000630' #铜陵有色
 GZLQ='000523' #广州浪奇
 XYGF._member_map_._OrderedDict__update({'d':'601799'})#星宇股份
 STLK='601798' #ST蓝科
@@ -1657,13 +1708,13 @@ XCKG='601155' #新城控股
 LFGF = Enum('LFGF', 'a#力帆股份 b#联发股份')
 LFGF._member_map_._OrderedDict__update({'a':'601777'})#力帆股份
 SHSM='600689' #上海三毛
+SDLQ='000498' #山东路桥
 NJXB='600682' #南京新百
 JTFZ='600683' #京投发展
-STSP='600680' #ST上普
 BCNY='600681' #百川能源
 JLQC = Enum('JLQC', 'a#金龙汽车 b#江铃汽车')
 JLQC._member_map_._OrderedDict__update({'a':'600686'})#金龙汽车
-GTKG='600687' #刚泰控股
+STGT='600687' #ST刚泰
 ZJSY='600684' #珠江实业
 ZCFW='600685' #中船防务
 TGZM='002509' #天广中茂
@@ -1673,13 +1724,14 @@ DKNY='002505' #大康农业
 HGCY='002504' #弘高创意
 FLZC='002507' #涪陵榨菜
 XXJC='002506' #协鑫集成
-LYJZ='002501' #利源精制
+STLY='002501' #ST利源
 SXZQ='002500' #山西证券
 SYT='002503' #搜于特
-HWWH='002502' #骅威文化
+DLWH='002502' #鼎龙文化
 ZDYL='603301' #振德医疗
 DADL='600178' #东安动力
-ATKG='600179' #安通控股
+STAT = Enum('STAT', 'a#ST安通 b#ST安泰')
+STAT._member_map_._OrderedDict__update({'a':'600179'})#ST安通
 MDNY='600175' #美都能源
 ZGJS='600176' #中国巨石
 YGE._member_map_._OrderedDict__update({'b':'600177'})#雅戈尔
@@ -1691,14 +1743,15 @@ YCM='002181' #粤传媒
 NSD='002180' #纳思达
 YYT='002183' #怡亚通
 YHJS='002182' #云海金属
-HTKJ = Enum('HTKJ', 'a#华天科技 b#航天科技 c#华铁科技 d#鸿特科技 e#恒通科技 f#华体科技')
+HTKJ = Enum('HTKJ', 'a#华天科技 b#航天科技 c#恒通科技 d#华体科技')
 HTKJ._member_map_._OrderedDict__update({'a':'002185'})#华天科技
 HDKZ='002184' #海得控制
 GBGF = Enum('GBGF', 'a#广百股份 b#广博股份')
 GBGF._member_map_._OrderedDict__update({'a':'002187'})#广百股份
 QJD='002186' #全聚德
 DFTX='600776' #东方通信
-STBS='002188' #ST巴士
+STBS = Enum('STBS', 'a#ST巴士 b#ST步森')
+STBS._member_map_._OrderedDict__update({'a':'002188'})#ST巴士
 HSJT._member_map_._OrderedDict__update({'b':'600774'})#汉商集团
 LAL='300596' #利安隆
 ZYZQ='601375' #中原证券
@@ -1714,7 +1767,7 @@ CCDG='600192' #长城电工
 STCX='600193' #ST创兴
 JZG='600190' #锦州港
 HZSY='600191' #华资实业
-STDT='600198' #ST大唐
+DTDX='600198' #大唐电信
 JZZJ='600199' #金种子酒
 QMXC='002439' #启明星辰
 JSST = Enum('JSST', 'a#江苏神通 b#江苏舜天')
@@ -1723,12 +1776,12 @@ ZLGF._member_map_._OrderedDict__update({'b':'002431'})#棕榈股份
 HYGF._member_map_._OrderedDict__update({'b':'002430'})#杭氧股份
 TAT='002433' #太安堂
 JAYL='002432' #九安医疗
-CJRF='002435' #长江润发
+CJJK='002435' #长江润发
 WLY = Enum('WLY', 'a#万里扬 b#五粮液')
 WLY._member_map_._OrderedDict__update({'a':'002434'})#万里扬
 YHYY='002437' #誉衡药业
 XSKJ._member_map_._OrderedDict__update({'b':'002436'})#兴森科技
-KMYY='600518' #康美药业
+STKM='600518' #ST康美
 GZMT='600519' #贵州茅台
 CSYH = Enum('CSYH', 'a#长沙银行 b#常熟银行')
 CSYH._member_map_._OrderedDict__update({'a':'601577'})#长沙银行
@@ -1743,8 +1796,7 @@ HHJC='600515' #海航基础
 JSYG='600220' #江苏阳光
 HHKG='600221' #海航控股
 TLYY='600222' #太龙药业
-LSZY = Enum('LSZY', 'a#鲁商置业 b#力生制药')
-LSZY._member_map_._OrderedDict__update({'a':'600223'})#鲁商置业
+LSFZ='600223' #鲁商发展
 TJSJ='600225' #天津松江
 HYGF._member_map_._OrderedDict__update({'c':'600226'})#瀚叶股份
 SJT = Enum('SJT', 'a#圣济堂 b#S佳通')
@@ -1760,7 +1812,7 @@ JZCH='000587' #金洲慈航
 HYTX='000586' #汇源通信
 STDD='000585' #ST东电
 HGZN='000584' #哈工智能
-QLTA='000589' #黔轮胎A
+GZLT='000589' #贵州轮胎
 YLWL='300628' #亿联网络
 YLGF._member_map_._OrderedDict__update({'e':'002725'})#跃岭股份
 HYW='002724' #海洋王
@@ -1768,7 +1820,7 @@ YXT='002727' #一心堂
 LDRS='002726' #龙大肉食
 JYWH='002721' #金一文化
 JLT._member_map_._OrderedDict__update({'b':'002723'})#金莱特
-JLGF._member_map_._OrderedDict__update({'b':'002722'})#金轮股份
+JLGF._member_map_._OrderedDict__update({'c':'002722'})#金轮股份
 HLL='002729' #好利来
 TYYY='002728' #特一药业
 DHZY._member_map_._OrderedDict__update({'b':'600354'})#敦煌种业
@@ -1784,7 +1836,7 @@ XNKF='600359' #新农开发
 SYKJ = Enum('SYKJ', 'a#数源科技 b#生益科技 c#双一科技 d#盛洋科技')
 SYKJ._member_map_._OrderedDict__update({'a':'000909'})#数源科技
 JFYY='000908' #景峰医药
-HTKJ._member_map_._OrderedDict__update({'c':'603300'})#华铁科技
+HTYJ='603300' #华铁科技
 SHYH._member_map_._OrderedDict__update({'b':'603159'})#上海亚虹
 TLGF = Enum('TLGF', 'a#腾龙股份 b#天龙股份 c#铁流股份')
 TLGF._member_map_._OrderedDict__update({'a':'603158'})#腾龙股份
@@ -1794,7 +1846,7 @@ THJM='000766' #通化金马
 LXBE='603157' #拉夏贝尔
 XZKY='000762' #西藏矿业
 BGBC='000761' #本钢板材
-STE='000760' #斯太尔
+STST='000760' #ST斯太
 ADWE='300719' #安达维尔
 CSZC='300718' #长盛轴承
 HXXC='300717' #华信新材
@@ -1804,12 +1856,12 @@ YKR='300713' #英可瑞
 YFGF='300712' #永福股份
 GHTX='300711' #广哈通信
 WLGD='300710' #万隆光电
-STYH._member_map_._OrderedDict__update({'b':'600778'})#ST友好
+YHJT._member_map_._OrderedDict__update({'b':'600778'})#友好集团
 HMKJ = Enum('HMKJ', 'a#华懋科技 b#皇马科技 c#海默科技 d#华脉科技 e#豪迈科技')
 HMKJ._member_map_._OrderedDict__update({'a':'603306'})#华懋科技
 SJF='600779' #水井坊
 FLJG='300432' #富临精工
-LDGD='002189' #利达光电
+ZGX='002189' #中光学
 CYT='300430' #诚益通
 BFJT='300431' #暴风集团
 GST='300436' #广生堂
@@ -1831,20 +1883,20 @@ DFSY='603081' #大丰实业
 SFHY='000631' #顺发恒业
 JQKJ='603083' #剑桥科技
 TCZK='603085' #天成自控
-TLYS='000630' #铜陵有色
+HFKJ._member_map_._OrderedDict__update({'b':'300419'})#浩丰科技
 GZHB='300388' #国祯环保
 ABS='300389' #艾比森
 SLHP='300384' #三联虹普
 XLHJ='300385' #雪浪环境
 FTCX='300386' #飞天诚信
-FBGF='300387' #富邦股份
+FBGF._member_map_._OrderedDict__update({'b':'300387'})#富邦股份
 ASXX='300380' #安硕信息
 YDL = Enum('YDL', 'a#溢多利 b#易德龙')
 YDL._member_map_._OrderedDict__update({'a':'300381'})#溢多利
 SLK='300382' #斯莱克
 GHXW='300383' #光环新网
-SJG='603881' #数据港
-SHGF._member_map_._OrderedDict__update({'b':'000014'})#沙河股份
+SWGF._member_map_._OrderedDict__update({'d':'603333'})#尚纬股份
+SZLJ='603332' #苏州龙杰
 SZHA='000017' #深中华A
 SKJA='000016' #深康佳A
 SWYA='000011' #深物业A
@@ -1854,17 +1906,20 @@ NBA='000012' #南玻A
 XDKJ = Enum('XDKJ', 'a#雄帝科技 b#兄弟科技')
 XDKJ._member_map_._OrderedDict__update({'a':'300546'})#雄帝科技
 XHW='603888' #新华网
-SFKJ='603339' #四方科技
+ZSNY='601975' #招商南油
 LDZB='300545' #联得装备
-SSBA='000019' #深深宝A
-SZCC='000018' #神州长城
+SLKG='000019' #深粮控股
+STSC='000018' #ST神城
 SLGF._member_map_._OrderedDict__update({'e':'300540'})#深冷股份
 WFFZ='000638' #万方发展
 YKF='000514' #渝开发
+SSWK='688030' #山石网科
+TYSJ='688033' #天宜上佳
 GJYX='000516' #国际医学
+CYKG='688036' #传音控股
 RADC='000517' #荣安地产
 HTGF._member_map_._OrderedDict__update({'e':'600864'})#哈投股份
-JLJT='000510' #金路集团
+XJL='000510' #新金路
 JZT = Enum('JZT', 'a#九州通 b#九芝堂')
 JZT._member_map_._OrderedDict__update({'a':'600998'})#九州通
 ZSZQ = Enum('ZSZQ', 'a#招商证券 b#浙商证券')
@@ -1888,6 +1943,7 @@ HWGF._member_map_._OrderedDict__update({'b':'300095'})#华伍股份
 YLZ='300096' #易联众
 ZYGF._member_map_._OrderedDict__update({'b':'300097'})#智云股份
 DSL='603335' #迪生力
+WXSW='688321' #微芯生物
 JYGF._member_map_._OrderedDict__update({'d':'603429'})#集友股份
 DXTX='603421' #鼎信通讯
 HDYS='603103' #横店影视
@@ -1898,7 +1954,7 @@ DFGX='300166' #东方国信
 DWX='300167' #迪威迅
 NBG='601018' #宁波港
 HZSK='300161' #华中数控
-LMGF._member_map_._OrderedDict__update({'b':'300162'})#雷曼股份
+LMGD='300162' #雷曼光电
 XFXC='300163' #先锋新材
 SXHM='601015' #陕西黑猫
 JNFD='601016' #节能风电
@@ -1906,11 +1962,9 @@ WDXX='300168' #万达信息
 TSXC='300169' #天晟新材
 LJGF._member_map_._OrderedDict__update({'b':'601012'})#隆基股份
 CYXX='300366' #创意信息
-DFWL = Enum('DFWL', 'a#东方网力 b#东方网络')
-DFWL._member_map_._OrderedDict__update({'a':'300367'})#东方网力
+DFWL='300367' #东方网力
 ZWZX='300364' #中文在线
-HHKJ = Enum('HHKJ', 'a#恒华科技 b#海航科技 c#华宏科技 d#辉煌科技')
-HHKJ._member_map_._OrderedDict__update({'a':'300365'})#恒华科技
+HHKJ._member_map_._OrderedDict__update({'b':'300365'})#恒华科技
 TXHJ='300362' #天翔环境
 BTGF = Enum('BTGF', 'a#博腾股份 b#芭田股份 c#宝钛股份 d#博通股份')
 BTGF._member_map_._OrderedDict__update({'a':'300363'})#博腾股份
@@ -1931,28 +1985,27 @@ DFJS='002889' #东方嘉盛
 JNHG = Enum('JNHG', 'a#江南化工 b#金牛化工')
 JNHG._member_map_._OrderedDict__update({'a':'002226'})#江南化工
 ATX='002227' #奥特迅
-TBSP='002220' #天宝食品
+STTB='002220' #ST天宝
 DHNY='002221' #东华能源
 FJKJ='002222' #福晶科技
 YYYL='002223' #鱼跃医疗
 BJCX='600861' #北京城乡
-WJL='000533' #万家乐
+SNGF._member_map_._OrderedDict__update({'b':'000533'})#顺钠股份
 XBKY='601168' #西部矿业
 BJYH='601169' #北京银行
-TFZQ='601162' #新股
+TFZQ='601162' #天风证券
 SJLT='601163' #三角轮胎
 XYYH='601166' #兴业银行
 LYJN='002088' #鲁阳节能
-XHY='002089' #新海宜
+STXH='002089' #ST新海
 DLGF._member_map_._OrderedDict__update({'b':'000530'})#大冷股份
 YMHG='600691' #阳煤化工
 JTL._member_map_._OrderedDict__update({'b':'002081'})#金螳螂
 WBD._member_map_._OrderedDict__update({'b':'002082'})#万邦德
 YTGF._member_map_._OrderedDict__update({'b':'600692'})#亚通股份
-LTTZ='600695' #绿庭投资
+HOZG='002084' #海鸥住工
 WFAW='002085' #万丰奥威
-DFHY = Enum('DFHY', 'a#东方海洋 b#东方环宇')
-DFHY._member_map_._OrderedDict__update({'a':'002086'})#东方海洋
+OYJT='600697' #欧亚集团
 STYS = Enum('STYS', 'a#ST岩石 b#ST运盛')
 STYS._member_map_._OrderedDict__update({'a':'600696'})#ST岩石
 SET='002538' #司尔特
@@ -1963,8 +2016,7 @@ XJBY='002532' #新界泵业
 JBDG='002533' #金杯电工
 HGGF._member_map_._OrderedDict__update({'b':'002534'})#杭锅股份
 LZZJ='002535' #林州重机
-XBGF = Enum('XBGF', 'a#西泵股份 b#新宝股份')
-XBGF._member_map_._OrderedDict__update({'a':'002536'})#西泵股份
+FLGF._member_map_._OrderedDict__update({'b':'002536'})#飞龙股份
 HLJH='002537' #海联金汇
 JKGF._member_map_._OrderedDict__update({'b':'603337'})#杰克股份
 TYZG = Enum('TYZG', 'a#太原重工 b#通裕重工')
@@ -1995,7 +2047,8 @@ TCYL='600763' #通策医疗
 GLDC='600185' #格力地产
 GDGF='600184' #光电股份
 GZSW='600187' #国中水务
-LHJK='600186' #莲花健康
+STLH = Enum('STLH', 'a#ST莲花 b#ST柳化')
+STLH._member_map_._OrderedDict__update({'a':'600186'})#ST莲花
 RMT='600180' #瑞茂通
 SYKJ._member_map_._OrderedDict__update({'b':'600183'})#生益科技
 SJT._member_map_._OrderedDict__update({'b':'600182'})#S佳通
@@ -2011,11 +2064,12 @@ SGJT._member_map_._OrderedDict__update({'b':'002400'})#省广集团
 ZYHK = Enum('ZYHK', 'a#中远海科 b#中远海控')
 ZYHK._member_map_._OrderedDict__update({'a':'002401'})#中远海科
 TRZB='002150' #通润装备
-BDXT='002151' #北斗星通
+ASD._member_map_._OrderedDict__update({'c':'002403'})#爱仕达
 QXTD='002408' #齐翔腾达
-HMD='600510' #黑牡丹
+HMD = Enum('HMD', 'a#黑牡丹 b#恒铭达')
+HMD._member_map_._OrderedDict__update({'a':'600510'})#黑牡丹
 HZJJ='002158' #汉钟精机
-STSD._member_map_._OrderedDict__update({'b':'002159'})#三特索道
+STSD='002159' #三特索道
 GYFZ='000537' #广宇发展
 TFNY='600509' #天富能源
 SHNY='600508' #上海能源
@@ -2024,53 +2078,55 @@ BCSY='601588' #北辰实业
 HTCG='600501' #航天晨光
 ZHGJ='600500' #中化国际
 HLJZ='600503' #华丽家族
-AHSL='600502' #安徽水利
+AHJG='600502' #安徽建工
 XCDL='600505' #西昌电力
 FDTG='600507' #方大特钢
 XLGF='600506' #香梨股份
 YNCT='600239' #云南城投
 TLXC='000809' #铁岭新城
-YHSW='000806' #银河生物
+STYH._member_map_._OrderedDict__update({'b':'000806'})#ST银河
 YLGF._member_map_._OrderedDict__update({'f':'000807'})#云铝股份
 MFTZ='600235' #民丰特纸
 STSS='600234' #ST山水
 BJWH='000802' #北京文化
-JYCC='000803' #ST金宇
+JYCC='000803' #金宇车城
 YQJC='000800' #一汽轿车
-SCJZ='000801' #四川九洲
+CZDH='600230' #沧州大化
 HTJG='601882' #海天精工
 GDGH='000576' #广东甘化
-HMQC='000572' #海马汽车
+STHM = Enum('STHM', 'a#ST海马 b#ST赫美')
+STHM._member_map_._OrderedDict__update({'a':'000572'})#ST海马
 YHYA='000573' #粤宏远A
 SCCA='000570' #苏常柴A
-XDZA='000571' #新大洲A
-OPZW='002711' #欧浦智网
+STDZ='000571' #ST大洲
+STOP='002711' #ST欧浦
 SMCM='002712' #思美传媒
 DYRS='002713' #东易日盛
 MYGF='002714' #牧原股份
 DYGF._member_map_._OrderedDict__update({'b':'002715'})#登云股份
-JGYY='002716' #金贵银业
+STJG = Enum('STJG', 'a#金贵银业 b#ST景谷')
+STJG._member_map_._OrderedDict__update({'a':'002716'})#金贵银业
 LNGF='002717' #岭南股份
 YBDD='002718' #友邦吊顶
 MQE='002719' #麦趣尔
 STZJ='000972' #ST中基
 FSKJ='000973' #佛塑科技
 ZKSH='000970' #中科三环
-GSKG='000971' #高升控股
+STGS='000971' #ST高升
 HTGF._member_map_._OrderedDict__update({'f':'000976'})#华铁股份
 LCXX='000977' #浪潮信息
 CJTX='600345' #长江通信
-YTZY='000975' #银泰资源
+YTHJ='000975' #银泰资源
 GLLY='000978' #桂林旅游
 YQMY='600348' #阳泉煤业
 RBK='600439' #瑞贝卡
 TWGF = Enum('TWGF', 'a#通威股份 b#同为股份')
 TWGF._member_map_._OrderedDict__update({'a':'600438'})#通威股份
 AYS='603214' #爱婴室
-TNZG='300569' #天能重工
+XJNY='601918' #新集能源
 SNHQ='000718' #苏宁环球
-ZYCM='000719' #中原传媒
-JLGF._member_map_._OrderedDict__update({'c':'000712'})#锦龙股份
+YLKJ='603217' #元利科技
+JLGF._member_map_._OrderedDict__update({'d':'000712'})#锦龙股份
 FLZY='000713' #丰乐种业
 BRJY='000710' #贝瑞基因
 JLKJ._member_map_._OrderedDict__update({'b':'000711'})#京蓝科技
@@ -2078,10 +2134,16 @@ HZM='000716' #黑芝麻
 SGSS='000717' #韶钢松山
 ZXSY='000715' #中兴商业
 CMZY='000488' #晨鸣纸业
+DFNM='300769' #德方纳米
+ZJJT='000039' #中集集团
 BSYJ='300622' #博士眼镜
-MRYL='300760' #新股
+SHHX='300762' #上海瀚讯
+JLKJ._member_map_._OrderedDict__update({'c':'300763'})#锦浪科技
+MRYL='300760' #迈瑞医疗
 ZGSY='601857' #中国石油
+MRHD='300766' #每日互动
 WYGF='300621' #维业股份
+XNW='300765' #新诺威
 SNDA='000037' #深南电A
 YNBY='000538' #云南白药
 HLKG='000036' #华联控股
@@ -2100,7 +2162,7 @@ LYT='300423' #鲁亿通
 CAQC='000625' #长安汽车
 HLSY='000622' #恒立实业
 JLAD='000623' #吉林敖东
-HXGF._member_map_._OrderedDict__update({'e':'300427'})#红相股份
+HXGF._member_map_._OrderedDict__update({'f':'300427'})#红相股份
 TDYS='300426' #唐德影视
 QLXC='300429' #强力新材
 STXC='300428' #四通新材
@@ -2110,6 +2172,7 @@ GJSY='000159' #国际实业
 GXFZ='000628' #高新发展
 PGFT='000629' #攀钢钒钛
 STL='603520' #司太立
+SZSS='300783' #三只松鼠
 ZYXC='603527' #众源新材
 DLKJ._member_map_._OrderedDict__update({'b':'603528'})#多伦科技
 QXWJ='002575' #群兴玩具
@@ -2128,31 +2191,32 @@ DRYL='300396' #迪瑞医疗
 FLH='300395' #菲利华
 TFTX='300394' #天孚通信
 SHFA='000020' #深华发A
-SKJ='000021' #深科技
-JYT='601908' #京运通
+RBKJ='688005' #容百科技
+HKKJ='688006' #杭可科技
 STDA='000023' #深天地A
 JFJY._member_map_._OrderedDict__update({'b':'300559'})#佳发教育
 BDYY._member_map_._OrderedDict__update({'b':'300558'})#贝达药业
-FYDA='000026' #飞亚达A
+RCWN='688002' #睿创微纳
 SZNY='000027' #深圳能源
 LTSX='300555' #路通视信
 SCXC='300554' #三超新材
 NFCM='601900' #南方传媒
 FZZQ='601901' #方正证券
 GAKJ='300551' #古鳌科技
-HRKJ._member_map_._OrderedDict__update({'b':'300550'})#和仁科技
+ZGTH='688009' #中国通号
 JZGF = Enum('JZGF', 'a#集智股份 b#金证股份')
 JZGF._member_map_._OrderedDict__update({'a':'300553'})#集智股份
 WJKJ='300552' #万集科技
 JPCG='603180' #金牌厨柜
 HMKJ._member_map_._OrderedDict__update({'b':'603181'})#皇马科技
 JYY='603183' #建研院
+SJSK='603185' #上机数控
 ADJM='603638' #艾迪精密
 HLE='603639' #海利尔
 NWRJ='603636' #南威软件
-ZHGF = Enum('ZHGF', 'a#镇海股份 b#振华股份 c#中弘股份 d#中环股份')
+ZHGF = Enum('ZHGF', 'a#镇海股份 b#振华股份 c#中环股份')
 ZHGF._member_map_._OrderedDict__update({'a':'603637'})#镇海股份
-LMGF._member_map_._OrderedDict__update({'c':'603633'})#徕木股份
+LMGF._member_map_._OrderedDict__update({'b':'603633'})#徕木股份
 LFJH='603630' #拉芳家化
 DHGF._member_map_._OrderedDict__update({'b':'603856'})#东宏股份
 HRGF._member_map_._OrderedDict__update({'b':'603855'})#华荣股份
@@ -2162,7 +2226,7 @@ QYGK='300087' #荃银高科
 KZYY='300086' #康芝药业
 YZJ='300085' #银之杰
 HMKJ._member_map_._OrderedDict__update({'c':'300084'})#海默科技
-JSZN='300083' #劲胜智能
+BFNY='600989' #宝丰能源
 CFHJ = Enum('CFHJ', 'a#赤峰黄金 b#城发环境')
 CFHJ._member_map_._OrderedDict__update({'a':'600988'})#赤峰黄金
 HXDF='300081' #恒信东方
@@ -2183,9 +2247,11 @@ HFZY='600356' #恒丰纸业
 ZDDJ='603988' #中电电机
 AHJT='603989' #艾华集团
 KSGF._member_map_._OrderedDict__update({'c':'603458'})#勘设股份
-JHJT = Enum('JHJT', 'a#吉华集团 b#际华集团 c#江河集团')
+JHJT = Enum('JHJT', 'a#吉华集团 b#锦泓集团 c#际华集团 d#江河集团')
 JHJT._member_map_._OrderedDict__update({'a':'603980'})#吉华集团
 YNDL='000903' #云内动力
+QFQC='603982' #泉峰汽车
+WMGF._member_map_._OrderedDict__update({'b':'603983'})#丸美股份
 JZYY = Enum('JZYY', 'a#九洲药业 b#江中药业')
 JZYY._member_map_._OrderedDict__update({'a':'603456'})#九洲药业
 HRGF._member_map_._OrderedDict__update({'c':'603985'})#恒润股份
@@ -2194,38 +2260,38 @@ KDL._member_map_._OrderedDict__update({'b':'603987'})#康德莱
 YQZY='601388' #怡球资源
 ZJLS='600352' #浙江龙盛
 QLS='600720' #祁连山
-XGGF._member_map_._OrderedDict__update({'c':'600353'})#旭光股份
+XGGF._member_map_._OrderedDict__update({'b':'600353'})#旭光股份
 SSGF = Enum('SSGF', 'a#首商股份 b#三圣股份 c#杉杉股份')
 SSGF._member_map_._OrderedDict__update({'a':'600723'})#首商股份
 JNHG._member_map_._OrderedDict__update({'b':'600722'})#金牛化工
-STYW='600725' #ST云维
-STHT = Enum('STHT', 'a#ST海投 b#ST皇台')
-STHT._member_map_._OrderedDict__update({'a':'600896'})#ST海投
+STYW._member_map_._OrderedDict__update({'b':'600725'})#ST云维
+LHTZ='600896' #览海投资
 ZHSD = Enum('ZHSD', 'a#智慧松德 b#中航善达')
 ZHSD._member_map_._OrderedDict__update({'a':'300173'})#智慧松德
 ZDHB='300172' #中电环保
 NJYH='601009' #南京银行
 LYG='601008' #连云港
 ZHD='300177' #中海达
-HTKJ._member_map_._OrderedDict__update({'d':'300176'})#鸿特科技
+PSKJ='300176' #派生科技
 LYGF._member_map_._OrderedDict__update({'c':'300175'})#朗源股份
 YLGF._member_map_._OrderedDict__update({'g':'300174'})#元力股份
 LGGF._member_map_._OrderedDict__update({'b':'601003'})#柳钢股份
 JYSY='601002' #晋亿实业
 DTMY='601001' #大同煤业
 TSG='601000' #唐山港
-JLFD._member_map_._OrderedDict__update({'b':'601007'})#金陵饭店
+JLFD='601007' #金陵饭店
 DQTL='601006' #大秦铁路
 CQGT='601005' #重庆钢铁
 HYGF._member_map_._OrderedDict__update({'d':'000861'})#海印股份
 PLGF='300375' #鹏翎股份
-HTKJ._member_map_._OrderedDict__update({'e':'300374'})#恒通科技
+HTKJ._member_map_._OrderedDict__update({'c':'300374'})#恒通科技
 YSS='300377' #赢时胜
 YST='300376' #易事特
 HZGF='300371' #汇中股份
 AKKJ = Enum('AKKJ', 'a#安控科技 b#爱康科技')
 AKKJ._member_map_._OrderedDict__update({'a':'300370'})#安控科技
-YJKJ='300373' #扬杰科技
+YJKJ = Enum('YJKJ', 'a#扬杰科技 b#姚记科技')
+YJKJ._member_map_._OrderedDict__update({'a':'300373'})#扬杰科技
 SXYX='000863' #三湘印象
 DFT='300379' #东方通
 DJRJ='300378' #鼎捷软件
@@ -2234,7 +2300,7 @@ TWSX='002238' #天威视讯
 YPS='002899' #英派斯
 SLYY = Enum('SLYY', 'a#赛隆药业 b#双鹭药业')
 SLYY._member_map_._OrderedDict__update({'a':'002898'})#赛隆药业
-YHGF._member_map_._OrderedDict__update({'c':'002897'})#意华股份
+YHGF._member_map_._OrderedDict__update({'b':'002897'})#意华股份
 ZDLD='002896' #中大力德
 CHGF._member_map_._OrderedDict__update({'d':'002895'})#川恒股份
 KDXF='002230' #科大讯飞
@@ -2243,6 +2309,7 @@ KLE='002892' #科力尔
 ZCGF._member_map_._OrderedDict__update({'d':'002891'})#中宠股份
 HYGF._member_map_._OrderedDict__update({'e':'002890'})#弘宇股份
 HCQJ='601177' #杭齿前进
+GFKJ='688007' #光峰科技
 ZGXD._member_map_._OrderedDict__update({'b':'601179'})#中国西电
 LCSW='601368' #绿城水务
 XSD='002527' #新时达
@@ -2253,11 +2320,12 @@ TQQZ='002523' #天桥起重
 ZJZC='002522' #浙江众成
 QFXC='002521' #齐峰新材
 RFJJ='002520' #日发精机
-HLGF._member_map_._OrderedDict__update({'f':'000882'})#华联股份
+HLGF._member_map_._OrderedDict__update({'e':'000882'})#华联股份
 ZSGL='001965' #招商公路
 HYFC='002529' #海源复材
 YFT._member_map_._OrderedDict__update({'b':'002528'})#英飞拓
 SGDL='601369' #陕鼓动力
+HXYC='688001' #华兴源创
 HNGS='000886' #海南高速
 ZDGF = Enum('ZDGF', 'a#中鼎股份 b#智度股份 c#正丹股份')
 ZDGF._member_map_._OrderedDict__update({'a':'000887'})#中鼎股份
@@ -2268,9 +2336,9 @@ ZJYQ._member_map_._OrderedDict__update({'b':'600759'})#洲际油气
 CFHJ._member_map_._OrderedDict__update({'b':'000885'})#城发环境
 JPTY='000545' #金浦钛业
 JZYY._member_map_._OrderedDict__update({'b':'600750'})#江中药业
-HHKJ._member_map_._OrderedDict__update({'b':'600751'})#海航科技
+HHKJ._member_map_._OrderedDict__update({'c':'600751'})#海航科技
 DFYX='600753' #东方银星
-JJGF._member_map_._OrderedDict__update({'b':'600754'})#锦江股份
+JJJD='600754' #锦江酒店
 XMGM='600755' #厦门国贸
 LCRJ='600756' #浪潮软件
 CJCM='600757' #长江传媒
@@ -2279,11 +2347,11 @@ ZGHJ = Enum('ZGHJ', 'a#中广核技 b#中国核建')
 ZGHJ._member_map_._OrderedDict__update({'a':'000881'})#中广核技
 ZHTB='002145' #中核钛白
 HDGK='002144' #宏达高科
-YABK='002411' #必康股份
+YABK='002411' #延安必康
 GLD='002410' #广联达
 XFKG='002141' #贤丰控股
 DHKJ._member_map_._OrderedDict__update({'b':'002140'})#东华科技
-YJCM='002143' #印纪传媒
+YJT='002143' #ST印纪
 GDHW='002414' #高德红外
 THGF = Enum('THGF', 'a#天虹股份 b#太化股份')
 THGF._member_map_._OrderedDict__update({'a':'002419'})#天虹股份
@@ -2319,7 +2387,8 @@ YYXC._member_map_._OrderedDict__update({'b':'000819'})#岳阳兴长
 HJKJ._member_map_._OrderedDict__update({'c':'000818'})#航锦科技
 ZCSJ='600242' #中昌数据
 QHHD='600243' #青海华鼎
-HYZB='600240' #华业资本
+STHY = Enum('STHY', 'a#ST华业 b#ST华源')
+STHY._member_map_._OrderedDict__update({'a':'600240'})#ST华业
 SDWH='600241' #时代万恒
 WTDC='600246' #万通地产
 STCC='600247' #ST成城
@@ -2338,7 +2407,7 @@ TCCL='002709' #天赐材料
 GYGF._member_map_._OrderedDict__update({'b':'002708'})#光洋股份
 ZXLY='002707' #众信旅游
 LXDQ='002706' #良信电器
-XBGF._member_map_._OrderedDict__update({'b':'002705'})#新宝股份
+XBGF='002705' #新宝股份
 JLTY='300651' #金陵体育
 ZJSB='002703' #浙江世宝
 HXSP='002702' #海欣食品
@@ -2352,27 +2421,40 @@ TBJJ='000965' #天保基建
 DLY='600405' #动力源
 GDNR='600406' #国电南瑞
 CYDL='000966' #长源电力
-STAT='600408' #ST安泰
+STAT._member_map_._OrderedDict__update({'b':'600408'})#ST安泰
 SYHG._member_map_._OrderedDict__update({'b':'600409'})#三友化工
 ZTJR='000540' #中天金融
 HGGF._member_map_._OrderedDict__update({'c':'000709'})#河钢股份
-DYTG='000708' #大冶特钢
+ZXTG='000708' #大冶特钢
 XMXD='000701' #厦门信达
-MSKJ._member_map_._OrderedDict__update({'b':'000700'})#模塑科技
+MSKJ='000700' #模塑科技
 HYSH='000703' #恒逸石化
 ZHKJ._member_map_._OrderedDict__update({'c':'000702'})#正虹科技
-ZJZY._member_map_._OrderedDict__update({'b':'000705'})#浙江震元
+ZJZY='000705' #浙江震元
 SXG='603896' #寿仙谷
 STSH='000707' #ST双环
-SDLQ='000498' #山东路桥
+HCHB='300779' #惠城环保
+XCS='300778' #新城市
 SLL='601360' #三六零
+ZLKJ = Enum('ZLKJ', 'a#智莱科技 b#中粮生化')
+ZLKJ._member_map_._OrderedDict__update({'a':'300771'})#智莱科技
+XMGF='300770' #新媒股份
+LKL='300773' #拉卡拉
+YDGF._member_map_._OrderedDict__update({'c':'300772'})#运达股份
+SJFW='300775' #三角防务
+ZJKJ = Enum('ZJKJ', 'a#中简科技 b#中坚科技')
+ZJKJ._member_map_._OrderedDict__update({'a':'300777'})#中简科技
+DEJG = Enum('DEJG', 'a#帝尔激光 b#德恩精工')
+DEJG._member_map_._OrderedDict__update({'a':'300776'})#帝尔激光
+LQKJ='688008' #澜起科技
 CCKJ._member_map_._OrderedDict__update({'b':'603897'})#长城科技
+TRD='300001' #特锐德
 CHKJ._member_map_._OrderedDict__update({'b':'002288'})#超华科技
 YLT._member_map_._OrderedDict__update({'b':'000635'})#英力特
 MHSH='000637' #茂化实华
 FHGK='000636' #风华高科
 KLWW='300418' #昆仑万维
-HFKJ._member_map_._OrderedDict__update({'b':'300419'})#浩丰科技
+XBCD='688122' #西部超导
 HJTZ='000633' #合金投资
 SMJT='000632' #三木集团
 ZGFL='300414' #中光防雷
@@ -2380,14 +2462,15 @@ YZM='300415' #伊之密
 SSSY='300416' #苏试试验
 NHYQ='300417' #南华仪器
 ZYKJ._member_map_._OrderedDict__update({'b':'300410'})#正业科技
-JDGF._member_map_._OrderedDict__update({'c':'300411'})#金盾股份
+JDGF._member_map_._OrderedDict__update({'d':'300411'})#金盾股份
 JNKJ._member_map_._OrderedDict__update({'b':'300412'})#迦南科技
 MGCM='300413' #芒果超媒
+SMDL='603530' #神马电力
 ZYKJ._member_map_._OrderedDict__update({'c':'603533'})#掌阅科技
 JCGJ='603535' #嘉诚国际
-HFGF._member_map_._OrderedDict__update({'c':'603536'})#惠发股份
+HFSP='603536' #惠发食品
 MNH='603538' #美诺华
-BSGJ='002282' #博深工具
+BSGF._member_map_._OrderedDict__update({'d':'002282'})#博深股份
 YJH = Enum('YJH', 'a#亿嘉和 b#御家汇')
 YJH._member_map_._OrderedDict__update({'a':'603666'})#亿嘉和
 TYZN='603895' #天永智能
@@ -2398,11 +2481,15 @@ BLB='002286' #保龄宝
 QZZY='002287' #奇正藏药
 YTGF._member_map_._OrderedDict__update({'c':'002284'})#亚太股份
 ADE='002740' #爱迪尔
-ZLDC='000031' #中粮地产
+DYC='000031' #大悦城
 SLH='002285' #世联行
 ZYHK._member_map_._OrderedDict__update({'b':'601919'})#中远海控
-XJNY='601918' #新集能源
-ZJJT='000039' #中集集团
+ZWGS='688012' #中微公司
+XGGD='688011' #新光光电
+FGGF='688010' #福光股份
+ZJYH='601860' #紫金银行
+XMYL='688016' #心脉医疗
+JKKJ='688015' #交控科技
 SDT='000038' #深大通
 ZFT='300560' #中富通
 HJKJ._member_map_._OrderedDict__update({'d':'300561'})#汇金科技
@@ -2411,7 +2498,7 @@ SYGF._member_map_._OrderedDict__update({'c':'300563'})#神宇股份
 KXJS='300565' #科信技术
 JZKJ._member_map_._OrderedDict__update({'b':'300566'})#激智科技
 JCDZ._member_map_._OrderedDict__update({'b':'300567'})#精测电子
-ASD._member_map_._OrderedDict__update({'b':'002747'})#埃斯顿
+LTDZ='603629' #利通电子
 QYGF='603628' #清源股份
 JHLY='603199' #九华旅游
 YJGJ='603198' #迎驾贡酒
@@ -2420,14 +2507,16 @@ RBSS='603196' #日播时尚
 KSKJ = Enum('KSKJ', 'a#科森科技 b#凯盛科技')
 KSKJ._member_map_._OrderedDict__update({'a':'603626'})#科森科技
 HDKJ._member_map_._OrderedDict__update({'b':'603192'})#汇得科技
-ZPGF = Enum('ZPGF', 'a#正平股份 b#中葡股份')
-ZPGF._member_map_._OrderedDict__update({'a':'603843'})#正平股份
+ZGRB='601319' #中国人保
+ZPGF='603843' #正平股份
 ZGPA='601318' #中国平安
 HTT='603848' #好太太
 XTGF._member_map_._OrderedDict__update({'b':'002746'})#仙坛股份
+YXGX='603297' #永新光学
 JFGF._member_map_._OrderedDict__update({'b':'603997'})#继峰股份
-ZXKJ._member_map_._OrderedDict__update({'b':'603996'})#中新科技
+STZX='603996' #ST中新
 LYMY='603993' #洛阳钼业
+SLKJ='603992' #松霖科技
 ZZGF._member_map_._OrderedDict__update({'b':'603991'})#至正股份
 LSKJ = Enum('LSKJ', 'a#蓝思科技 b#隆盛科技')
 LSKJ._member_map_._OrderedDict__update({'a':'300433'})#蓝思科技
@@ -2440,20 +2529,20 @@ HZYH='600926' #杭州银行
 HNTZ='000548' #湖南投资
 JBT='603444' #吉比特
 ZHHB='300692' #中环环保
-SHGF._member_map_._OrderedDict__update({'c':'300693'})#盛弘股份
+SHGF._member_map_._OrderedDict__update({'b':'300693'})#盛弘股份
 SYKJ._member_map_._OrderedDict__update({'c':'300690'})#双一科技
 SHYA='000531' #穗恒运A
 ALD='300696' #爱乐达
 DGHJ='300697' #电工合金
 ZHYF='601808' #中海油服
-LHGF = Enum('LHGF', 'a#新股 b#林海股份')
-LHGF._member_map_._OrderedDict__update({'a':'300694'})#新股
+LHGF = Enum('LHGF', 'a#蠡湖股份 b#林海股份 c#立华股份')
+LHGF._member_map_._OrderedDict__update({'a':'300694'})#蠡湖股份
 MYBK='300188' #美亚柏科
-SNJY='300189' #神农基因
+SNKJ='300189' #神农科技
 YQHB='300187' #永清环保
 LYXX='300184' #力源信息
 TYZG._member_map_._OrderedDict__update({'b':'300185'})#通裕重工
-JCGF = Enum('JCGF', 'a#捷成股份 b#金辰股份 c#京城股份')
+JCGF = Enum('JCGF', 'a#捷成股份 b#晶晨股份 c#金辰股份 d#京城股份')
 JCGF._member_map_._OrderedDict__update({'a':'300182'})#捷成股份
 DRZB='300183' #东软载波
 HFCX='300180' #华峰超纤
@@ -2461,7 +2550,7 @@ ZLYY='300181' #佐力药业
 KHGF='300340' #科恒股份
 ZHDZ='600372' #中航电子
 TYJD='300342' #天银机电
-LCHL='300343' #联创互联
+LCGF='300343' #联创股份
 TKZZ='300344' #太空智造
 HYXC='300345' #红宇新材
 NDGD='300346' #南大光电
@@ -2472,9 +2561,11 @@ YQXL='000927' #一汽夏利
 WXDN='600371' #万向德农
 SKGF._member_map_._OrderedDict__update({'b':'600376'})#首开股份
 NHGS='600377' #宁沪高速
+SKJ='000021' #深科技
+QDG='601298' #青岛港
 CQJG='600939' #重庆建工
 HLYY='601100' #恒立液压
-HHNY='601101' #昊华能源
+HHNY._member_map_._OrderedDict__update({'b':'601101'})#昊华能源
 ZGYZ='601106' #中国一重
 SCCY='601107' #四川成渝
 FZCM='002027' #分众传媒
@@ -2482,14 +2573,21 @@ CTZQ='601108' #财通证券
 SNYG='002024' #苏宁易购
 LKFW='002413' #雷科防务
 HTDQ='002025' #航天电器
-ZYXY='603127' #昭衍新药
-KHSW='002022' #科华生物
-HTGX='002023' #海特高新
-STBD='002552' #ST宝鼎
+QNSX='002958' #青农商行
+XXDQ='002959' #小熊电器
+XMSP='002956' #西麦食品
+KRJS='002957' #科瑞技术
+HHKJ._member_map_._OrderedDict__update({'d':'002955'})#鸿合科技
+YSGD='002952' #亚世光电
+RFGF='002953' #日丰股份
+AMYL='002950' #奥美医疗
+JSKJ = Enum('JSKJ', 'a#金时科技 b#捷顺科技 c#佳士科技 d#杰赛科技')
+JSKJ._member_map_._OrderedDict__update({'a':'002951'})#金时科技
+BDKJ='002552' #宝鼎科技
 JNSW='601199' #江南水务
 QHZY='002550' #千红制药
 SRYL='002551' #尚荣医疗
-HLGF._member_map_._OrderedDict__update({'g':'002556'})#辉隆股份
+HLGF._member_map_._OrderedDict__update({'f':'002556'})#辉隆股份
 QQSP='002557' #洽洽食品
 HBP='002554' #惠博普
 DXZQ='601198' #东兴证券
@@ -2503,9 +2601,9 @@ MJGF='002397' #梦洁股份
 XBZY._member_map_._OrderedDict__update({'b':'002390'})#信邦制药
 CQGF._member_map_._OrderedDict__update({'b':'002391'})#长青股份
 BJLE='002392' #北京利尔
-LSZY._member_map_._OrderedDict__update({'b':'002393'})#力生制药
+LSZY='002393' #力生制药
 JSJT='603558' #健盛集团
-JYJT._member_map_._OrderedDict__update({'c':'002398'})#建研集团
+LZJT._member_map_._OrderedDict__update({'b':'002398'})#建研集团
 HPR='002399' #海普瑞
 STDK='600747' #ST大控
 JSSP='600746' #江苏索普
@@ -2515,12 +2613,12 @@ HYDC='600743' #华远地产
 YQFW='600742' #一汽富维
 HYQC='600741' #华域汽车
 SXJH='600740' #山西焦化
-STCL='600749' #ST藏旅
+XZLY='600749' #西藏旅游
 SSFZ='600748' #上实发展
 ZGZY='601618' #中国中冶
 JZXN='601619' #嘉泽新能
 GDDQ='601616' #广电电气
-QPL='002029' #七匹狼
+MYZN='601615' #明阳智能
 DZKJ='300530' #达志科技
 ZGHJ._member_map_._OrderedDict__update({'b':'601611'})#中国核建
 HNRZ='002596' #海南瑞泽
@@ -2531,7 +2629,7 @@ CJXC='002171' #楚江新材
 AYJK='002172' #澳洋健康
 CXYL='002173' #创新医疗
 YZWL='002174' #游族网络
-DFWL._member_map_._OrderedDict__update({'b':'002175'})#东方网络
+STDW='002175' #ST东网
 JTDJ='002176' #江特电机
 YYGF._member_map_._OrderedDict__update({'b':'002177'})#御银股份
 YHZN='002178' #延华智能
@@ -2543,22 +2641,22 @@ ZTKJ._member_map_._OrderedDict__update({'b':'600522'})#中天科技
 HHYY='600521' #华海药业
 WYKJ='600520' #文一科技
 JNGX='600527' #江南高纤
-FDHB='600526' #菲达环保
+NWGF._member_map_._OrderedDict__update({'b':'603880'})#南卫股份
 CYJT='600525' #长园集团
 SDYB='600529' #山东药玻
 ZTGY='600528' #中铁工业
 XDGF = Enum('XDGF', 'a#先达股份 b#湘电股份')
 XDGF._member_map_._OrderedDict__update({'a':'603086'})#先达股份
-DGKG='000828' #东莞控股
+DGKG._member_map_._OrderedDict__update({'b':'000828'})#东莞控股
 TYKG='000829' #天音控股
-HHKJ._member_map_._OrderedDict__update({'c':'002645'})#华宏科技
-SWJN='000820' #神雾节能
+HHKJ._member_map_._OrderedDict__update({'e':'002645'})#华宏科技
+STJN='000820' #ST节能
 JSQJ='000821' #京山轻机
 SDHH='000822' #山东海化
 CSDZ='000823' #超声电子
 MZGF._member_map_._OrderedDict__update({'b':'600255'})#梦舟股份
 TGBX='000825' #太钢不锈
-QDSD='000826' #启迪桑德
+QDHJ='000826' #启迪环境
 GHNY='600256' #广汇能源
 LYTY='000558' #莱茵体育
 WXQC='000559' #万向钱潮
@@ -2567,12 +2665,12 @@ SDZG='002598' #山东章鼓
 JLQC._member_map_._OrderedDict__update({'b':'000550'})#江铃汽车
 CYKJ._member_map_._OrderedDict__update({'b':'000551'})#创元科技
 JYMD='000552' #靖远煤电
-SLDA='000553' #沙隆达A
+ADMA='000553' #安道麦A
 TSSY='000554' #泰山石油
 SZXX._member_map_._OrderedDict__update({'b':'000555'})#神州信息
 XBCY='000557' #西部创业
 GKSH='002778' #高科石化
-ZJKJ='002779' #中坚科技
+ZJKJ._member_map_._OrderedDict__update({'b':'002779'})#中坚科技
 HKWS='002415' #海康威视
 ZXJY='002772' #众兴菌业
 KHYY._member_map_._OrderedDict__update({'b':'002773'})#康弘药业
@@ -2582,7 +2680,7 @@ BBL='002776' #柏堡龙
 JYYH._member_map_._OrderedDict__update({'b':'002777'})#久远银海
 KYDT='002774' #快意电梯
 WKYL='002775' #文科园林
-STYD._member_map_._OrderedDict__update({'b':'600238'})#ST椰岛
+STYD='600238' #ST椰岛
 DFNY='000958' #东方能源
 SGGF._member_map_._OrderedDict__update({'c':'000959'})#首钢股份
 TRRY='600419' #天润乳业
@@ -2611,21 +2709,20 @@ HBGF._member_map_._OrderedDict__update({'c':'300741'})#华宝股份
 YBDL='300742' #越博动力
 TDSM='300743' #天地数码
 JLYC='300748' #金力永磁
-MDDQ='300341' #麦迪电气
+MKAD='300341' #麦克奥迪
 DLDC._member_map_._OrderedDict__update({'b':'002606'})#大连电瓷
-YXQC='002607' #亚夏汽车
+ZGJY='002607' #中公教育
 STLL='002604' #ST龙力
-YJPK='002605' #姚记扑克
+YJKJ._member_map_._OrderedDict__update({'b':'002605'})#姚记科技
 SJHT='002602' #世纪华通
 YLYY='002603' #以岭药业
 LYZZ='002600' #领益智造
 LMBL='002601' #龙蟒佰利
 JSGX='002608' #江苏国信
-JSKJ = Enum('JSKJ', 'a#捷顺科技 b#佳士科技 c#杰赛科技')
-JSKJ._member_map_._OrderedDict__update({'a':'002609'})#捷顺科技
+JSKJ._member_map_._OrderedDict__update({'b':'002609'})#捷顺科技
 ZHCC='300224' #正海磁材
 JTNY='000600' #建投能源
-SNGF._member_map_._OrderedDict__update({'b':'000601'})#韶能股份
+SNGF._member_map_._OrderedDict__update({'c':'000601'})#韶能股份
 DSJS='300409' #道氏技术
 SDKY='000603' #盛达矿业
 HCJT='603298' #杭叉集团
@@ -2642,7 +2739,7 @@ JQSW='300406' #九强生物
 KLGF._member_map_._OrderedDict__update({'d':'300405'})#科隆股份
 BJYY='300404' #博济医药
 SWLK='603508' #思维列控
-YJGF = Enum('YJGF', 'a#永吉股份 b#易见股份 c#银江股份 d#延江股份')
+YJGF = Enum('YJGF', 'a#永吉股份 b#宇晶股份 c#易见股份 d#银江股份 e#延江股份')
 YJGF._member_map_._OrderedDict__update({'a':'603058'})#永吉股份
 BJJ='603059' #倍加洁
 DBGF='603056' #德邦股份
@@ -2657,8 +2754,8 @@ HXKJ = Enum('HXKJ', 'a#航新科技 b#恒星科技 c#弘讯科技')
 HXKJ._member_map_._OrderedDict__update({'a':'300424'})#航新科技
 XBHJ='601069' #西部黄金
 ZLGJ='601068' #中铝国际
-SWGF._member_map_._OrderedDict__update({'d':'603333'})#明星电缆
-NWGF._member_map_._OrderedDict__update({'b':'603880'})#南卫股份
+SJG='603881' #数据港
+SHGF._member_map_._OrderedDict__update({'c':'000014'})#沙河股份
 HYKJ._member_map_._OrderedDict__update({'b':'000536'})#华映科技
 LBX='603883' #老百姓
 KRGF='300577' #开润股份
@@ -2674,9 +2771,8 @@ JXHK='603885' #吉祥航空
 FHCM='601928' #凤凰传媒
 JSCM='601929' #吉视传媒
 SZRZ='300579' #数字认证
-MLST='000010' #美丽生态
-STKD = Enum('STKD', 'a#ST康达 b#ST凯迪')
-STKD._member_map_._OrderedDict__update({'a':'000048'})#ST康达
+STML='000010' #ST美丽
+KDE='000048' #ST康达
 DSDC='000049' #德赛电池
 BCKJ._member_map_._OrderedDict__update({'b':'300548'})#博创科技
 ZZKG='000042' #中洲控股
@@ -2690,7 +2786,8 @@ XAGF._member_map_._OrderedDict__update({'b':'603889'})#新澳股份
 CHKJ._member_map_._OrderedDict__update({'c':'300547'})#川环科技
 NLGF='603611' #诺力股份
 STFZ._member_map_._OrderedDict__update({'b':'603612'})#索通发展
-CHGF._member_map_._OrderedDict__update({'e':'603615'})#茶花股份
+GLGF._member_map_._OrderedDict__update({'b':'603613'})#国联股份
+SFKJ='603339' #四方科技
 HJHS='603616' #韩建河山
 JHGF._member_map_._OrderedDict__update({'d':'603617'})#君禾股份
 JYGJ='603871' #嘉友国际
@@ -2703,11 +2800,14 @@ LKZN='300543' #朗科智能
 ZSSK='001979' #招商蛇口
 XJST='300541' #先进数通
 ZJGF._member_map_._OrderedDict__update({'b':'603477'})#振静股份
+LYGF._member_map_._OrderedDict__update({'d':'603729'})#龙韵股份
 SQHY='002555' #三七互娱
 HDKJ._member_map_._OrderedDict__update({'c':'603358'})#华达科技
+YTGX='300790' #宇瞳光学
 DYGF._member_map_._OrderedDict__update({'c':'603278'})#大业股份
+JJHB='603279' #景津环保
 TPJT._member_map_._OrderedDict__update({'b':'601689'})#拓普集团
-HTZQ._member_map_._OrderedDict__update({'b':'601688'})#华泰证券
+HTZQ._member_map_._OrderedDict__update({'c':'601688'})#GDR华泰证券
 YMD='002623' #亚玛顿
 DCL='603233' #大参林
 HYYY='300199' #翰宇药业
@@ -2715,10 +2815,10 @@ NCGF='300198' #纳川股份
 CRGF._member_map_._OrderedDict__update({'b':'300195'})#长荣股份
 FAYY='300194' #福安药业
 THST='300197' #铁汉生态
-CHGF._member_map_._OrderedDict__update({'f':'300196'})#长海股份
+CHGF._member_map_._OrderedDict__update({'e':'300196'})#长海股份
 QNHX='300191' #潜能恒信
 WEL='300190' #维尔利
-JSKJ._member_map_._OrderedDict__update({'b':'300193'})#佳士科技
+JSKJ._member_map_._OrderedDict__update({'c':'300193'})#佳士科技
 KSWD='300192' #科斯伍德
 QTJY='300359' #全通教育
 CTKJ='300358' #楚天科技
@@ -2731,21 +2831,28 @@ DTKJ='300353' #东土科技
 BXY='300352' #北信源
 YGDQ='300351' #永贵电器
 HPF='300350' #华鹏飞
-BSGF._member_map_._OrderedDict__update({'d':'300402'})#宝色股份
+BSGF._member_map_._OrderedDict__update({'e':'300402'})#宝色股份
 NYYH='601288' #农业银行
-ZGGH='601111' #中国国航
-HDGF._member_map_._OrderedDict__update({'e':'601113'})#华鼎股份
+ZGGH._member_map_._OrderedDict__update({'b':'601111'})#中国国航
+STHD='601113' #华鼎股份
 ZGHX='601117' #中国化学
 SJGW='601116' #三江购物
 HNXJ='601118' #海南橡胶
-XJJJ='002941' #新股
-ALK='002940' #新股
+HYGJ='002949' #华阳国际
+QDYH='002948' #青岛银行
+HLZQ='002945' #华林证券
+HMD._member_map_._OrderedDict__update({'b':'002947'})#恒铭达
+XRY='002946' #新乳业
+XJJJ='002941' #新疆交建
+ALK='002940' #昂利康
+YJGF._member_map_._OrderedDict__update({'b':'002943'})#宇晶股份
+XNGF='002942' #新农股份
 HLGG='002541' #鸿路钢构
 YTKJ._member_map_._OrderedDict__update({'b':'002540'})#亚太科技
 WHDQ='002543' #万和电气
 ZHYT='002542' #中化岩土
 DFTT='002545' #东方铁塔
-JSKJ._member_map_._OrderedDict__update({'c':'002544'})#杰赛科技
+JSKJ._member_map_._OrderedDict__update({'d':'002544'})#杰赛科技
 CXJG='002547' #春兴精工
 XLDZ='002546' #新联电子
 KMTQ='002549' #凯美特气
@@ -2754,13 +2861,12 @@ HZSZ='002383' #合众思壮
 LFYL='002382' #蓝帆医疗
 SJGF = Enum('SJGF', 'a#双箭股份 b#神剑股份')
 SJGF._member_map_._OrderedDict__update({'a':'002381'})#双箭股份
-KYGF = Enum('KYGF', 'a#科远股份 b#开元股份')
-KYGF._member_map_._OrderedDict__update({'a':'002380'})#科远股份
+KYZH='002380' #科远智慧
 WXN='002387' #维信诺
 TYJT='002386' #天原集团
 DBN='002385' #大北农
 DSJM='002384' #东山精密
-NYKJ='002389' #南洋科技
+HTCH='002389' #航天彩虹
 XYZC._member_map_._OrderedDict__update({'b':'002388'})#新亚制程
 CDLL='000848' #承德露露
 STXM='600732' #ST新梅
@@ -2769,8 +2875,7 @@ GTDL='600886' #国投电力
 YLGF._member_map_._OrderedDict__update({'h':'600887'})#伊利股份
 BRCB='600880' #博瑞传播
 YTJT._member_map_._OrderedDict__update({'b':'600881'})#亚泰集团
-SDJT = Enum('SDJT', 'a#实达集团 b#山东金泰')
-SDJT._member_map_._OrderedDict__update({'a':'600734'})#实达集团
+SDJT='600734' #实达集团
 BWKJ._member_map_._OrderedDict__update({'b':'600883'})#博闻科技
 LZMB='600738' #兰州民百
 LNCD='600739' #辽宁成大
@@ -2783,7 +2888,7 @@ ZGTB='601601' #中国太保
 ZGLY='601600' #中国铝业
 XXHX='000949' #新乡化纤
 ZGDQ='002169' #智光电气
-SZHC='002168' #深圳惠程
+HCKJ='002168' #惠程科技
 DFGY='002167' #东方锆业
 LYSW='002166' #莱茵生物
 HBL='002165' #红宝丽
@@ -2796,7 +2901,7 @@ CLGF._member_map_._OrderedDict__update({'c':'002160'})#常铝股份
 ZSCM='600088' #中视传媒
 TBDG='600089' #特变电工
 ZZJS='002822' #中装建设
-ZPGF._member_map_._OrderedDict__update({'b':'600084'})#中葡股份
+STZP='600084' #ST中葡
 TRT='600085' #同仁堂
 DFJY='600086' #东方金钰
 GQJT='601238' #广汽集团
@@ -2810,7 +2915,7 @@ CTKG='600649' #城投控股
 TDCY='600647' #同达创业
 LSDL._member_map_._OrderedDict__update({'b':'600644'})#乐山电力
 ZYXH='600645' #中源协和
-SNGF._member_map_._OrderedDict__update({'c':'600642'})#申能股份
+SNGF._member_map_._OrderedDict__update({'d':'600642'})#申能股份
 AJJT='600643' #爱建集团
 HBKG='600640' #号百控股
 WYQY='600641' #万业企业
@@ -2834,31 +2939,39 @@ HJGF._member_map_._OrderedDict__update({'c':'002763'})#汇洁股份
 JFLB='002762' #金发拉比
 LDCD='002765' #蓝黛传动
 XFDZ='002767' #先锋电子
-SLGF._member_map_._OrderedDict__update({'f':'002766'})#索菱股份
+STSL='002766' #ST索菱
 HLZJ='600398' #海澜之家
-STFG._member_map_._OrderedDict__update({'b':'600399'})#ST抚钢
+STFG='600399' #ST抚钢
 BLDQ='600468' #百利电气
 FSGF='600469' #风神股份
-JYGF._member_map_._OrderedDict__update({'e':'600462'})#九有股份
+STJY='600462' #ST九有
 KGGF='600463' #空港股份
 SLW='600460' #士兰微
 HCSY='600461' #洪城水业
 LGFZ='600466' #蓝光发展
 HDJ='600467' #好当家
-JSGF = Enum('JSGF', 'a#金山股份 b#江山股份 c#井神股份')
-JSGF._member_map_._OrderedDict__update({'a':'600396'})#金山股份
-STAM='600397' #ST安煤
+STJS='600396' #ST金山
+AYMY='600397' #安源煤业
 MJNY='000723' #美锦能源
 HNFZ='000722' #湖南发展
 XAYS='000721' #西安饮食
-STXN='000720' #ST新能
+XNTS='000720' #新能泰山
 HDKJ._member_map_._OrderedDict__update({'d':'000727'})#华东科技
 LTA='000726' #鲁泰A
 JDFA='000725' #京东方A
 YJPJ='000729' #燕京啤酒
 GYZQ='000728' #国元证券
+APYL='300753' #爱朋医疗
+LLKJ='300752' #隆利科技
+MWGF='300751' #迈为股份
 NDSD='300750' #宁德时代
-HES='002615' #哈尔斯
+LBTK='300757' #罗博特科
+ZSJM='300756' #中山金马
+HZJX='300755' #华致酒行
+KLHC='300759' #康龙化成
+QCHX='300758' #七彩化学
+HES = Enum('HES', 'a#哈尔斯 b#豪尔赛')
+HES._member_map_._OrderedDict__update({'a':'002615'})#哈尔斯
 AJH='002614' #奥佳华
 LXKJ._member_map_._OrderedDict__update({'b':'002617'})#露笑科技
 CQJT='002616' #长青集团
@@ -2870,7 +2983,7 @@ AGLS='002619' #艾格拉斯
 DBKJ='002618' #丹邦科技
 YDCD='002406' #远东传动
 QCJC='000837' #秦川机床
-STJG='600265' #ST景谷
+STJG._member_map_._OrderedDict__update({'b':'600265'})#ST景谷
 BJCJ='600266' #北京城建
 HZYY='600267' #海正药业
 KLKJ='600260' #凯乐科技
@@ -2890,16 +3003,15 @@ HHTZ='000616' #海航投资
 JHGF._member_map_._OrderedDict__update({'f':'000615'})#京汉股份
 DDHA='000613' #大东海A
 RYDZ='603286' #日盈电子
-TSFZ='000611' #天首发展
+STTS._member_map_._OrderedDict__update({'b':'000611'})#ST天首
 XALY='000610' #西安旅游
 LBGF='603519' #立霸股份
-WGNS='603518' #维格娜丝
+JHJT._member_map_._OrderedDict__update({'b':'603518'})#锦泓集团
 FDHJ='603045' #福达合金
 JWSP='603517' #绝味食品
 CZKJ='603516' #淳中科技
 OPZM='603515' #欧普照明
 HMKJ._member_map_._OrderedDict__update({'d':'603042'})#华脉科技
-#STYF='600421' #ST仰帆
 YHCS='601933' #永辉超市
 HZJD='300503' #昊志机电
 QDSJ='300500' #启迪设计
@@ -2925,10 +3037,14 @@ HFMY='603609' #禾丰牧业
 TCSS='603608' #天创时尚
 XZRZ='603869' #新智认知
 FKDQ='603868' #飞科电器
+XHGF._member_map_._OrderedDict__update({'b':'603867'})#新化股份
 TLMB='603866' #桃李面包
+SYZY._member_map_._OrderedDict__update({'b':'603863'})#松炀资源
 BYDQ='603861' #白云电器
-ZGGK._member_map_._OrderedDict__update({'b':'603860'})#中公高科
+ZGGK = Enum('ZGGK', 'a#中公高科 b#中国高科')
+ZGGK._member_map_._OrderedDict__update({'a':'603860'})#中公高科
 XDGF._member_map_._OrderedDict__update({'b':'600416'})#湘电股份
+STFD='600526' #ST菲达
 FYZ='603466' #风语筑
 ALGF='300218' #安利股份
 HLZH='300219' #鸿利智汇
@@ -2940,16 +3056,20 @@ YHL='300212' #易华录
 JXFH='300213' #佳讯飞鸿
 SYGF._member_map_._OrderedDict__update({'d':'300210'})#森远股份
 YTKJ._member_map_._OrderedDict__update({'c':'300211'})#亿通科技
+JFMY='688368' #晶丰明源
+HYDZ='603267' #鸿远电子
 TLGF._member_map_._OrderedDict__update({'b':'603266'})#天龙股份
 HSGY='603260' #合盛硅业
 HOGF='603269' #海鸥股份
 SFGF = Enum('SFGF', 'a#松发股份 b#四方股份 c#三孚股份')
 SFGF._member_map_._OrderedDict__update({'a':'603268'})#松发股份
+AJKJ = Enum('AJKJ', 'a#安集科技 b#安洁科技')
+AJKJ._member_map_._OrderedDict__update({'a':'688019'})#安集科技
 YAKJ='300328' #宜安科技
 HLGQ='300329' #海伦钢琴
 SBD='300322' #硕贝德
 HCGD='300323' #华灿光电
-HDGF._member_map_._OrderedDict__update({'f':'300320'})#海达股份
+HDGF._member_map_._OrderedDict__update({'e':'300320'})#海达股份
 TDGF = Enum('TDGF', 'a#同大股份 b#通达股份 c#泰达股份')
 TDGF._member_map_._OrderedDict__update({'a':'300321'})#同大股份
 KLT='300326' #凯利泰
@@ -2984,7 +3104,7 @@ MPZB='002574' #明牌珠宝
 WFGF='601010' #文峰股份
 TDDL='002576' #通达动力
 HDWY='603385' #惠达卫浴
-STYM='002570' #ST因美
+BYM='002570' #贝因美
 PGDQ='600312' #平高电气
 SFY='002572' #索菲亚
 BTL._member_map_._OrderedDict__update({'b':'601011'})#宝泰隆
@@ -3000,7 +3120,7 @@ YTYY='002370' #亚太药业
 BFHC='002371' #北方华创
 HFDL='600893' #航发动力
 DSWH='600892' #大晟文化
-QLJT='600891' #秋林集团
+STQL='600891' #ST秋林
 ZFGF._member_map_._OrderedDict__update({'b':'600890'})#中房股份
 XMKG='600897' #厦门空港
 NBFD='600724' #宁波富达
@@ -3009,19 +3129,21 @@ GRGF='600894' #广日股份
 CQBH='600729' #重庆百货
 JDKJ._member_map_._OrderedDict__update({'c':'600728'})#佳都科技
 GMTX='600898' #国美通讯
-TCKG = Enum('TCKG', 'a#通程控股 b#天成控股')
-TCKG._member_map_._OrderedDict__update({'a':'000419'})#通程控股
-XTEA='000418' #小天鹅A
+TCKG='000419' #通程控股
+LXKJ._member_map_._OrderedDict__update({'c':'688018'})#乐鑫科技
+NFGF = Enum('NFGF', 'a#南纺股份 b#南风股份')
+NFGF._member_map_._OrderedDict__update({'a':'600250'})#南纺股份
 CCQC='601633' #长城汽车
 QBJT='601636' #旗滨集团
 ZHJT='600252' #中恒集团
+HTHT='688066' #航天宏图
 JKWH='300459' #金科文化
 ZHZB._member_map_._OrderedDict__update({'b':'600705'})#中航资本
 ZXYY._member_map_._OrderedDict__update({'b':'002118'})#紫鑫药业
 KQDZ='002119' #康强电子
 DHGF._member_map_._OrderedDict__update({'c':'600257'})#大湖股份
 SBKJ='002112' #三变科技
-TRSY='002113' #天润数娱
+STTR='002113' #ST天润
 SGMG='002110' #三钢闽光
 WHGT='002111' #威海广泰
 ZGHC='002116' #中国海诚
@@ -3030,7 +3152,7 @@ LPXD='002114' #罗平锌电
 SWTX._member_map_._OrderedDict__update({'b':'002115'})#三维通信
 LHGF._member_map_._OrderedDict__update({'b':'600099'})#林海股份
 GZFZ='600098' #广州发展
-YJGF._member_map_._OrderedDict__update({'b':'600093'})#易见股份
+YJGF._member_map_._OrderedDict__update({'c':'600093'})#易见股份
 TRQZ='002283' #天润曲轴
 STMK='600091' #ST明科
 TJT='600090' #同济堂
@@ -3046,8 +3168,8 @@ STZA='600654' #ST中安
 XDDC='600657' #信达地产
 FLYX='600651' #飞乐音响
 JJTZ='600650' #锦江投资
-PDJT='601258' #庞大集团
-YJYX='600652' #游久游戏
+STPD='601258' #ST庞大
+STYJ='600652' #ST游久
 XJTY='600075' #新疆天业
 STBQ='600074' #ST保千
 SDGF._member_map_._OrderedDict__update({'c':'600077'})#宋都股份
@@ -3063,12 +3185,13 @@ RFYY='600079' #人福医药
 CXGF._member_map_._OrderedDict__update({'b':'600078'})#澄星股份
 KTHW='300455' #康拓红外
 SDWD='002026' #山东威达
-DFXX='002755' #东方新星
-YXTG='002756' #永兴特钢
-NXZB='002757' #南兴装备
+ASK = Enum('ASK', 'a#奥赛康 b#爱司凯 c#奥士康')
+ASK._member_map_._OrderedDict__update({'a':'002755'})#奥赛康
+YXCL='002756' #永兴材料
+NXGF='002757' #南兴股份
 LJYY='002750' #龙津药业
 YSZS='002751' #易尚展示
-YDGF._member_map_._OrderedDict__update({'c':'002753'})#永东股份
+YDGF._member_map_._OrderedDict__update({'d':'002753'})#永东股份
 HXBZ='002228' #合兴包装
 YHKJ='300457' #赢合科技
 HTYY='002758' #华通医药
@@ -3078,14 +3201,14 @@ SYDQ._member_map_._OrderedDict__update({'a':'002028'})#思源电气
 JQH='002885' #京泉华
 HYNY._member_map_._OrderedDict__update({'c':'600387'})#海越能源
 BBCM='600386' #北巴传媒
-SDJT._member_map_._OrderedDict__update({'b':'600385'})#山东金泰
+STJT='600385' #ST金泰
 HMKJ._member_map_._OrderedDict__update({'e':'002595'})#豪迈科技
 BLKJ._member_map_._OrderedDict__update({'c':'002592'})#八菱科技
 GDMZ='600382' #广东明珠
 QHCT='600381' #青海春天
 JKY._member_map_._OrderedDict__update({'b':'600380'})#健康元
 GLM='002340' #格林美
-JSGF._member_map_._OrderedDict__update({'b':'600389'})#江山股份
+JSGF='600389' #江山股份
 STGF._member_map_._OrderedDict__update({'d':'002599'})#盛通股份
 QJYY='600479' #千金药业
 KLY = Enum('KLY', 'a#科力远 b#凯莱英')
@@ -3098,14 +3221,14 @@ XYKJ._member_map_._OrderedDict__update({'d':'600476'})#湘邮科技
 XJDQ._member_map_._OrderedDict__update({'b':'603416'})#信捷电气
 CZGF='000990' #诚志股份
 MDDL='000993' #闽东电力
-STHT._member_map_._OrderedDict__update({'b':'000995'})#ST皇台
+STHT='000995' #ST皇台
 ZGZQ._member_map_._OrderedDict__update({'b':'000996'})#中国中期
 XDL = Enum('XDL', 'a#新大陆 b#雪迪龙')
 XDL._member_map_._OrderedDict__update({'a':'000997'})#新大陆
 LPGK='000998' #隆平高科
 HRSJ._member_map_._OrderedDict__update({'b':'000999'})#华润三九
 RHGF='002620' #瑞和股份
-SLGF._member_map_._OrderedDict__update({'g':'002621'})#三垒股份
+MJM='002621' #美吉姆
 RYJT._member_map_._OrderedDict__update({'b':'002622'})#融钰集团
 YDLA='000539' #粤电力A
 WMSJ='002624' #完美世界
@@ -3113,11 +3236,10 @@ GQJS='002625' #光启技术
 JDW='002626' #金达威
 YCJY='002627' #宜昌交运
 CDLQ='002628' #成都路桥
-RZGF='002629' #仁智股份
+STRZ='002629' #ST仁智
 JHNY='600273' #嘉化能源
 KKSY='600272' #开开实业
 HTXX='600271' #航天信息
-WYFZ='600270' #外运发展
 YLJN='600277' #亿利洁能
 HRYY._member_map_._OrderedDict__update({'b':'600276'})#恒瑞医药
 STCY='600275' #ST昌鱼
@@ -3142,7 +3264,7 @@ KSKJ._member_map_._OrderedDict__update({'b':'600552'})#凯盛科技
 BFGJ='000065' #北方国际
 XRSW='300511' #雪榕生物
 DDRJ='603383' #顶点软件
-HTSD='300513' #恒泰实达
+HSKJ='300513' #恒实科技
 ZYGF._member_map_._OrderedDict__update({'c':'300512'})#中亚股份
 GDJY='603386' #广东骏亚
 YXD='300514' #友讯达
@@ -3150,26 +3272,28 @@ HBZK='300517' #海波重科
 THXC._member_map_._OrderedDict__update({'b':'603055'})#台华新材
 XGYY='300519' #新光药业
 SXD='300518' #盛讯达
-YCGF._member_map_._OrderedDict__update({'b':'603388'})#元成股份
+YCGF='603388' #元成股份
 YZJJ='603389' #亚振家居
 HKSG='000068' #华控赛格
 HQCA='000069' #华侨城A
 WXK='603676' #卫信康
 QJJX='603677' #奇精机械
 HJDZ='603678' #火炬电子
-HTKJ._member_map_._OrderedDict__update({'f':'603679'})#华体科技
+HTKJ._member_map_._OrderedDict__update({'d':'603679'})#华体科技
 ZGCC='000066' #中国长城
 HSTC='600410' #华胜天成
 JHJG='603607' #京华激光
 QMJJ='603818' #曲美家居
-SLGF._member_map_._OrderedDict__update({'h':'603819'})#神力股份
+SLGF._member_map_._OrderedDict__update({'f':'603819'})#神力股份
 WYTC='300420' #五洋停车
 YSGF._member_map_._OrderedDict__update({'c':'603813'})#原尚股份
-FSJT='603810' #新股
+STFS='603810' #ST丰山
 CYYY='603811' #诚意药业
 GJJJ='603816' #顾家家居
 HXHB='603817' #海峡环保
+JJGF._member_map_._OrderedDict__update({'b':'603815'})#交建股份
 TZXX='300209' #天泽信息
+QDZC='300208' #青岛中程
 XGKJ='603499' #翔港科技
 HWKJ._member_map_._OrderedDict__update({'b':'603496'})#恒为科技
 STS='300204' #舒泰神
@@ -3179,14 +3303,16 @@ HLZ='300201' #海伦哲
 GMXC='300200' #高盟新材
 JGKJ = Enum('JGKJ', 'a#聚光科技 b#精功科技')
 JGKJ._member_map_._OrderedDict__update({'a':'300203'})#聚光科技
-JLGF._member_map_._OrderedDict__update({'d':'300202'})#聚龙股份
-JJY='603708' #家家悦
+JLGF._member_map_._OrderedDict__update({'e':'300202'})#聚龙股份
+HHKJ._member_map_._OrderedDict__update({'f':'603256'})#宏和科技
 ZYJJ='603709' #中源家居
 DHWL='603258' #电魂网络
-JYGF._member_map_._OrderedDict__update({'f':'603707'})#健友股份
+JYGF._member_map_._OrderedDict__update({'e':'603707'})#健友股份
 SYKJ._member_map_._OrderedDict__update({'d':'603703'})#盛洋科技
+NBSB='603700' #宁波水表
 DHGF._member_map_._OrderedDict__update({'d':'603701'})#德宏股份
 BSK='300422' #博世科
+ZKR='603927' #中科软
 JHS='603922' #金鸿顺
 NCP='000061' #农产品
 XYGF._member_map_._OrderedDict__update({'f':'603928'})#兴业股份
@@ -3204,41 +3330,47 @@ THHJ='300332' #天壕环境
 DSGF = Enum('DSGF', 'a#迪森股份 b#大商股份 c#道森股份')
 DSGF._member_map_._OrderedDict__update({'a':'300335'})#迪森股份
 JMKJ._member_map_._OrderedDict__update({'b':'300334'})#津膜科技
-YBGF._member_map_._OrderedDict__update({'b':'300337'})#银邦股份
+YBGF='300337' #银邦股份
 XWH='300336' #新文化
 JSDZ='600699' #均胜电子
 ZXTX='000063' #中兴通讯
 MLY='000815' #美利云
-HNTY='600698' #湖南天雁
+STTY='600698' #ST天雁
 YLGF._member_map_._OrderedDict__update({'i':'002126'})#银轮股份
+SZYH='002966' #苏州银行
 SZRQ='601139' #深圳燃气
 GYFL='601138' #工业富联
+HES._member_map_._OrderedDict__update({'b':'002963'})#豪尔赛
+WFGD='002962' #五方光电
+RDQH='002961' #瑞达期货
+QNXF='002960' #青鸟消防
 QHWY='603027' #千禾味业
 BWHJ='601137' #博威合金
-DGJC='300749' #新股
+DGJC='300749' #顶固集创
 HXCY='300025' #华星创业
 ZCKJ._member_map_._OrderedDict__update({'b':'002080'})#中材科技
 HYXD='300027' #华谊兄弟
 HRYY._member_map_._OrderedDict__update({'c':'300026'})#红日药业
 DYJS='300021' #大禹节水
-YJGF._member_map_._OrderedDict__update({'c':'300020'})#银江股份
+YJGF._member_map_._OrderedDict__update({'d':'300020'})#银江股份
 BDGF._member_map_._OrderedDict__update({'b':'300023'})#宝德股份
-QDHE='600690' #青岛海尔
+HEZJ='600690' #海尔智家
 TLGD='300029' #天龙光电
 DBJT='600693' #东百集团
-BSGF._member_map_._OrderedDict__update({'e':'002569'})#步森股份
+STBS._member_map_._OrderedDict__update({'b':'002569'})#ST步森
 FRGF._member_map_._OrderedDict__update({'b':'002083'})#孚日股份
+JJY='603708' #家家悦
 SMFS='002563' #森马服饰
-HOZG='002084' #海鸥住工
+LTTZ='600695' #绿庭投资
 XJH='002561' #徐家汇
 TDGF._member_map_._OrderedDict__update({'b':'002560'})#通达股份
 TRS='002567' #唐人神
 YSYY='002566' #益盛药业
 SHGF._member_map_._OrderedDict__update({'d':'002565'})#顺灏股份
 DSGF._member_map_._OrderedDict__update({'b':'600694'})#大商股份
-DFHY._member_map_._OrderedDict__update({'b':'603706'})#东方环宇
+DFHY='603706' #东方环宇
 ZYKJ._member_map_._OrderedDict__update({'d':'002369'})#卓翼科技
-OYJT='600697' #欧亚集团
+STDHY='002086' #ST东海洋
 YMKD='603259' #药明康德
 YAYY='002365' #永安药业
 ZHDQ='002364' #中恒电气
@@ -3265,15 +3397,15 @@ ZGDJ='601669' #中国电建
 BLHJ='000811' #冰轮环境
 TLGF._member_map_._OrderedDict__update({'c':'603926'})#铁流股份
 CNDL='000155' #川能动力
-AKKC='000868' #安凯客车
+STAK='000868' #ST安凯
 XJHJ='603080' #新疆火炬
-XHGF='002109' #兴化股份
+XHGF._member_map_._OrderedDict__update({'c':'002109'})#兴化股份
 CZMZ='002108' #沧州明珠
 GDHT='002101' #广东鸿图
 TKSW='002100' #天康生物
 CWSZ='000810' #创维数字
 STGF._member_map_._OrderedDict__update({'e':'002102'})#ST冠福
-XLJK='002105' #信隆健康
+XLJK._member_map_._OrderedDict__update({'b':'002105'})#信隆健康
 HBGF._member_map_._OrderedDict__update({'d':'002104'})#恒宝股份
 WHYY='002107' #沃华医药
 LBGK='002106' #莱宝高科
@@ -3283,27 +3415,27 @@ HSCM='000156' #华数传媒
 SYDL='603920' #世运电路
 ZYA='000869' #张裕A
 XQL='002291' #星期六
-ZKXC='002290' #中科新材
+STZK='002290' #ST中科
 LLSH='002293' #罗莱生活
 AFYL='002292' #奥飞娱乐
-JYGF._member_map_._OrderedDict__update({'g':'002295'})#精艺股份
+JYGF._member_map_._OrderedDict__update({'f':'002295'})#精艺股份
 XLT._member_map_._OrderedDict__update({'b':'002294'})#信立泰
 BYXC='002297' #博云新材
-HHKJ._member_map_._OrderedDict__update({'d':'002296'})#辉煌科技
+HHKJ._member_map_._OrderedDict__update({'g':'002296'})#辉煌科技
 JFJT='600668' #尖峰集团
 ZMJ='601717' #郑煤机
 FYBL='600660' #福耀玻璃
-ALJY='600661' #新南洋
+ALJY='600661' #昂立教育
 QSKG='600662' #强生控股
-JHJT._member_map_._OrderedDict__update({'b':'601718'})#际华集团
+JHJT._member_map_._OrderedDict__update({'c':'601718'})#际华集团
 HYGF._member_map_._OrderedDict__update({'f':'600664'})#哈药股份
 TDY='600665' #天地源
-ARD='600666' #奥瑞德
+STRD='600666' #ST瑞德
 TJSY='600667' #太极实业
 YBE='300681' #英搏尔
 LSKJ._member_map_._OrderedDict__update({'b':'300680'})#隆盛科技
 HTSW='300683' #海特生物
-LXKJ._member_map_._OrderedDict__update({'c':'300682'})#朗新科技
+LXKJ._member_map_._OrderedDict__update({'d':'300682'})#朗新科技
 ADSW='300685' #艾德生物
 ZSKJ._member_map_._OrderedDict__update({'b':'300684'})#中石科技
 SYXX='300687' #赛意信息
@@ -3311,7 +3443,7 @@ ZDL='300686' #智动力
 BLDC='600048' #保利地产
 CYHM='300688' #创业黑马
 JDSW='603387' #基蛋生物
-HDGF._member_map_._OrderedDict__update({'g':'002035'})#华帝股份
+HDGF._member_map_._OrderedDict__update({'f':'002035'})#华帝股份
 SSGF._member_map_._OrderedDict__update({'b':'002742'})#三圣股份
 JLFZ='002037' #久联发展
 LCDZ='002036' #联创电子
@@ -3319,14 +3451,15 @@ JLZN='002031' #巨轮智能
 DAJY='002030' #达安基因
 MLS='002745' #木林森
 SSGF._member_map_._OrderedDict__update({'c':'600884'})#杉杉股份
-GGGF='002749' #国光股份
+XYF='000902' #新洋丰
 SLSY='002748' #世龙实业
 QYDL='002039' #黔源电力
 SLYY._member_map_._OrderedDict__update({'b':'002038'})#双鹭药业
+YHJK='000150' #宜华健康
 GJTY='600444' #国机通用
 XLKX='002584' #西陇科学
 JZGF._member_map_._OrderedDict__update({'b':'600446'})#金证股份
-WHGF._member_map_._OrderedDict__update({'b':'002586'})#围海股份
+STWH='002586' #ST围海
 WMYY='002581' #未名医药
 SYGF._member_map_._OrderedDict__update({'e':'002580'})#圣阳股份
 HND='002583' #海能达
@@ -3342,14 +3475,14 @@ YXJK._member_map_._OrderedDict__update({'b':'000987'})#越秀金控
 DQHK='000985' #大庆华科
 XSMD='000983' #西山煤电
 STZR='000982' #ST中绒
-YYGF._member_map_._OrderedDict__update({'e':'000981'})#银亿股份
+STYY='000981' #ST银亿
 ZTQC='000980' #众泰汽车
 BFDH='600435' #北方导航
 XRGF._member_map_._OrderedDict__update({'b':'002639'})#雪人股份
 QSGF._member_map_._OrderedDict__update({'b':'002638'})#勤上股份
 ZYKJ._member_map_._OrderedDict__update({'e':'002637'})#赞宇科技
 JAGJ='002636' #金安国纪
-AJKJ='002635' #安洁科技
+AJKJ._member_map_._OrderedDict__update({'b':'002635'})#安洁科技
 BJGF='002634' #棒杰股份
 SKGF._member_map_._OrderedDict__update({'c':'002633'})#申科股份
 DMGX='002632' #道明光学
@@ -3370,42 +3503,43 @@ ZYSC='600280' #中央商场
 THGF._member_map_._OrderedDict__update({'b':'600281'})#太化股份
 ZHGF._member_map_._OrderedDict__update({'b':'603067'})#振华股份
 YFCC='603066' #音飞储存
+ABT='688168' #安博通
 HWDQ='603063' #禾望电气
 GJJT='603060' #国检集团
 YGC='000671' #阳光城
-YFW='000670' #盈方微
+STYF._member_map_._OrderedDict__update({'b':'000670'})#ST盈方
 DDDF='000673' #当代东方
 SFSN='000672' #上峰水泥
 HQJT='603069' #海汽集团
 ZDGF._member_map_._OrderedDict__update({'b':'000676'})#智度股份
+JCGF._member_map_._OrderedDict__update({'b':'688099'})#晶晨股份
 SHJT='300408' #三环集团
 SXNY='000860' #顺鑫农业
 PZH='600436' #片仔癀
-JSGF._member_map_._OrderedDict__update({'c':'603299'})#井神股份
-BHC='600721' #百花村
+SYJS='603299' #苏盐井神
+STBH='600721' #ST百花
 HSKG='000509' #华塑控股
-DEHY='300403' #地尔汉宇
+HYJT._member_map_._OrderedDict__update({'b':'300403'})#汉宇集团
 XTRQ='603393' #新天然气
 TFXX='000070' #特发信息
 FXGF._member_map_._OrderedDict__update({'c':'000926'})#福星股份
 JFSW='300529' #健帆生物
-JCGF._member_map_._OrderedDict__update({'b':'603396'})#金辰股份
+JCGF._member_map_._OrderedDict__update({'c':'603396'})#金辰股份
 JXGF._member_map_._OrderedDict__update({'b':'603399'})#吉翔股份
 BBYZ='603398' #邦宝益智
 ZQGF._member_map_._OrderedDict__update({'b':'300526'})#中潜股份
 ZGYJ='300527' #中国应急
 KDGC='300520' #科大国创
-ASK = Enum('ASK', 'a#爱司凯 b#奥士康')
-ASK._member_map_._OrderedDict__update({'a':'300521'})#爱司凯
+ASK._member_map_._OrderedDict__update({'b':'300521'})#爱司凯
 SMKJ._member_map_._OrderedDict__update({'b':'300522'})#世名科技
 CAKJ='300523' #辰安科技
-HLGF._member_map_._OrderedDict__update({'h':'603661'})#恒林股份
+HLGF._member_map_._OrderedDict__update({'g':'603661'})#恒林股份
 SZKD='603660' #苏州科达
 SXXC._member_map_._OrderedDict__update({'c':'603663'})#三祥新材
-YXGX='603297' #永新光学
+KLCG='603662' #柯力传感
 KLD._member_map_._OrderedDict__update({'b':'603665'})#康隆达
 WZXC._member_map_._OrderedDict__update({'b':'603667'})#五洲新春
-KYGF._member_map_._OrderedDict__update({'b':'300338'})#开元股份
+KYGF='300338' #开元股份
 LKYY._member_map_._OrderedDict__update({'b':'603669'})#灵康药业
 TMKJ='603668' #天马科技
 GXJK='000503' #国新健康
@@ -3416,11 +3550,11 @@ HNGF._member_map_._OrderedDict__update({'b':'603809'})#豪能股份
 GLS='603808' #歌力思
 HJZB='000532' #华金资本
 DSGF._member_map_._OrderedDict__update({'c':'603800'})#道森股份
-WHGF._member_map_._OrderedDict__update({'c':'300508'})#维宏股份
+WHGF._member_map_._OrderedDict__update({'b':'300508'})#维宏股份
 FST='603806' #福斯特
 WNHJ='002034' #旺能环境
-FLGF._member_map_._OrderedDict__update({'b':'002931'})#锋龙股份
-NHSW='000504' #南华生物
+FLGF._member_map_._OrderedDict__update({'c':'002931'})#锋龙股份
+STSW='000504' #ST生物
 JQXX='603918' #金桥信息
 GHSW='300238' #冠昊生物
 DBSW='300239' #东宝生物
@@ -3442,13 +3576,14 @@ GDYT='002152' #广电运通
 TYST='603717' #天域生态
 SLS._member_map_._OrderedDict__update({'b':'603716'})#塞力斯
 XPP='603711' #香飘飘
+BCDZ='688188' #柏楚电子
 MEKW='603713' #密尔克卫
 SJXX='002153' #石基信息
 LDXC='603937' #丽岛新材
 BMDZ='603936' #博敏电子
 HET='002402' #和而泰
 RNKJ='603933' #睿能科技
-ASD._member_map_._OrderedDict__update({'c':'002403'})#爱仕达
+BDXT='002151' #北斗星通
 YFYF='603939' #益丰药房
 SFGF._member_map_._OrderedDict__update({'c':'603938'})#三孚股份
 YYDQ='300304' #云意电气
@@ -3464,7 +3599,8 @@ ZJXC='300308' #中际旭创
 JAKJ='300309' #吉艾科技
 YKKJ='002409' #雅克科技
 LBHG='600727' #鲁北化工
-HDNY='600726' #华电能源
+STHY._member_map_._OrderedDict__update({'b':'600726'})#ST华源
+BDJG='603331' #百达精工
 ZXSK='002912' #中新赛克
 CQRQ='600917' #重庆燃气
 ZYMC='002910' #庄园牧场
@@ -3487,7 +3623,7 @@ ZYGF._member_map_._OrderedDict__update({'d':'300018'})#中元股份
 GBKJ='300019' #硅宝科技
 XDZY='600420' #现代制药
 SYDQ._member_map_._OrderedDict__update({'b':'002358'})#森源电气
-BXJT='002359' #北讯集团
+STBX='002359' #ST北讯
 GDDL._member_map_._OrderedDict__update({'b':'600310'})#桂东电力
 SDHJ='600547' #山东黄金
 BJKR='002350' #北京科锐
@@ -3497,16 +3633,16 @@ JRGF = Enum('JRGF', 'a#杰瑞股份 b#晶瑞股份')
 JRGF._member_map_._OrderedDict__update({'a':'002353'})#杰瑞股份
 TSYL='002354' #天神娱乐
 XMZT='002355' #兴民智通
-HMJT='002356' #赫美集团
+STHM._member_map_._OrderedDict__update({'b':'002356'})#ST赫美
 FLYY='002357' #富临运业
 GMDC='600708' #光明地产
 HTDZ='600879' #航天电子
 WTRQ='603689' #皖天然气
 DFDQ='600875' #东方电气
 CYHB='600874' #创业环保
-STJL='600877' #ST嘉陵
+STDN._member_map_._OrderedDict__update({'b':'600877'})#ST嘉陵
 LYBL='600876' #洛阳玻璃
-STYF._member_map_._OrderedDict__update({'b':'600871'})#ST油服
+SHYF._member_map_._OrderedDict__update({'b':'600871'})#石化油服
 STXH='600870' #ST厦华
 MHSW='600873' #梅花生物
 ZJGX = Enum('ZJGX', 'a#中炬高新 b#张家港行')
@@ -3535,10 +3671,10 @@ SLDZ='002138' #顺络电子
 TBGF = Enum('TBGF', 'a#拓邦股份 b#天邦股份')
 TBGF._member_map_._OrderedDict__update({'a':'002139'})#拓邦股份
 HTTX='600677' #航天通信
-JYGF._member_map_._OrderedDict__update({'h':'600676'})#交运股份
+JYGF._member_map_._OrderedDict__update({'g':'600676'})#交运股份
 ZHQY='600675' #中华企业
 CTNY='600674' #川投能源
-DYGK='600673' #东阳光科
+DYG='600673' #东阳光
 TMYY='600671' #天目药业
 SHFH='600679' #上海凤凰
 SCJD='600678' #四川金顶
@@ -3559,12 +3695,13 @@ XHC='002001' #新和成
 HDXY='002002' #鸿达兴业
 WXGF='002003' #伟星股份
 HBJK='002004' #华邦健康
-DHRD='002005' #德豪润达
+STDH='002005' #ST德豪
 JGKJ._member_map_._OrderedDict__update({'b':'002006'})#精功科技
 HLSW._member_map_._OrderedDict__update({'b':'002007'})#华兰生物
 DZJG='002008' #大族激光
 TQGF='002009' #天奇股份
 WNDL='000543' #皖能电力
+YWYC='300792' #壹网壹创
 FLDL='600452' #涪陵电力
 BTGF._member_map_._OrderedDict__update({'c':'600456'})#宝钛股份
 BTGF._member_map_._OrderedDict__update({'d':'600455'})#博通股份
@@ -3578,20 +3715,28 @@ HCTX='300578' #会畅通讯
 YTSD='600233' #圆通速递
 JFKJ._member_map_._OrderedDict__update({'c':'300022'})#吉峰科技
 LJHB='600388' #龙净环保
-JYGF._member_map_._OrderedDict__update({'i':'600232'})#金鹰股份
+JYGF._member_map_._OrderedDict__update({'h':'600232'})#金鹰股份
+ZXCB='300788' #中信出版
+TYDQ='300789' #唐源电气
 LGGF._member_map_._OrderedDict__update({'c':'600231'})#凌钢股份
-CZDH='600230' #沧州大化
+DEJG._member_map_._OrderedDict__update({'b':'300780'})#德恩精工
+YSJT._member_map_._OrderedDict__update({'b':'300781'})#因赛集团
+ZSW='300782' #卓胜微
+SCJZ='000801' #四川九洲
+ZDM='300785' #值得买
+GLHB='300786' #国林环保
+HNSY='300787' #海能实业
 WXSH='002648' #卫星石化
 BYKJ='002649' #博彦科技
 DYBY='603757' #大元泵业
-RZL='002642' #荣之联
+STRL._member_map_._OrderedDict__update({'b':'002642'})#ST荣联
 WRGF='002643' #万润股份
 KJT='002640' #跨境通
 YGGF._member_map_._OrderedDict__update({'c':'002641'})#永高股份
 QQKJ='002646' #青青稞酒
 RDKG='002647' #仁东控股
 FCZY='002644' #佛慈制药
-JYKJ._member_map_._OrderedDict__update({'d':'300028'})#金亚科技
+JYKJ._member_map_._OrderedDict__update({'e':'300028'})#金亚科技
 ADS='600299' #安迪苏
 AQJM='600298' #安琪酵母
 QAGF='603758' #秦安股份
@@ -3609,7 +3754,7 @@ YXML='601890' #亚星锚链
 WLY._member_map_._OrderedDict__update({'b':'000858'})#五粮液
 CLJT='603012' #创力集团
 YPGF='603013' #亚普股份
-WSGF._member_map_._OrderedDict__update({'d':'603010'})#万盛股份
+WSGF._member_map_._OrderedDict__update({'c':'603010'})#万盛股份
 HDZN='603011' #合锻智能
 XHT='603016' #新宏泰
 ZHSJ='603017' #中衡设计
@@ -3618,7 +3763,7 @@ HXKJ._member_map_._OrderedDict__update({'c':'603015'})#弘讯科技
 ZSJT='603018' #中设集团
 ZKSG='603019' #中科曙光
 EMSA='000888' #峨眉山A
-MYTX='000889' #茂业通信
+ZJBC='000889' #中嘉博创
 MDDZ='300656' #民德电子
 HXDZ._member_map_._OrderedDict__update({'b':'300657'})#弘信电子
 SJTH='300654' #世纪天鸿
@@ -3627,7 +3772,7 @@ LDK='300652' #雷迪克
 ZHSW='300653' #正海生物
 TLZM='300650' #太龙照明
 ZMSY='603619' #中曼石油
-YJGF._member_map_._OrderedDict__update({'d':'300658'})#延江股份
+YJGF._member_map_._OrderedDict__update({'e':'300658'})#延江股份
 ZFXX='300659' #中孚信息
 XDKJ._member_map_._OrderedDict__update({'b':'002562'})#兄弟科技
 SLJD='600258' #首旅酒店
@@ -3655,8 +3800,10 @@ THGD='603656' #泰禾光电
 CGKJ='603657' #春光科技
 TCXC='603650' #彤程新材
 CWGF='603123' #翠微股份
+CHGF._member_map_._OrderedDict__update({'f':'603615'})#茶花股份
 TJGF._member_map_._OrderedDict__update({'d':'002368'})#太极股份
 YZXC='002652' #扬子新材
+HXXF='600340' #华夏幸福
 KYJT='600422' #昆药集团
 ZGZT='601390' #中国中铁
 DFTY='000962' #东方钽业
@@ -3673,18 +3820,20 @@ FRTZ='300228' #富瑞特装
 ZTDQ='601877' #正泰电器
 THHD='002366' #台海核电
 ZSLC='601872' #招商轮船
-STLH='600423' #ST柳化
+STLH._member_map_._OrderedDict__update({'b':'600423'})#ST柳化
 TPN='603877' #太平鸟
 ZSZQ._member_map_._OrderedDict__update({'b':'601878'})#浙商证券
 MZDQ='603728' #鸣志电器
-LYGF._member_map_._OrderedDict__update({'d':'603729'})#龙韵股份
+ZGGK._member_map_._OrderedDict__update({'b':'600730'})#中国高科
 NBGF._member_map_._OrderedDict__update({'b':'603238'})#诺邦股份
 ZJXT='603239' #浙江仙通
+TZKJ='688003' #天准科技
 QXHJ='002573' #清新环境
 GERJ='603232' #格尔软件
 ZGTZ='603721' #中广天择
 AKL='603722' #阿科力
 GSYH='601398' #工商银行
+YYTX='603236' #移远通信
 TAXC='603725' #天安新材
 LDJT='603726' #朗迪集团
 BMK='603727' #博迈科
@@ -3698,13 +3847,13 @@ HCGF='603909' #合诚股份
 FSZM='000541' #佛山照明
 HNHL='600731' #湖南海利
 JSYX='600959' #江苏有线
-GZGF='600882' #广泽股份
-ZLSH='000930' #中粮生化
+MKLD='600882' #妙可蓝多
+ZLKJ._member_map_._OrderedDict__update({'b':'000930'})#中粮生化
 TSSW='300313' #天山生物
 BXJS='300312' #邦讯技术
 KXXC='600076' #康欣新材
-ZHGF._member_map_._OrderedDict__update({'c':'000979'})#中弘股份
-JWXN='300317' #珈伟股份
+STYF._member_map_._OrderedDict__update({'c':'600421'})#ST仰帆
+JWXN='300317' #珈伟新能
 JSJD='300316' #晶盛机电
 ZQKJ='300315' #掌趣科技
 DWYL='300314' #戴维医疗
@@ -3722,7 +3871,7 @@ BDJT='600865' #百大集团
 ZHGK='600862' #中航高科
 NMHD='600863' #内蒙华电
 RHYY='000650' #仁和药业
-JCGF._member_map_._OrderedDict__update({'c':'600860'})#京城股份
+JCGF._member_map_._OrderedDict__update({'d':'600860'})#京城股份
 GNGF = Enum('GNGF', 'a#冠农股份 b#赣能股份')
 GNGF._member_map_._OrderedDict__update({'a':'600251'})#冠农股份
 ZGRS='601628' #中国人寿
@@ -3733,14 +3882,12 @@ MPGC='002902' #铭普光磁
 JSZL='600901' #江苏租赁
 CJDL='600900' #长江电力
 GZRQ='600903' #贵州燃气
-HYJT._member_map_._OrderedDict__update({'b':'002906'})#华阳集团
+HYJT._member_map_._OrderedDict__update({'c':'002906'})#华阳集团
 JTGF._member_map_._OrderedDict__update({'b':'002909'})#集泰股份
 DSKJ._member_map_._OrderedDict__update({'b':'002908'})#德生科技
 LGWH='601599' #鹿港文化
 HAZQ='600909' #华安证券
 WXYH='600908' #无锡银行
-NFGF = Enum('NFGF', 'a#南纺股份 b#南风股份')
-NFGF._member_map_._OrderedDict__update({'a':'600250'})#南纺股份
 AKSW='300009' #安科生物
 THFW._member_map_._OrderedDict__update({'b':'300008'})#天海防务
 HWKJ._member_map_._OrderedDict__update({'d':'300007'})#汉威科技
@@ -3749,7 +3896,7 @@ TLZ='300005' #探路者
 NFGF._member_map_._OrderedDict__update({'b':'300004'})#南风股份
 LPYL='300003' #乐普医疗
 SZTY='300002' #神州泰岳
-TRD='300001' #特锐德
+SKS='603737' #三棵树
 TEGF._member_map_._OrderedDict__update({'b':'002347'})#泰尔股份
 ZZGF._member_map_._OrderedDict__update({'c':'002346'})#柘中股份
 CHJ='002345' #潮宏基
@@ -3758,8 +3905,9 @@ CWCM='002343' #慈文传媒
 JLSJ='002342' #巨力索具
 XLKJ='002341' #新纶科技
 STHQ='600556' #ST慧球
+ZGWY._member_map_._OrderedDict__update({'b':'601598'})#中国外运
 JHZY='002349' #精华制药
-GLGF._member_map_._OrderedDict__update({'b':'002348'})#高乐股份
+GLGF._member_map_._OrderedDict__update({'c':'002348'})#高乐股份
 XNZQ='600369' #西南证券
 SHLG='600848' #上海临港
 SHFZ='000895' #双汇发展
@@ -3768,7 +3916,8 @@ SGSB='600843' #上工申贝
 DHKJ._member_map_._OrderedDict__update({'d':'600844'})#丹化科技
 BXRJ='600845' #宝信软件
 TJKJ._member_map_._OrderedDict__update({'c':'600846'})#同济科技
-WLGF._member_map_._OrderedDict__update({'d':'600847'})#万里股份
+WLGF._member_map_._OrderedDict__update({'c':'600847'})#万里股份
+ZYCM='000719' #中原传媒
 ZJGX._member_map_._OrderedDict__update({'b':'002839'})#张家港行
 GFJT='601086' #国芳集团
 TWGF._member_map_._OrderedDict__update({'b':'002835'})#同为股份
@@ -3782,12 +3931,12 @@ BYLF='002832' #比音勒芬
 MWJT='002123' #梦网集团
 STTM='002122' #ST天马
 KLDZ='002121' #科陆电子
-YDGF._member_map_._OrderedDict__update({'d':'002120'})#韵达股份
+YDGF._member_map_._OrderedDict__update({'e':'002120'})#韵达股份
 NJDS='002127' #南极电商
 HDGJ='600027' #华电国际
 XTDH='002125' #湘潭电化
 TBGF._member_map_._OrderedDict__update({'b':'002124'})#天邦股份
-ZHGF._member_map_._OrderedDict__update({'d':'002129'})#中环股份
+ZHGF._member_map_._OrderedDict__update({'c':'002129'})#中环股份
 LTMY='002128' #露天煤业
 LXGF._member_map_._OrderedDict__update({'b':'600592'})#龙溪股份
 DLSY='600593' #大连圣亚
@@ -3795,7 +3944,7 @@ THKJ._member_map_._OrderedDict__update({'b':'600590'})#泰豪科技
 XAGF._member_map_._OrderedDict__update({'c':'600596'})#新安股份
 GMRY='600597' #光明乳业
 YBZY._member_map_._OrderedDict__update({'b':'600594'})#益佰制药
-ZFSY='600595' #中孚实业
+STZF='600595' #ST中孚
 BDH='600598' #北大荒
 XMJK='600599' #熊猫金控
 YSZL='600602' #云赛智联
@@ -3804,14 +3953,14 @@ QDPJ='600600' #青岛啤酒
 FZKJ._member_map_._OrderedDict__update({'b':'600601'})#方正科技
 LDKG='600606' #绿地控股
 SBGX='600604' #市北高新
-YDGF._member_map_._OrderedDict__update({'e':'603277'})#银都股份
+YDGF._member_map_._OrderedDict__update({'f':'603277'})#银都股份
 STHK='600608' #ST沪科
 JBQC='600609' #金杯汽车
 ZYHT='600428' #中远海特
 DFGF='601515' #东风股份
 ZGSH._member_map_._OrderedDict__update({'b':'600028'})#中国石化
 NFHK='600029' #南方航空
-ASK._member_map_._OrderedDict__update({'b':'002913'})#奥士康
+ASK._member_map_._OrderedDict__update({'c':'002913'})#奥士康
 SDGT='600022' #山东钢铁
 ZNDL='600023' #浙能电力
 ZYGS='600020' #中原高速
@@ -3824,33 +3973,33 @@ DFSS='603377' #东方时尚
 ZSDL='001696' #宗申动力
 SYGF._member_map_._OrderedDict__update({'f':'600429'})#三元股份
 YFYY='002019' #亿帆医药
-STHX='002018' #ST华信
 DXHP='002017' #东信和平
 SRZY='002016' #世荣兆业
-XKHB='002015' #霞客环保
+XXNK='002015' #协鑫能科
 YXGF._member_map_._OrderedDict__update({'b':'002014'})#永新股份
 ZHJD='002013' #中航机电
 KEGF='002012' #凯恩股份
 DAHJ='002011' #盾安环境
 CHZL='002010' #传化智联
-YSDZ='002289' #宇顺电子
+DPKJ='300768' #迪普科技
+STYS='002289' #ST宇顺
 ZGWX='600118' #中国卫星
-CJTZ='600119' #长江投资
+STCT='600119' #ST长投
 SXSL='600116' #三峡水利
 XNTG='600117' #西宁特钢
 DMGF._member_map_._OrderedDict__update({'c':'600114'})#东睦股份
 DFHK='600115' #东方航空
-TCKG._member_map_._OrderedDict__update({'b':'600112'})#天成控股
+STTC='600112' #ST天成
 ZJDR='600113' #浙江东日
 NDGF='600110' #诺德股份
 BFXT='600111' #北方稀土
 AKM='600336' #澳柯玛
 MKJJ='600337' #美克家居
-GJQC='600335' #国机汽车
+LHGF._member_map_._OrderedDict__update({'c':'300761'})#立华股份
 BYS='600332' #白云山
 CCRQ='600333' #长春燃气
 TTGF._member_map_._OrderedDict__update({'b':'600330'})#天通股份
-HDGF._member_map_._OrderedDict__update({'h':'600331'})#宏达股份
+HDGF._member_map_._OrderedDict__update({'g':'600331'})#宏达股份
 XZZF='600338' #西藏珠峰
 ZYGC='600339' #中油工程
 GBGF._member_map_._OrderedDict__update({'b':'002103'})#广博股份
@@ -3866,20 +4015,22 @@ ZKJC='002657' #中科金财
 MDDD='002656' #摩登大道
 BRGF='002568' #百润股份
 YNTY='000878' #云南铜业
+ZSGK='001872' #招商港口
+ZSJR='002511' #中顺洁柔
 YYKJ='603879' #永悦科技
 XXW='000876' #新希望
-JDGF._member_map_._OrderedDict__update({'d':'000875'})#吉电股份
+JDGF._member_map_._OrderedDict__update({'e':'000875'})#吉电股份
 TDGF._member_map_._OrderedDict__update({'c':'000652'})#泰达股份
 GLDQ='000651' #格力电器
 ZGGL='601888' #中国国旅
 ZWGX='000657' #中钨高新
 JKGF._member_map_._OrderedDict__update({'c':'000656'})#金科股份
-STJL='000655' #ST金岭
+JLKY='000655' #金岭矿业
 JAHB='603822' #嘉澳环保
 ZGYH._member_map_._OrderedDict__update({'b':'601881'})#中国银河
 DLG='601880' #大连港
 HLZC='600361' #华联综超
-JHJT._member_map_._OrderedDict__update({'c':'601886'})#江河集团
+JHJT._member_map_._OrderedDict__update({'d':'601886'})#江河集团
 AKGJ='603001' #奥康国际
 RMW='603000' #人民网
 LYRY='603003' #龙宇燃油
@@ -3887,7 +4038,7 @@ HCDZ='603002' #宏昌电子
 JFKJ._member_map_._OrderedDict__update({'d':'603005'})#晶方科技
 XCNY='600777' #新潮能源
 HWGF._member_map_._OrderedDict__update({'c':'603007'})#花王股份
-LMGF._member_map_._OrderedDict__update({'d':'603006'})#联明股份
+LMGF._member_map_._OrderedDict__update({'c':'603006'})#联明股份
 BTKJ._member_map_._OrderedDict__update({'b':'603009'})#北特科技
 XLM='603008' #喜临门
 GNGF._member_map_._OrderedDict__update({'b':'000899'})#赣能股份
