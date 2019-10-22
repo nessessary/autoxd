@@ -9,6 +9,7 @@
 2. 找到聚类后的中心点， 作为该集合的代表， 记录在原始数据中的索引， 再把这些中心点做一次聚类， 最后根据图形来设置编号label
 3. 测试数据源的分段， 一次处理掉全部的数据， 分段抛入执行， 记录数据偏移
 4. 产生的数据集需要带上一个id， 带上时间， 数值
+5. 保存中心点的基于数据源的索引, 加上切片偏移
 """
 from __future__ import print_function
 import os
@@ -165,7 +166,9 @@ def calc_center(clust_elements, distances):
     distances: dict 全部元素的距离矩阵， 用indexs取两个index之间的距离 , key=(i,j)
     return: index
     """
-    assert(len(clust_elements)>1)
+    #assert(len(clust_elements)>1)
+    if len(clust_elements) == 1:
+        return clust_elements[0]
     avgs = []
     for i in clust_elements:
         s = 0
@@ -182,7 +185,10 @@ def calc_center(clust_elements, distances):
     return clust_elements[pos]
 
 def myhclust(indexs):
-    """尝试层次聚类"""
+    """尝试层次聚类, 因为大样本会造成计算速度过慢， 因此不能2000的切片
+    indexs: array 索引, 按顺序的索引列表，不支持打乱
+    return: df 中心点
+    """
     offset = indexs[0]
     l = load_data()
     print("num=%d, total_num = %d"%(len(indexs), len(l)))
@@ -218,19 +224,17 @@ def myhclust(indexs):
     #在100样本下， 使用0.2比较合适
     tree , distances = hcluster.hcluster(features, l, distfcn=distfn)
     clusters = tree.extract_clusters(0.2 * tree.distance)
-    #for c in clusters:
-        #elements = c.get_cluster_elements()
-        #print(len(elements), elements)        
-        #if len(elements)>3:
-            #for index in elements:
-                #draw(g_list[index])            
+    center_indexs = []        # 保存中心点       
     print('clusters num=', len(clusters))
     def ShowResult():
+        img_dir = 'html/'
+        agl.removeDir(img_dir)
         for j,c in enumerate(clusters):
             elements = c.get_cluster_elements()
             nbr_elements = len(elements)
+            center_index = calc_center(elements, distances) + offset
+            center_indexs.append(center_index)
             if nbr_elements > 20:
-                center_index = calc_center(elements, distances)
                 print(j, center_index, elements)
                 pl.figure(figsize=(20,10))
                 for i, p in enumerate(elements):
@@ -256,22 +260,46 @@ def myhclust(indexs):
             d = distfn(np.array([i[0]]), np.array([j[0]]))
             print(len(i), len(j), d)
     #combine_clusters()    
-    ##计算中心点
-    #for j,c in enumerate(clusters):
-        #elements = c.get_cluster_elements()
-        #if(len(elements)>1):
-            #calc_center(elements, distances)    
     ShowResult()
-    print('end')
+    df = pd.DataFrame(center_indexs)
+    print(df)
+    return df
+
+def run_myclust():
+    """按切片顺序跑完整个数据源"""
+    datas = load_data()
+    block_len = 300
+    split_indexs = np.array_split(range(len(datas)), len(datas)/block_len)
+    for i, indexs in enumerate(split_indexs):
+        print("it's batchid=%d [%d,%d]"%(i,indexs[0], indexs[-1]))
+        df = myhclust(indexs)
+
+def myclust_split_run(indexs):
+    """把indexs再切片执行"""
+    block_len = 1500
+    split_indexs = np.array_split(indexs, len(indexs)/block_len)
+    df = pd.DataFrame([])
+    for i , indexs in enumerate(split_indexs):
+        print("it's batchid=%d [%d,%d]"%(i,indexs[0], indexs[-1]))
+        df_cur = myhclust(indexs)
+        df = pd.concat([df, df_cur])
+    return df
 
 def test_myhclust():
+    
     a = range(900)
     a = a[300:600]
-    myhclust(a)
+    df = myhclust(a)
+    #np.savetxt('center_indexs.txt', center_indexs)
+    df.to_csv('center_indexs.csv')
     
 def test_multi_myhclust():
-    a = range(g_num)
-    MultiSubProcess.run_fn(myhclust, a, __file__)
+    datas = load_data()
+    a = range(len(datas))
+    df, = MultiSubProcess.run_fn(myclust_split_run, a, __file__)
+    #np.savetxt('center_indexs.txt', center_indexs)
+    df.to_csv('html/center_indexs.csv')
+    #print(df[0].head())
     
 #def test_kmeans():
     #pl = None
@@ -521,8 +549,9 @@ class MyHCluster:
 if __name__ == "__main__":
     #run()
     agl.tic()
-    test_myhclust()
-    #test_multi_myhclust()
+    #run_myclust()
+    #test_myhclust()
+    test_multi_myhclust()
     
     #myknn()
     #test_kmeans()
