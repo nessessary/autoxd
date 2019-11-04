@@ -1,0 +1,23 @@
+记录ubuntu的环境安装
+
+1. 目录, ~/work
+    1) soft_env, 安装cuda
+
+2. 查看显卡状态
+    1) nvidia-smi
+    
+3.talib 
+    1) 使用本地源码编译
+    configuare
+    make
+    make install
+    2) pip install talib
+    3) 碰到numpy需要升级的情况
+    
+4. 执行文件， 入口
+    1) cnn_boll/pearson_clust.py 基于皮尔逊的聚类
+    2）trading_gym/trading_gym.py 用强化学习dqn学习boll区间交易
+    
+5. 关机
+    sudo shutdown -h now
+    
