@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-pink.min.css">
+		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+		<script src="/static/jquery.min.js"></script>
+		<script src="/static/mysubmit.js"></script>
+		<title>Get Greeting</title>
+	</head>
+
+	<body>
+		<img id="id_image" src="image/100" width=300 height=300/>
+		<form action="/greeting" method="POST" id="greetingForm">
+		  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			<input class="mdl-textfield__input" type="text" id="name" name="name">
+			<label class="mdl-textfield__label" for="name">Enter your name:</label>
+		  </div>
+		  <div>
+			<input type="checkbox" id="id_labels_0" name="labels_0">aaaa</input>
+			<input type="checkbox" id="id_labels_1" name="labels_1">bbbb</input>
+		  </div>
+		<br />
+
+		</form>
+		<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" 
+		onclick="submit();">Submit</button>
+	</body>
+</html>
