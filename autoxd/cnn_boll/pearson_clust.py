@@ -12,7 +12,7 @@
 5. 保存中心点的基于数据源的索引, 加上切片偏移
 """
 from __future__ import print_function
-import os
+import os, optparse, sys
 import pandas as pd
 import judge_boll_sign as jbs
 from autoxd import pattern_recognition as pr
@@ -46,9 +46,9 @@ g_report = []   #比较的结果
 #pl = publish.Publish(explicit=False)
 
 # 读取样本
-g_num = 400
-def modify_num_base_cpuinfo():
-    global g_num
+def get_process_block_num():
+    """根据机器的cpu数量来获取数据块长度"""
+    num = 400
     #cpu 核心数量
     cpu_num = psutil.cpu_count()
     print('cpu_num:', cpu_num)
@@ -58,16 +58,17 @@ def modify_num_base_cpuinfo():
     print(machine_user_name)
     if cpu_num == 4 and machine_user_name == 'wangkang':
         #it's mac
-        g_num = 200
+        num = 200
     if cpu_num == 3 and machine_user_name == 'root':
         #docker
-        g_num = 2000*cpu_num
+        num = 1500
     if cpu_num >= 8:
         #remote home
-        g_num = 10000
-modify_num_base_cpuinfo()        
+        num = 4000
+    return num
 
 def draw(b):
+    """根据boll值画图"""
     boll_up, boll_mid, boll_low = b
     closes = np.nan
     #ui.drawBoll(pl, closes, boll_up, boll_mid, boll_low)
@@ -76,6 +77,31 @@ def draw(b):
     pl.plot(boll_mid)
     pl.plot(boll_low)
     pl.axis('off')
+
+def draw_multi(datas, clusts_index, datas_offset, ids, center_index):
+    """画多个id到一幅图上"""
+    elements = ids
+    pl.figure(figsize=(20,10))
+    for i, p in enumerate(elements):
+        pl.subplot(max(4,int(np.ceil(len(elements)/5)) ), 5, i + 1)
+        #pl.subplot(4, 5, i + 1)
+        pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
+        #im = array(Image.open(imlist[elements[p]]))
+        #imshow(im)
+        draw(datas[p])
+        #如果是中心点，右上角画一个点， 或画一个红色的外框
+        if p+datas_offset == center_index:
+            boll_up, boll_mid, boll_low = datas[p]
+            h = np.max(boll_up)
+            l = np.min(boll_low)
+            left = 0
+            right = len(boll_low)-1
+            ui.Rectangle(pl, datas[p], h, l, left, right, clr='r', linewidth=1)
+        imgname = 'html/%i_%s.png'%(clusts_index+datas_offset, str(os.getpid()) )
+        pl.savefig(imgname)
+    pl.show()
+    #pl.clf()
+    #pl.close()
 
 def cmp_boll_two(tuple1, tuple2, id1, id2):
     """对于两个图， 如何象matplotlib一样的变成图"""
@@ -97,7 +123,7 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
 
 def load_data():
     """加载数据
-    return: list
+    return: list, bolls
     """
     l = []
     codes = ['000005']
@@ -110,6 +136,16 @@ def load_data():
             for index in range(100, len(df) - jbs.g_scope_len):
                 l.append(getBolls(index, datas))
     return l
+
+def load_csv_data():
+    """从csv中获取数据， 为第一次计算的结果
+    return: np.ndarray"""
+    df = pd.read_csv('center_indexs_mid.csv')
+    df = df[df.columns[0]]
+    indexs = df.get_values()
+    datas = load_data()
+    datas = np.array(datas)
+    return datas[indexs]
 
 def getBolls(index, datas):
     """画5分钟线的boll图
@@ -184,18 +220,25 @@ def calc_center(clust_elements, distances):
     #print('max_pos = %d, %.2f'%(clust_elements[pos], avgs[pos]))
     return clust_elements[pos]
 
-def myhclust(indexs):
+def myhclust(datas, indexs):
     """尝试层次聚类, 因为大样本会造成计算速度过慢， 因此不能2000的切片
+    datas: list or np.ndarray 数据源
     indexs: array 索引, 按顺序的索引列表，不支持打乱
     return: df 中心点
     """
     offset = indexs[0]
-    l = load_data()
+    #l = load_data()
+    l = datas
     print("num=%d, total_num = %d"%(len(indexs), len(l)))
     l = l[indexs[0]:indexs[-1]]
     indexs = range(indexs[-1]-indexs[0])
     assert(len(indexs) == len(l))
-    
+
+    #原始数据集
+    code = '000005'
+    tick_period = jbs.g_scope_len    
+    df_datas = jbs.getData(code)[3]
+
     #写入本地img中
     fname = 'img_labels/hclust_imgs'
     #agl.removeDir(fname)
@@ -225,6 +268,7 @@ def myhclust(indexs):
     tree , distances = hcluster.hcluster(features, l, distfcn=distfn)
     clusters = tree.extract_clusters(0.2 * tree.distance)
     center_indexs = []        # 保存中心点       
+    center_indexs_columns = ['datas_index', 'code', 'dt', 'tick_period',  'clust_id', 'label_id', 'label_desc']
     print('clusters num=', len(clusters))
     def ShowResult():
         img_dir = 'html/'
@@ -233,22 +277,17 @@ def myhclust(indexs):
             elements = c.get_cluster_elements()
             nbr_elements = len(elements)
             center_index = calc_center(elements, distances) + offset
-            center_indexs.append(center_index)
-            if nbr_elements > 20:
-                print(j, center_index, elements)
-                pl.figure(figsize=(20,10))
-                for i, p in enumerate(elements):
-                    pl.subplot(max(4,int(np.ceil(len(elements)/5)) ), 5, i + 1)
-                    #pl.subplot(4, 5, i + 1)
-                    pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
-                    #im = array(Image.open(imlist[elements[p]]))
-                    #imshow(im)
-                    draw(l[p])
-                    imgname = 'html/%i_%s.png'%(j+offset, str(os.getpid()) )
-                    pl.savefig(imgname)
-                pl.show()
-                #pl.clf()
-                #pl.close()
+            
+            #添加的字段
+            dt = df_datas.index[center_index]
+            clust_id = j
+            label_id = 0
+            label_desc = ''
+            
+            center_indexs.append([center_index, code, dt, tick_period, clust_id, label_id, label_desc])
+            print(j, center_index, len(elements),elements)
+            #if nbr_elements >= 6:
+                #draw_multi(l, j, offset, elements, center_index)
     
     #hcluster.draw_dendrogram(tree,imlist,filename='./sunset.png')                
     def combine_clusters():
@@ -261,7 +300,7 @@ def myhclust(indexs):
             print(len(i), len(j), d)
     #combine_clusters()    
     ShowResult()
-    df = pd.DataFrame(center_indexs)
+    df = pd.DataFrame(center_indexs, columns=center_indexs_columns)
     print(df)
     return df
 
@@ -272,290 +311,68 @@ def run_myclust():
     split_indexs = np.array_split(range(len(datas)), len(datas)/block_len)
     for i, indexs in enumerate(split_indexs):
         print("it's batchid=%d [%d,%d]"%(i,indexs[0], indexs[-1]))
-        df = myhclust(indexs)
+        df = myhclust(datas, indexs)
 
 def myclust_split_run(indexs):
     """把indexs再切片执行"""
-    block_len = 1500
-    split_indexs = np.array_split(indexs, len(indexs)/block_len)
+    datas = load_data()
+    block_len = get_process_block_num()
+    print(indexs)
+    split_block = len(indexs)/block_len
+    if split_block < 1:
+        split_block = 1
+    split_indexs = np.array_split(indexs, split_block)
     df = pd.DataFrame([])
     for i , indexs in enumerate(split_indexs):
         print("it's batchid=%d [%d,%d]"%(i,indexs[0], indexs[-1]))
-        df_cur = myhclust(indexs)
+        df_cur = myhclust(datas, indexs)
         df = pd.concat([df, df_cur])
     return df
 
 def test_myhclust():
-    
+    """跑单进程小数据"""
     a = range(900)
     a = a[300:600]
-    df = myhclust(a)
+    #df = myhclust(load_data(), a)
+    df = myclust_split_run(a)
     #np.savetxt('center_indexs.txt', center_indexs)
+    df.to_csv('center_indexs.csv')
+    
+def test_second_myhclust():
+    """对已经聚类的点再聚类一次"""
+    datas = load_csv_data()
+    indexs = range(len(datas))
+    df = myhclust(datas, indexs)
     df.to_csv('center_indexs.csv')
     
 def test_multi_myhclust():
     datas = load_data()
+    #datas = datas[:6000]
     a = range(len(datas))
     df, = MultiSubProcess.run_fn(myclust_split_run, a, __file__)
     #np.savetxt('center_indexs.txt', center_indexs)
-    df.to_csv('html/center_indexs.csv')
+    fname = os.path.dirname(__file__) + '/center_indexs_mid.csv'
+    df.to_csv(fname)
     #print(df[0].head())
     
-#def test_kmeans():
-    #pl = None
-    #from scipy.cluster.vq import *
-    #from pylab import *
-    #class1 = 1.5 * randn(100,2)
-    #class2 = randn(100,2) + array([5,5])
-    #features = vstack((class1,class2))
-    
-    ##knn
-    #if 0:
-        #centroids,variance = kmeans(features,2)
-        #code,distance = vq(features,centroids)
-        #figure()
-        #ndx = where(code==0)[0]
-        #plot(features[ndx,0],features[ndx,1],'*')
-        #ndx = where(code==1)[0]
-        #plot(features[ndx,0],features[ndx,1],'r.')
-        #plot(centroids[:,0],centroids[:,1],'go')
-        #axis('off')
-        #show()    
-    
-    ##hclust
-    #tree = hcluster.hcluster(features)
-    #clusters = tree.extract_clusters(0.23 * tree.distance)
-    #for c in clusters:
-        #elements = c.get_cluster_elements()
-        #print(len(elements), )        
-
-#def myknn():
-    #load_data()
-    #indexs = cmp_bolls()
-    
-    ##写入本地img中
-    #fname = 'img_labels/hclust_imgs'
-    #agl.removeDir(fname)
-    #agl.createDir(fname)
-    #imlist = []
-    ##for i in range(len(indexs)):
-    #for i in indexs:
-        #pl.figure
-        #draw(g_list[i])
-        #fname1 =fname + '/img_%s.png'%(i)
-        #pl.savefig(fname1)
-        #pl.close()
-        #imlist.append(fname1)
-
-    #n = len(indexs)
-    ## 计算距离矩阵
-    #S = np.array([[ distfn(indexs[i], indexs[j])
-    #for i in range(n) ] for j in range(n)], 'f')
-    ## 创建拉普拉斯矩阵
-    #rowsum = np.sum(S,axis=0)
-    #D = np.diag(1 / np.sqrt(rowsum))
-    #I = np.identity(n)
-    #L = I - np.dot(D, np.dot(S,D))
-    ## 计算矩阵L 的特征向量
-    #U,sigma,V = np.linalg.svd(L)
-    #k = 5
-    ## 从矩阵L 的前k 个特征向量（eigenvector）中创建特征向量（feature vector）
-    ## 叠加特征向量作为数组的列
-    
-    #features = np.array(V[:k]).T
-    ## k-means 聚类
-    #features = whiten(features)
-    #centroids,distortion = kmeans(features,k)
-    #code,distance = vq(features,centroids)
-    ## 绘制聚类簇
-    #for c in range(k):
-        #ind = np.where(code==c)[0]
-        #figure()
-        #for i in range(np.minimum(len(ind),39)):
-            #im = Image.open(imlist[ind[i]])
-            #subplot(4,10,i+1)
-            #imshow(array(im))
-            #axis('equal')
-            #axis('off')
-    #show()    
-
-def calcCenterId(clusters):
-    """找到集合里中心的点
-    clusters: list clust id的集合, indexs
-    return: 数据源索引 index"""
-    avgs = []
-    for i in clusters:
-        s = 0
-        for j in clusters:
-            if i != j:
-                s += distfn(i, j)
-        v = s / (len(clusters)-1)
-        avgs.append(v)
-    pos = agl.array_val_to_pos(np.array(avgs), np.max(avgs))
-    #print('max_pos = %d, %.2f'%(pos, avgs[pos]))
-    
-def MyKnnImpl():
-    """自行实现， 对每个元素， 分别输出70，80，90区间的集合；其实现方式不能简单的套knn和hclust
-    并不需要完整的放入集合中
-    经过测试，聚类效果比pca等好
-    """
-    #pl = publish.Publish()
-
-    load_data()
-    indexs = cmp_bolls()
-    print(indexs)
-    
-    use_redis = 1
-    #key = myredis.gen_keyname(__file__, MyKnnImpl)
-    #if not use_redis:
-        #myredis.delkey(key)
-    #else:
-        ##用redis保存
-        #indexs = myredis.createRedisVal(key, indexs).get()
-    #print(indexs)
-
-    #写入本地img中
-    fname = 'img_labels/hclust_imgs'
-    if not use_redis:
-        agl.removeDir(fname)
-        agl.createDir(fname)
-    imlist = []
-    #for i in range(len(indexs)):
-    for i in indexs:
-        fname1 =fname + '/img_%s.png'%(i)
-        if not use_redis:
-            pl.figure
-            draw(g_list[i])
-            pl.savefig(fname1)
-            pl.close()
-        imlist.append(fname1)
-    if use_redis == 0:
-        return
-
-
-    dist_v = 0.90   #pearson相似度
-    n = len(indexs)
-    S = np.zeros([n,n])
-    for i in range(n):
-        for j in range(n):
-            S[i,j] = distfn(i, j)
-    #print(S)
-    
-    def IsInClust(i, clusts):
-        is_in_clusts = False
-        for clust1 in clusts:
-            if i in clust1:
-                is_in_clusts = True
-                break
-        return is_in_clusts
-    
-    #用选择法，把各元素放到它们相近的集合内
-    clusts = []
-    for i in range(n):
-        if IsInClust(i, clusts):
-            continue
-        clust = []
-        for j in range(n):
-            if S[i,j] > 0.8:
-                #print(S[i,j],)
-                if not IsInClust(j, clusts):
-                    clust.append(j)
-        print(i,clust)
-        clusts.append(clust)
-        if len(clust)>=4:
-            calcCenterId(clust)
-
-    def split_min_and_combo_to_max(clusts):
-        """分拆小的集合， 合并到大的集合"""
-        pass
-        
-        #if i>20 and len(clust)>3 and len(clust)<20:
-            #print(i, clust)        
-            ##print(i, len(clust))
-            #if not publish.IsPublish(pl):
-                #pl.figure(figsize=(10,8))
-            #else:
-                #pl.figure
-            #for k,j in enumerate(clust):
-                #im = Image.open(imlist[j])
-                #pl.subplot(4,5,k+1)
-                #pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
-                #pl.imshow(np.array(im))
-                #pl.axis('equal')
-                #pl.axis('off')
-            #pl.show()
-            #print('end')
-            ##time.sleep(5)
-            #pl.close()
-    #pl.publish()
-            
-    
-class MyHCluster:
-    """调用scipy的层次聚类
-    鉴于层次算法也是需要计算合并后的平均值的，不计算平均值， 给两个图形进行合并，合并成新的图形后再与所有的图形重新比较一次， 再选取最优值合并， 重复这个过程
-    """
-    def __init__(self):
-        load_data()
-    def _show(self, cluster_ids):
-        pl.figure(figsize=(10,5))
-        for i, p in enumerate(cluster_ids):
-            pl.subplot(4, 5, i + 1)
-            pl.subplots_adjust(wspace =0.01, hspace =0.01, left=0, right=1, bottom=0,top=1)
-            draw(g_list[p])
-        pl.show()
-    def _comboBoll(self, id1, id2):
-        pass
-    
-    def clust_person(self):
-        points = []
-        for i in range(100):
-            points.append(np.array([i]))
-        points = np.array(points)
-        disMat = sch.distance.pdist(points, distfn)
-        disMat[np.isnan(disMat)==True] = 0
-        print(disMat)
-        Z=sch.linkage(disMat,method='average') 
-        cluster= sch.fcluster(Z, t=1, criterion='inconsistent') 
-        print("Original cluster by hierarchy clustering:\n",cluster)            
-        max_clust = np.max(cluster)
-        for i in range(max_clust):
-            i = i+1
-            cluster_ids = np.where(cluster == i)[0]
-            print(cluster_ids)
-            self._show(cluster_ids)
-        print('')
-    def sample(self):
-        
-        points=scipy.randn(20,1)  
-        print(points)
-        
-        #1. 层次聚类
-        #生成点与点之间的距离矩阵,这里用的欧氏距离:
-        #disMat = sch.distance.pdist(points,'euclidean') 
-        #print(disMat)
-        def _distfn(u,v):
-            return np.sqrt((u-v)**2).sum()
-        disMat = sch.distance.pdist(points, _distfn)
-        print(disMat)
-        #进行层次聚类:
-        Z=sch.linkage(disMat,method='average') 
-        #将层级聚类结果以树状图表示出来并保存为plot_dendrogram.png
-        P=sch.dendrogram(Z)
-        plt.savefig('plot_dendrogram.png')
-        #根据linkage matrix Z得到聚类结果:
-        cluster= sch.fcluster(Z, t=1, criterion='inconsistent') 
-        
-        print("Original cluster by hierarchy clustering:\n",cluster)            
 if __name__ == "__main__":
+    parser = optparse.OptionParser()
+    parser.add_option('--single', dest='single', action="store_true", help='单进程执行')
+    parser.add_option('--multi', dest='multi', action="store_true", help="多进程执行")
+    parser.add_option('--second', dest='second', action="store_true", help="第二阶段")
+    
+    options, args = parser.parse_args(sys.argv[1:])
+    
     #run()
     agl.tic()
     #run_myclust()
-    #test_myhclust()
-    test_multi_myhclust()
+    if options.single is not None:
+        test_myhclust()
+    elif options.multi is not None:
+        test_multi_myhclust()
+    elif options.second is not None:
+        test_second_myhclust()
+    else:
+        print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n')
     
-    #myknn()
-    #test_kmeans()
-    #MyKnnImpl()
-    #MyHCluster().sample()
-    #MyHCluster().clust_person()
     agl.toc()

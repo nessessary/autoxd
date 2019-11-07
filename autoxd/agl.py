@@ -889,7 +889,8 @@ def df_concat(df1, l):
     df1: pd.DataFrame
     l : list
     """
-    return pd.concat([df1, pd.DataFrame(l).T])
+    df2 = pd.DataFrame(l).T
+    return pd.concat([df1, df2])
 def df_remove_col(df, cols):
     """df删除列 return: df"""
     return df.drop(cols, axis=1)

@@ -2,7 +2,7 @@
 
 """人工判断一个boll是否能买卖"""
 from __future__ import print_function
-import os,sys
+import os,sys, warnings
 def getMainDir():
     cur_file_path = __file__
     if cur_file_path == '':

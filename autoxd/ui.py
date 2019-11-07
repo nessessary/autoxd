@@ -672,13 +672,13 @@ class AsynDrawKline(object):
         plt.draw()
         plt.pause(0.1)    
 
-def Rectangle(pl,quotes, h,l, left, right):
+def Rectangle(pl,quotes, h,l, left, right,clr='b', linewidth=0.25):
     """在k线图中画矩形
-    h,l : 上下的价格
+    h,l : 上下的价格, np.max(quotes); np.min(quotes)
     left,right: 左右的index
     """
-    clr = 'b'
-    linewidth = 0.25
+    #clr = 'b'
+    #linewidth = 0.25
     a = np.zeros(len(quotes))
     a[:] = np.nan
     
@@ -693,7 +693,8 @@ def Rectangle(pl,quotes, h,l, left, right):
     #画竖线
     pl.plot([left,left],[h,l], clr, linewidth=linewidth)
     pl.plot([right, right], [h,l], clr, linewidth=linewidth)
-    
+
+   
 def drawKlineUseDf(pl, df, rects=None, is_show=True):
     """画k线图, 同步
     df : 日线或5分钟线, cols('ohlcv')
