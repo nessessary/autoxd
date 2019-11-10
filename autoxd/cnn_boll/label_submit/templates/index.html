@@ -1,27 +1,35 @@
 <html>
 	<head>
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-pink.min.css">
-		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-		<script src="/static/jquery.min.js"></script>
-		<script src="/static/mysubmit.js"></script>
+		<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+		<link rel="stylesheet" href="static/material.blue-pink.min.css">
+		<link href="static/zzsc.css" rel="stylesheet" type="text/css"   />
+
+		<script defer src="static/material.min.js"></script>
+		<!-- <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script> -->
+		<script src="static/jquery.min.js"></script>
+		<script src="static/mysubmit.js"></script>
 		<title>Get Greeting</title>
 	</head>
 
-	<body>
+	<body onload="update_labels();">
 		<img id="id_image" src="image/100" width=300 height=300/>
-		<form action="/greeting" method="POST" id="greetingForm">
+		
 		  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			<input class="mdl-textfield__input" type="text" id="name" name="name">
-			<label class="mdl-textfield__label" for="name">Enter your name:</label>
+			<label class="mdl-textfield__label" for="name">Enter your label:</label>
 		  </div>
-		  <div>
-			<input type="checkbox" id="id_labels_0" name="labels_0">aaaa</input>
-			<input type="checkbox" id="id_labels_1" name="labels_1">bbbb</input>
+		  <!-- <div id = "id_labels">
+			<button id="id_labels_0" name="labels_0" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">aaaa</button>
+			<button style="border:3px solid #000；color:yellow;mdl-button--accent">bbbb</button>
+			
+		  </div> -->
+		  <div id="tagscloud">
+			<!-- <a href="#" class="tagc1" onclick="click_label($(this));">ABBB</a>
+			<a href="#" class="tagc2" style="left: 20px;top: 20px;">CCBB</a>
+			<a href="#" class="tagc5" style="left: 70px;top: 20px;">CCBB</a> -->
+			<!-- <a href="#" class="tagc5">ABBB</a> -->
 		  </div>
-		<br />
-
-		</form>
+		
 		<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" 
 		onclick="submit();">Submit</button>
 	</body>

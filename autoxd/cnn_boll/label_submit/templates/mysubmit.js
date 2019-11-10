@@ -66,8 +66,7 @@ function submit() {
     g_id ++;
     // update_image(g_id);
     var name = $("#name").val();
-    var url = "/api?new_label={0}&labels={1}";
-    url = url.format(name, get_labels());
+    var url = "/api?new_label=" + name;
     // ajax post, ?new_label=%s&labels=[1,2,3,5]
     $.get(url, function(result) {
         print(g_id);
@@ -83,21 +82,9 @@ function print(s) {
 // submit();
 
 
-// 获取checked标签
+// 获取checked的标签, return: [1, 3, 4, 5]
 function get_labels() {
-    // var array_checked_labels = new Array;
-    var str_checked_labels = "";
-    $("#tagscloud a").each(function(index, element) {
-        if($(this).attr("class") == "tagc2") {
-            // array_checked_labels.push(index);
-            str_checked_labels += toString(index);
-            str_checked_labels += ",";
-        }
-    });
-
-    // return array_checked_labels;
-    return str_checked_labels;
+    return [1, 3, 4, 5]
 }
 
-// print(get_labels());
-
+get_labels();

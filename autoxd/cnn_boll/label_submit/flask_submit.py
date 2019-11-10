@@ -1,6 +1,8 @@
 #coding:utf8
 import os
 from flask import Flask, request, render_template, Response, send_file, jsonify
+#import labels as mylabel    #与route的方法冲突
+import labels
 
 app = Flask(__name__)
 @app.route('/')
@@ -8,23 +10,31 @@ def index():
     #return 'Hello World'
     return render_template('index.html')
 
-@app.route('/greeting', methods = ["POST"])
-def greeting():
-    POST_name = request.form["name"]
-    labels = "null"
-    print(request.form.keys())
-    if "labels" in request.form.keys():    
-        labels = request.form["labels"]
-    return render_template("greeting.html", name = POST_name, labels=labels)
 
 @app.route('/api', methods = ["GET"])
 def handle_ajax_submit():
-    form = dict(request.args)
-    values = form.keys()
-    values = str(form.values())
-    print(values)
-    json = {"msg":"ok", "result":values}
+    """保存结果"""
+    new_label = None
+    str_labels = None
+    if 'new_label' in request.args.keys():
+        new_label = request.args['new_label']
+        
+    if 'labels' in request.args.keys():
+        str_labels = request.args['labels']
+        print(str_labels)
+    
+    index = request.args['index']
+    labels.save_labels(new_label, str_labels, index)
+        
+    json = {"msg":"ok"}
     return jsonify(json)
+
+@app.route('/labels', methods=["GET"])
+def get_labels():
+    obj_label = labels.LabelTable()
+    list_label = obj_label.query()
+    result = ','.join(list_label)
+    return Response(result)
 
 @app.route("/image/<imageid>")
 def get_img(imageid):
