@@ -1,9 +1,11 @@
 #coding:utf8
 
-"""标注聚类结果
+"""
+废弃
+标注聚类结果
 [id, datas_index, code, dt, tick_period, clust_id, label_id, label_desc]
-
-废弃，手工输入描述
+用tinkter实现界面
+手工输入描述
 """
 assert(False)
 import os, time

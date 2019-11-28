@@ -1,4 +1,7 @@
 #coding:utf8
+
+"""手工设置标签的页面实现， 先跑pearson_clust.py里的genimg"""
+
 import os
 from flask import Flask, request, render_template, Response, send_file, jsonify
 #import labels as mylabel    #与route的方法冲突
@@ -23,10 +26,11 @@ def handle_ajax_submit():
         str_labels = request.args['labels']
         print(str_labels)
     
-    index = request.args['index']
-    labels.save_labels(new_label, str_labels, index)
-        
-    json = {"msg":"ok"}
+    index = int(request.args['index'])
+    canContinue = labels.save_labels(new_label, str_labels, index)
+    print(index, canContinue)    
+    #看是不是执行到表的结尾了
+    json = {"msg": canContinue}
     return jsonify(json)
 
 @app.route('/labels', methods=["GET"])
@@ -38,8 +42,15 @@ def get_labels():
 
 @app.route("/image/<imageid>")
 def get_img(imageid):
+    """ 传入主id， 显示用数据id
+    img_labels/imgs/code_index.png
+    实现见pearson_clust.py:myhclust
+    """
+    imageid = int(imageid)
+    df = labels.get_data_table()
+    imageid = int(df.iloc[imageid]['datas_index'])
     cur_path = os.path.abspath(os.path.dirname(__file__)+'/..')
-    fname = cur_path + "/%s/000005_%s.png"%('img_labels/imgs', imageid)
+    fname = cur_path + "/%s/000005_%d.png"%('img_labels/imgs', imageid)
     print(fname)
     #image = file(fname)
     #resp = Response(image, mimetype="image/png")

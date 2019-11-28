@@ -1,4 +1,4 @@
-var g_id = 100;
+var g_id = 0;
 function update_image(id) {
     var url = "image/"+id;
     $("#id_image").attr("src", url);
@@ -43,14 +43,15 @@ function update_labels() {
     $.get(url, function(result) {
         //更新页面
         var div = $("#tagscloud");
+        div.empty();
         print(result);
         var array_label = result.split(",");
         var id = 0;
         var x = 0;
         var y = 0;
         array_label.forEach(element => {
-            x += 40;
-            if(id%4 == 0) {
+            x += 80;
+            if(id%2 == 0) {
                 x = 0;
                 y += 30;
             }
@@ -59,22 +60,34 @@ function update_labels() {
             div.append(tag_val);
             id++;
         });
+        // 调整button位置
+        // $("#mysubmit").css("left", "0px");
+        // $("#mysubmit").css("top", "%dpx".format(y+30));
     });
 }
 
 function submit() {
-    g_id ++;
-    // update_image(g_id);
     var name = $("#name").val();
-    var url = "/api?new_label={0}&labels={1}";
-    url = url.format(name, get_labels());
+    var url = "/api?new_label={0}&labels={1}&index={2}";
+    url = url.format(name, get_labels(), g_id);
     // ajax post, ?new_label=%s&labels=[1,2,3,5]
     $.get(url, function(result) {
-        print(g_id);
-        print(result);
-        update_image(g_id);
-        update_labels();
+        // result is json
+        if(result.msg) {
+            g_id ++;
+            update_page();
+        }else {
+            //当数据处理完后弹出
+            alert("it's end");
+        }
     });
+
+}
+
+function update_page() {
+    update_image(g_id);
+    $("#name").val("");
+    update_labels();
 }
 
 function print(s) {
@@ -90,7 +103,7 @@ function get_labels() {
     $("#tagscloud a").each(function(index, element) {
         if($(this).attr("class") == "tagc2") {
             // array_checked_labels.push(index);
-            str_checked_labels += toString(index);
+            str_checked_labels += String(index);
             str_checked_labels += ",";
         }
     });
@@ -99,5 +112,10 @@ function get_labels() {
     return str_checked_labels;
 }
 
-// print(get_labels());
+function test() {
+    var json = {"msg":1};
+    print(json.msg);
+    return String(1);
+}
+// print(test());
 

@@ -44,6 +44,19 @@ from autoxd.MultiSubProcess import MultiSubProcess
 
 g_report = []   #比较的结果
 #pl = publish.Publish(explicit=False)
+class MyCode:
+    g_code_name = "pearson_clust.code"
+    @staticmethod
+    def get():
+        key = MyCode.g_code_name
+        code = myredis.get_obj(key)
+        if code is None:
+            code = "000005"
+        return code
+    @staticmethod
+    def set(code):
+        key = MyCode.g_code_name
+        myredis.set_obj(key, code)
 
 # 读取样本
 def get_process_block_num():
@@ -126,7 +139,8 @@ def load_data():
     return: list, bolls
     """
     l = []
-    codes = ['000005']
+    code = MyCode.get()
+    codes = [code]
     for code in codes:
         datas = jbs.getData(code)   # from local
         upper, middle, lower, df, adx = datas
@@ -137,10 +151,13 @@ def load_data():
                 l.append(getBolls(index, datas))
     return l
 
-def load_csv_data():
+def load_csv_data(islast=False):
     """从csv中获取数据， 为第一次计算的结果
     return: np.ndarray"""
-    df = pd.read_csv('center_indexs_mid.csv')
+    fname = 'center_indexs_mid.csv'
+    if islast:
+        fname = 'center_indexs.csv'
+    df = pd.read_csv(fname)
     df = df[df.columns[0]]
     indexs = df.get_values()
     datas = load_data()
@@ -220,6 +237,25 @@ def calc_center(clust_elements, distances):
     #print('max_pos = %d, %.2f'%(clust_elements[pos], avgs[pos]))
     return clust_elements[pos]
 
+g_fname_csv = 'center_indexs.csv'
+g_fname_mid_csv = 'center_indexs_mid.csv'
+def genImgToFile(code):
+    """产生图形到文件
+    """
+    datas = load_data()
+    #    indexs: list 数据偏移索引
+    df = pd.read_csv(g_fname_csv, index_col=0)
+    indexs = df['datas_index'].values
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    fname = cur_dir + '/img_labels/imgs'
+    for i in indexs:
+        i = int(i)
+        fname1 =fname + '/%s_%d.png'%(code, i)
+        pl.figure
+        draw(datas[i])
+        pl.savefig(fname1)
+        pl.close()
+
 def myhclust(datas, indexs):
     """尝试层次聚类, 因为大样本会造成计算速度过慢， 因此不能2000的切片
     datas: list or np.ndarray 数据源
@@ -235,7 +271,7 @@ def myhclust(datas, indexs):
     assert(len(indexs) == len(l))
 
     #原始数据集
-    code = '000005'
+    code = MyCode.get()
     tick_period = jbs.g_scope_len    
     df_datas = jbs.getData(code)[3]
 
@@ -336,22 +372,37 @@ def test_myhclust():
     #df = myhclust(load_data(), a)
     df = myclust_split_run(a)
     #np.savetxt('center_indexs.txt', center_indexs)
-    df.to_csv('center_indexs.csv')
+    fname = get_cur_path() + '/' + get_result_path() + g_fname_mid_csv
+    df.to_csv(fname)
     
 def test_second_myhclust():
     """对已经聚类的点再聚类一次"""
     datas = load_csv_data()
     indexs = range(len(datas))
     df = myhclust(datas, indexs)
-    df.to_csv('center_indexs.csv')
+    df.to_csv(g_fname_csv)
     
+def get_cur_path():
+    return os.path.dirname(os.path.abspath(__file__))
+def get_result_path():
+    cur_dir = get_cur_path()
+    dir_path = 'datas/' + MyCode.get() + '/'
+    cur_dir += '/'
+    cur_dir += dir_path
+    agl.createDir(cur_dir)
+    return dir_path
+def get_result_mid_csv_path():
+    return get_cur_path() + '/' + get_result_path() + g_fname_mid_csv
+def get_result_csv_path():
+    return get_cur_path() + '/' + get_result_path() + g_fname_csv
+
 def test_multi_myhclust():
     datas = load_data()
     #datas = datas[:6000]
     a = range(len(datas))
     df, = MultiSubProcess.run_fn(myclust_split_run, a, __file__)
     #np.savetxt('center_indexs.txt', center_indexs)
-    fname = os.path.dirname(__file__) + '/center_indexs_mid.csv'
+    fname = get_result_mid_csv_path()
     df.to_csv(fname)
     #print(df[0].head())
     
@@ -360,11 +411,17 @@ if __name__ == "__main__":
     parser.add_option('--single', dest='single', action="store_true", help='单进程执行')
     parser.add_option('--multi', dest='multi', action="store_true", help="多进程执行")
     parser.add_option('--second', dest='second', action="store_true", help="第二阶段")
+    parser.add_option('--genimg', dest='genimg', action="store_true", help="生成图片文件")
+    parser.add_option('--code', dest='code', action="store", type="string", help="get codes")
     
     options, args = parser.parse_args(sys.argv[1:])
     
     #run()
     agl.tic()
+    if options.code is not None:
+        code = options.code
+        MyCode.set(code)
+        
     #run_myclust()
     if options.single is not None:
         test_myhclust()
@@ -372,6 +429,9 @@ if __name__ == "__main__":
         test_multi_myhclust()
     elif options.second is not None:
         test_second_myhclust()
+    elif options.genimg is not None:
+        code = MyCode.get()
+        genImgToFile(code)
     else:
         print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n')
     

@@ -11,8 +11,8 @@
 		<title>Get Greeting</title>
 	</head>
 
-	<body onload="update_labels();">
-		<img id="id_image" src="image/100" width=300 height=300/>
+	<body onload="update_page();">
+		<img id="id_image" src="image/0" width=300 height=300/>
 		
 		  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 			<input class="mdl-textfield__input" type="text" id="name" name="name">
@@ -30,7 +30,7 @@
 			<!-- <a href="#" class="tagc5">ABBB</a> -->
 		  </div>
 		
-		<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" 
-		onclick="submit();">Submit</button>
+		<button id="mysubmit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" 
+		onclick="submit();" accesskey="s" style="left: 850px;top: -200px;">Submit</button>
 	</body>
 </html>
