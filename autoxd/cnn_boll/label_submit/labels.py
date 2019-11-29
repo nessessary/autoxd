@@ -5,7 +5,7 @@ from __future__ import print_function
 import os
 import pandas as pd
 #from autoxd import agl
-from pearson_clust import get_result_csv_path
+from autoxd.cnn_boll.pearson_clust import get_result_csv_path
 
 class LabelTable(object):
     """标签表, datas/cnn_boll_label.csv"""

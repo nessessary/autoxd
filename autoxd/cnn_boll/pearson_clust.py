@@ -14,7 +14,7 @@
 from __future__ import print_function
 import os, optparse, sys
 import pandas as pd
-import judge_boll_sign as jbs
+import autoxd.cnn_boll.judge_boll_sign as jbs
 from autoxd import pattern_recognition as pr
 from autoxd import agl, ui
 #import pylab as pl
@@ -23,7 +23,7 @@ import numpy as np
 from pypublish import publish
 from autoxd import policy_report
 #from PCV.clustering import hcluster
-import hcluster_person as hcluster
+import autoxd.cnn_boll.hcluster_person as hcluster
 from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
@@ -154,9 +154,9 @@ def load_data():
 def load_csv_data(islast=False):
     """从csv中获取数据， 为第一次计算的结果
     return: np.ndarray"""
-    fname = 'center_indexs_mid.csv'
+    fname = get_result_mid_csv_path()
     if islast:
-        fname = 'center_indexs.csv'
+        fname = get_result_csv_path()
     df = pd.read_csv(fname)
     df = df[df.columns[0]]
     indexs = df.get_values()
@@ -244,7 +244,7 @@ def genImgToFile(code):
     """
     datas = load_data()
     #    indexs: list 数据偏移索引
-    df = pd.read_csv(g_fname_csv, index_col=0)
+    df = pd.read_csv(get_result_csv_path(), index_col=0)
     indexs = df['datas_index'].values
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     fname = cur_dir + '/img_labels/imgs'
@@ -380,7 +380,8 @@ def test_second_myhclust():
     datas = load_csv_data()
     indexs = range(len(datas))
     df = myhclust(datas, indexs)
-    df.to_csv(g_fname_csv)
+    fname = get_result_csv_path()
+    df.to_csv(fname)
     
 def get_cur_path():
     return os.path.dirname(os.path.abspath(__file__))
