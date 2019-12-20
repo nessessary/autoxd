@@ -146,13 +146,12 @@ def load_data():
         upper, middle, lower, df, adx = datas
         if len(df) < 100:
             continue
-        if jbs.IsSide(df['c'].values, upper, lower, middle):
-            for index in range(100, len(df) - jbs.g_scope_len):
-                l.append(getBolls(index, datas))
+        for index in range(100, len(df) - jbs.g_scope_len):
+            l.append(getBolls(index, datas))
     return l
 
 def load_csv_data(islast=False):
-    """从csv中获取数据， 为第一次计算的结果
+    """从csv中获取数据， 为第一次计算的结果, 同load_data
     return: np.ndarray"""
     fname = get_result_mid_csv_path()
     if islast:
@@ -251,6 +250,7 @@ def genImgToFile(code):
     for i in indexs:
         i = int(i)
         fname1 =fname + '/%s_%d.png'%(code, i)
+        print(fname1)
         pl.figure
         draw(datas[i])
         pl.savefig(fname1)
@@ -380,6 +380,16 @@ def test_second_myhclust():
     datas = load_csv_data()
     indexs = range(len(datas))
     df = myhclust(datas, indexs)
+    
+    #替换为mid表的记录
+    fname = get_result_mid_csv_path()
+    df_mid = pd.read_csv(fname)
+    for i, row in df.iterrows():
+        index = row['datas_index']
+        df.at[i, 'datas_index'] = df_mid.iloc[index]['datas_index']
+        col = 'dt'
+        df.at[i, col] = df_mid.iloc[index][col]
+    
     fname = get_result_csv_path()
     df.to_csv(fname)
     

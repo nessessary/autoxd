@@ -1,6 +1,8 @@
 var g_id = 0;
 function update_image(id) {
     var url = "image/"+id;
+    var timestamp = Date.parse(new Date());
+    url += "?t="+timestamp.toString();
     $("#id_image").attr("src", url);
 }
 
@@ -48,7 +50,7 @@ function update_labels() {
         var array_label = result.split(",");
         var id = 0;
         var x = 0;
-        var y = 0;
+        var y = -160;
         array_label.forEach(element => {
             x += 80;
             if(id%2 == 0) {

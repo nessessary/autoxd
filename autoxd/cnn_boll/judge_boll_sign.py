@@ -64,14 +64,21 @@ def drawBoll(pl,closes, boll_up, boll_mid, boll_low):
     #取消xylabels
     pl.axis('off')
 class data_sources():
+    def _getPath(self):
+        """冗余 库路径， 入口路径， 其它路径"""
+        sources_path = 'datasources/'
+        data_path = agl.combin_cur_dir(sources_path)
+        if not os.path.exists(data_path):
+            data_path += '/..'
+            data_path = os.path.abspath(data_path) + '/' + sources_path
+        if not os.path.exists(data_path):
+            data_path = os.path.abspath(os.path.dirname(__file__)) + '/' + sources_path
+        return data_path        
     def loadData(self, code):
-        data_path = 'datasources/'
-        data_path = agl.combin_cur_dir(__file__, data_path)
+        data_path = self._getPath()
         return stock.getFiveHisdatDf(code, method='path', path=data_path)
     def loadCodes(self):
-        data_path = 'datasources/'
-        data_path = agl.combin_cur_dir(__file__, data_path)
-        #print(os.listdir(data_path))
+        data_path = self._getPath()
         return [ str(f).split('.')[0] for f in os.listdir(data_path)]
 class data_tdx(data_sources):
     def loadCodes(self):
@@ -362,6 +369,7 @@ class DfResult:
         c.save()
 
 def IsSide(close, upper, lower, middle):
+    """在上下中轨之外"""
     boll_poss = [
         upper[-1],
      (upper[-1] - middle[-1])/2+middle[-1],

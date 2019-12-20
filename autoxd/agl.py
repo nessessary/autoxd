@@ -322,14 +322,20 @@ def swap(a,b):
     b = c
     return a, b
 
-def combin_cur_dir(cur_file, sub_dir):
+def combin_cur_dir(sub_dir):
     """组合目录
-    cur_file: 当前执行文件
+    当前执行文件的目录作为根目录, 支持多进程
     sub_dir: 当前执行文件下的子目录, 前面不带/
     return: 绝对路径
     """
-    cur_path = os.path.dirname(os.path.abspath(cur_file))
-    return cur_path + '/' + sub_dir
+    key = myredis.gen_keyname(__file__, combin_cur_dir)
+    enter_file = sys.argv[0]
+    root_dir = os.path.dirname(os.path.abspath(enter_file))
+    if root_dir.lower().find('multisubprocess')>=0:
+        root_dir = myredis.get_obj(key)
+    else:
+        myredis.set_obj(key, root_dir)
+    return root_dir + '/' + sub_dir
 
 def createDir(dir_path):
     if not os.path.exists(dir_path):
@@ -884,6 +890,9 @@ def is_function(fn):
 def df_filter(df, fn):
     for index, row in df.iterrows():
         fn(row)
+def df_set(df, i, col, v):
+    """给一个字段赋值"""
+    df.at[i, col] = v
 def df_concat(df1, l):
     """添加list到df1中
     df1: pd.DataFrame

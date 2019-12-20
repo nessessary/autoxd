@@ -6,13 +6,13 @@ import os
 from flask import Flask, request, render_template, Response, send_file, jsonify
 #import labels as mylabel    #与route的方法冲突
 import labels
+from autoxd.cnn_boll.pearson_clust import MyCode
 
 app = Flask(__name__)
 @app.route('/')
 def index():
     #return 'Hello World'
     return render_template('index.html')
-
 
 @app.route('/api', methods = ["GET"])
 def handle_ajax_submit():
@@ -50,7 +50,8 @@ def get_img(imageid):
     df = labels.get_data_table()
     imageid = int(df.iloc[imageid]['datas_index'])
     cur_path = os.path.abspath(os.path.dirname(__file__)+'/..')
-    fname = cur_path + "/%s/000005_%d.png"%('img_labels/imgs', imageid)
+    code = MyCode.get() #使用genimg设置的code from redis
+    fname = cur_path + "/%s/%s_%d.png"%('img_labels/imgs', code, imageid)
     print(fname)
     #image = file(fname)
     #resp = Response(image, mimetype="image/png")
