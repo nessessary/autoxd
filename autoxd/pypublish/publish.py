@@ -8,13 +8,11 @@ import numpy as np
 import pylab as pl
 import sys,os,codecs
 from autoxd import agl
-from policy_report import df_to_html_table
+from autoxd.pypublish.policy_report import df_to_html_table
 
 """模仿matlab的publish, 注意在__main__中调用有可能不会触发析构, pl的绘制放入一个函数中
 在当前工作目录中生成一个html\name\name.html
 plot生成png，绑定到html中
-2014-3-7 耗时4小时
-
 """
 
 def publishinfo():
@@ -67,6 +65,7 @@ class Publish:
         f.close()
         
         self.name = name 
+        self.fig_num = 1
 
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
@@ -128,12 +127,28 @@ class Publish:
             os.system(command)
         
     
-    def figure(self, id=1):
-        fig = pl.figure(id)
+    def figure(self, num=None,  # autoincrement if None, else integer from 1-N
+               figsize=None,  # defaults to rc figure.figsize
+               dpi=None,  # defaults to rc figure.dpi
+               facecolor=None,  # defaults to rc figure.facecolor
+               edgecolor=None,  # defaults to rc figure.edgecolor
+               frameon=True,
+               FigureClass=pl.Figure,
+               **kwargs
+               ):    
+    #def figure(self, id=1):
+        #num = self.fig_num
+        fig = pl.figure(num, figsize, dpi, facecolor, edgecolor, frameon, FigureClass, **kwargs)
+        #fig = pl.gcf()
         self.figs.append(fig)
+        #self.fig_num += 1
         return fig
+    def subplots_adjust(self, *args, **kwargs):    
+        return pl.subplots_adjust(*args, **kwargs)
     def gcf(self):
         return pl.gcf()
+    def clf(self):
+        pl.clf()
     def text(self, x, y, s, fontdict=None, withdash=False, **kwargs):
         pl.text(x, y, s, fontdict, withdash, **kwargs)
     def plot(self, *args, **kwargs):
@@ -188,6 +203,7 @@ class Publish:
                 fname = self.path + self.name + "_" + sPid + '_' + str(len(self.imgs)) + ".png"
             self.imgs.append(fname)            
             self.cur_img_fname = fname
+            #self.figs[-1].savefig(fname, dpi=70)
             pl.savefig(fname, dpi=70)
     def get_CurImgFname(self):
         return self.cur_img_fname

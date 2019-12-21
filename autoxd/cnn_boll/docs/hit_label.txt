@@ -1,0 +1,20 @@
+手工打标签使用手册
+
+-描述手动点标签的实现过程, 
+
+1. 生成聚类结果 pearson_clust.py
+    包括第一阶段和第二阶段
+
+2. 根据结果生成图片文件
+
+3. 在页面里手动选择标签
+
+- 使用手册
+    1) 跑一次聚类,   在远程机跑 pearson_clust.py --multi/--single --code
+    2) 再跑一次二次聚类 pearson_clust.py --second --code
+    3) 针对结果生成图片 pearson_clust.py --genimg --code
+    4) 手工对二次聚类的表打标签 启动页面, python label_submit/flask_submit.py
+    localhost:5000, 提交标签, 查询csv
+    5) pearson_clust.py --code=000001   设置当前处理的code
+    6）刷新页面， 处理当前的code
+

@@ -36,11 +36,11 @@ def getFunctionDoc():
     pass
 def tic():
     """开始计时"""
-    globals()['tt'] = time.clock()
+    globals()['tt'] = time.time()
 
 def toc():
     """计时结束"""
-    sec = time.clock()-globals()['tt']
+    sec = time.time()-globals()['tt']
     minutie = sec/60.0
     hour = minutie / 60.0
     a = datetime.timedelta(seconds = sec)
@@ -162,9 +162,16 @@ def GetSortedArrayIndexs(a, num=-1):
         i = len(a)-i-1
         b.append(a[i][0])
     return b
+def arrary_fillna(t1):
+    """用平均值填充"""
+    temp_col = t1
+    #print(temp_col)
+    nan_num =np.count_nonzero(temp_col!=temp_col) #判断该列存在不为0的数个数
+    if( nan_num != 0 ):
+        temp_not_nan_col = temp_col[temp_col==temp_col]
+        temp_col[np.isnan(temp_col)] = temp_not_nan_col.mean()
+    return t1
 
-def array_equal(a1,a2):
-    return (a1[np.isnan(a1)==False] == a2[np.isnan(a2)==False]).all()
 def array_val_to_pos(a, v):
     """由值取下标 
     agl.array_val_to_pos(np.array([1,2,3]),3)
@@ -315,14 +322,20 @@ def swap(a,b):
     b = c
     return a, b
 
-def combin_cur_dir(cur_file, sub_dir):
+def combin_cur_dir(sub_dir):
     """组合目录
-    cur_file: 当前执行文件
+    当前执行文件的目录作为根目录, 支持多进程
     sub_dir: 当前执行文件下的子目录, 前面不带/
     return: 绝对路径
     """
-    cur_path = os.path.dirname(os.path.abspath(cur_file))
-    return cur_path + '/' + sub_dir
+    key = myredis.gen_keyname(__file__, combin_cur_dir)
+    enter_file = sys.argv[0]
+    root_dir = os.path.dirname(os.path.abspath(enter_file))
+    if root_dir.lower().find('multisubprocess')>=0:
+        root_dir = myredis.get_obj(key)
+    else:
+        myredis.set_obj(key, root_dir)
+    return root_dir + '/' + sub_dir
 
 def createDir(dir_path):
     if not os.path.exists(dir_path):
@@ -877,12 +890,16 @@ def is_function(fn):
 def df_filter(df, fn):
     for index, row in df.iterrows():
         fn(row)
+def df_set(df, i, col, v):
+    """给一个字段赋值"""
+    df.at[i, col] = v
 def df_concat(df1, l):
     """添加list到df1中
     df1: pd.DataFrame
     l : list
     """
-    return pd.concat([df1, pd.DataFrame(l).T])
+    df2 = pd.DataFrame(l).T
+    return pd.concat([df1, df2])
 def df_remove_col(df, cols):
     """df删除列 return: df"""
     return df.drop(cols, axis=1)

@@ -798,9 +798,9 @@ def getHisdatDf(code, is_fuquan=True , is_Trunover=False):
         df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
 
-def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
+def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
     """
-    method: mysql , tdx, local
+    method: mysql , tdx, local, path
     return: df col('ohlcu')"""
     if method == 'mysql':
         return mysql.getFiveHisdat(code,start_day,end_day)
@@ -814,6 +814,13 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql'):
         return df
     if method == 'live':
         return LiveData().getFiveMinHisdat(code)
+    if method == 'path':
+        fname = code + '.csv'
+        fname = os.path.join(path, fname)
+        df = pd.read_csv(fname)
+        df.index = pd.DatetimeIndex( df[df.columns[0]])
+        return df
+        
 def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
@@ -1244,11 +1251,15 @@ def TDX_BOLL(closes):
     assert(len(closes)>=20)
     n = 20
     mid = talib.MA(closes, n)
-    vart1 = np.zeros(len(closes))
-    for i, v in np.ndenumerate(closes):
-        i = i[0]
-        vart1[i] = pow(closes[i] - mid[i], 2)
+    vart1 = (closes - mid) ** 2
     vart2 = talib.MA(vart1, n)
+    vart2 = agl.arrary_fillna(vart2)
+    #np.warnings.filterwarnings('ignore')
+    np.seterr(all='raise')
+    vart2 = np.abs(vart2)
+    #for i, v in enumerate(vart2):
+        #v = np.sqrt(v)
+    assert((vart2>0).all())
     vart3 = np.sqrt(vart2)
     upper = mid + 2*vart3
     lower = mid - 2*vart3
@@ -1315,12 +1326,20 @@ ADXR:EXPMEMA(ADX,MM);
 
     dmp = talib.EMA(hd, n)
     dmm = talib.EMA(ld, n)
+    dmp = agl.arrary_fillna(dmp)
+    mtr = agl.arrary_fillna(mtr)
+    # 防止除0
+    mtr[mtr==0] = 0.0000000001 
     pdi = dmp * 100 / mtr
     mdi = dmm * 100 / mtr
     adx = np.zeros(len(mdi))
     for i, v in np.ndenumerate(mdi):
         i = i[0]
-        adx[i] = abs(mdi[i]-pdi[i]) / (mdi[i]+pdi[i])*100 
+        divd_val = mdi[i]+pdi[i]
+        if divd_val == 0:
+            adx[i] = 0
+        else:
+            adx[i] = abs(mdi[i]-pdi[i]) / (divd_val)*100 
     adx = talib.EMA(adx, mm)
     return adx
 def ADX(highs, lows, closes):
