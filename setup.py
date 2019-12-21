@@ -6,18 +6,18 @@ from setuptools import setup, find_packages
 import sys
 import autoxd
 if sys.version > '3':
-    myexclude=()
+    myexclude=('*cnn_boll',)
 else:
     #setup.py install需要删除build等目录
     #只能过滤掉目录，不能过滤文件
-    myexclude = ('*pinyin',)
+    myexclude = ('*pinyin','*cnn_boll',)
 
 setup (
     name = 'autoxd',
     version = autoxd.__version__,
     description ="backtest framework",
     author = "Kang Wang",
-    email = "1764462457@qq.com",
+    author_email = "1764462457@qq.com",
     url="https://github.com/nessessary/autoxd.git",
     license = "BSD 3",
     #py_modules=['autoxd'],
