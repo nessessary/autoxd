@@ -272,3 +272,4 @@ Elapsed time: 2388.91 seconds / 39.82 min / 0.66 hour     0:39:48.911659
 reward = boll_var*boll_w+(trade_price_var*trade_time_interval)
 * 查表归纳法
 * 图形识别法
+	
