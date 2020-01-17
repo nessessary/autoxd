@@ -75,6 +75,7 @@ class data_sources():
             data_path = os.path.abspath(os.path.dirname(__file__)) + '/' + sources_path
         return data_path        
     def loadData(self, code):
+        """ return: df  five hisdat"""
         data_path = self._getPath()
         return stock.getFiveHisdatDf(code, method='path', path=data_path)
     def loadCodes(self):
