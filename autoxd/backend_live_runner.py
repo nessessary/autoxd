@@ -207,7 +207,7 @@ class LiveLocalRunner(LiveRunner):
         if len(df_five_hisdat)<30:
             return
         price = float(agl.FloatToStr(float(df_fenshi.tail(1)['p'])))
-        yclose = df_hisdat.ix[df_hisdat.index[-1]]['c']
+        yclose = df_hisdat.loc[df_hisdat.index[-1]]['c']
         zhangfu = stock.ZhangFu(price, yclose)
         rsi = stock.RSI(df_five_hisdat['c'])
         #ui.DrawClosesAndVolumes(pl, df_five_hisdat['c'], rsi)

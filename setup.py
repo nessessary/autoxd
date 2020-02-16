@@ -6,7 +6,8 @@ from setuptools import setup, find_packages
 import sys
 import autoxd
 if sys.version > '3':
-    myexclude=('*cnn_boll',)
+    #myexclude=('*cnn_boll',)
+    myexclude = ()
 else:
     #setup.py install需要删除build等目录
     #只能过滤掉目录，不能过滤文件

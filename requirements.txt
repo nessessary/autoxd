@@ -1,8 +1,10 @@
 PyPrind>=2.10.0
 redis>=2.10.5
 pandas>=0.22.0
-ta-lib
-numpy>=1.15.3
+#ta-lib
+numpy==1.18	# for fix 3.6 testing error
+scipy==1.1.0
+scikit_learn==0.21.3
 prettytable>=0.7.2
 charade>=1.0.3
 tushare>=1.1.7
@@ -15,7 +17,7 @@ psutil>=5.4.8
 #pyh>=0.1
 pytdx>=1.67
 six>=1.12.0
-scikit_learn>=0.20.2
 #talib>=0.1.1
 #win32gui>=221.6
 gym
+mpl_finance

@@ -55,8 +55,8 @@ def _HtmlTableToDf2(table_tag):
         df = pd.DataFrame(td.attrs)
         if len(df)>0:
             df = df.set_index(0)
-            if 'rowspan' in df.index and int(df.ix['rowspan'][1]) >1:
-                rows = int(df.ix['rowspan'][1])
+            if 'rowspan' in df.index and int(df.loc['rowspan'][1]) >1:
+                rows = int(df.loc['rowspan'][1])
                 c += rows -1
                 rowspan_inserts.append((i, rows, td.getText().encode('utf8')))
     col = c / row

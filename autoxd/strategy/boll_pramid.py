@@ -20,8 +20,6 @@ else:
     from autoxd import stock_pinyin as jx
 
 from autoxd.backtest_runner import BackTestPolicy
-if sys.platform == 'win32':
-    from autoxd import tc
 import datetime
 import pandas as pd
 import numpy as np

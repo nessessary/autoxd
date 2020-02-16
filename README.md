@@ -11,7 +11,7 @@ autoxd v0.4 回测框架
   * 自创FOUR指标， 简单计算多空
 
 - 变更
-  * 见docs/changelog.txt
+  * v0.4.3 废弃python2支持，python3.6 pandas 1.0
   * v0.4.1 支持macos
   * v0.4 大幅优化速度
   * v0.3 python3支持
@@ -48,7 +48,6 @@ autoxd v0.4 回测框架
   cd autoxd
   pip install -r requirements.txt
   pip install git+https://github.com/hanxiaomax/pyh.git
-  pip install git+https://github.com/matplotlib/mpl_finance.git
   python setup.py install
   ```
   * 安装redis

@@ -329,12 +329,12 @@ def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     #signals[['short_ma', 'long_ma']].plot(ax=ax1, lw=2.)
 
     # Plot the "buy" trades against AAPL
-    ax1.plot(signals.ix[signals.positions == 1.0].index, 
+    ax1.plot(signals.loc[signals.positions == 1.0].index, 
              bars['c'][signals.positions == 1.0],
              '^', markersize=10, color='m')
 
     # Plot the "sell" trades against AAPL
-    ax1.plot(signals.ix[signals.positions == -1.0].index, 
+    ax1.plot(signals.loc[signals.positions == -1.0].index, 
              bars['c'][signals.positions == -1.0],
              'v', markersize=10, color='k')
 
@@ -343,10 +343,10 @@ def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     returns['total'].plot(ax=ax2, lw=2.)
 
     # Plot the "buy" and "sell" trades against the equity curve
-    ax2.plot(returns.ix[signals.positions == 1.0].index, 
+    ax2.plot(returns.loc[signals.positions == 1.0].index, 
              returns.total[signals.positions == 1.0],
              '^', markersize=10, color='m')
-    ax2.plot(returns.ix[signals.positions == -1.0].index, 
+    ax2.plot(returns.loc[signals.positions == -1.0].index, 
              returns.total[signals.positions == -1.0],
              'v', markersize=10, color='k')
 
@@ -396,12 +396,12 @@ def ShowTradeResult2(pl, bars, signals, zhijin, changwei,signal_dependent_num=0,
     #signals[['short_ma', 'long_ma']].plot(ax=ax1, lw=2.)
 
     # Plot the "buy" trades against AAPL
-    ax1.plot(signals.ix[signals.positions == 1.0].index, 
+    ax1.plot(signals.loc[signals.positions == 1.0].index, 
              bars['c'][signals.positions == 1.0],
              '^', markersize=10, color='m')
 
     # Plot the "sell" trades against AAPL
-    ax1.plot(signals.ix[signals.positions == -1.0].index, 
+    ax1.plot(signals.loc[signals.positions == -1.0].index, 
              bars['c'][signals.positions == -1.0],
              'v', markersize=10, color='k')
 
@@ -433,7 +433,7 @@ def testShowTradeResult():
     from autoxd import stock
     code = '600100'
     bars = stock.Guider(code).ToDataFrame()
-    bars = bars.ix['2014':]
+    bars = bars.loc['2014':]
     print(bars.head())
     #两均线穿越
     signals = pd.DataFrame(index=bars.index)

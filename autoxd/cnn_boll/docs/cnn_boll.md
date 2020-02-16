@@ -1,6 +1,9 @@
 ## 流程
 
-1. pearson聚类
+1. 生成数据源
+	dump_five_to_csv.py
+
+2. pearson聚类
 
 对每一个股票进行第一次聚类， 方便放置到相应code目录下， 
 

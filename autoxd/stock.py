@@ -105,11 +105,11 @@ def getHisdatDataFrameFromRedis(code, start_day='', end_day=''):
         #agl.LOG(msg)
         return pd.DataFrame([])
     if start_day != '' and end_day != '':
-        df = df.ix[start_day:end_day]
+        df = df.loc[start_day:end_day]
     elif start_day != '':
-        df = df.ix[start_day:]
+        df = df.loc[start_day:]
     elif end_day != '':
-        df = df.ix[:end_day]
+        df = df.loc[:end_day]
     return df
 
 
@@ -260,7 +260,7 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
         df_hisdat = myredis.get_obj(code)
         if df_hisdat is None:
             continue
-        df_hisdat = df_hisdat.ix[date:end_day]
+        df_hisdat = df_hisdat.loc[date:end_day]
         if len(df_hisdat) == 0:
             continue
         ltgb = ltgbs[i]
@@ -670,22 +670,22 @@ def calc_fuquan_use_fenhong(df, df_fenhong):
     df_fenhong = df_fenhong.sort_values(by=2)
     for i in range(len(df_fenhong)):
         gu, money, date = df_fenhong.iloc[i]
-        if len(df.ix[:date]) < 2:
+        if len(df.loc[:date]) < 2:
             continue
         date = agl.df_get_pre_date(df, date)
         if money > 0:
             money = money * 0.1
-            df['o'].ix[:date] -= money
-            df['h'].ix[:date] -= money
-            df['c'].ix[:date] -= money
-            df['l'].ix[:date] -= money
+            df['o'].loc[:date] -= money
+            df['h'].loc[:date] -= money
+            df['c'].loc[:date] -= money
+            df['l'].loc[:date] -= money
         if gu > 0:
             # x = cur / (1+y/10)
             gu = 1+gu/10
-            df['o'].ix[:date] /= gu
-            df['h'].ix[:date] /= gu
-            df['c'].ix[:date] /= gu
-            df['l'].ix[:date] /= gu
+            df['o'].loc[:date] /= gu
+            df['h'].loc[:date] /= gu
+            df['c'].loc[:date] /= gu
+            df['l'].loc[:date] /= gu
     return df	    
 def test_calc_fuquan_use_fenhong():
     ths = createThs()
@@ -766,7 +766,7 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     df_GuBen_change[col] = df_GuBen_change[col].map(lambda x: agl.StrToFloat(x))
     df_GuBen_change = df_GuBen_change.dropna()
     first_day = agl.datetime_to_date(df.index[0].to_pydatetime())
-    df_GuBen_change = df_GuBen_change.ix[first_day:last_day]    
+    df_GuBen_change = df_GuBen_change.loc[first_day:last_day]    
 
     #Merge时排序需要对应
     df = df.sort_index()    #mysql存储时有些乱序， merge时必须是排序的，降序
@@ -1020,7 +1020,7 @@ def FuQuan_Fenshi(df_fenshi, df_hisdat):
         day = help.MyDate(day)
         day.Add(-1)
         day = day.ToStr()
-        z = df_fuquan.ix[i]['z']
+        z = df_fuquan.loc[i]['z']
         #关闭警告
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")	
@@ -1087,14 +1087,14 @@ class DataSources:
                     df = LiveData().getHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
                     df = datasource_fn(code, 'd')
-                df = df.ix[start_day:end_day]
+                df = df.loc[start_day:end_day]
                 #复权
                 df_fenhong = getFenHong(code)
                 df = calc_fuquan_use_fenhong(df, df_fenhong)
             df = df.sort_index()
             d[code] = df
-        panel = pd.Panel(d)
-        return panel
+        #panel = pd.Panel(d)
+        return d
     @staticmethod
     def getFiveMinHisdatPanl(codes, days):
         start_day , end_day = days
@@ -1107,7 +1107,7 @@ class DataSources:
                     df = LiveData().getFiveMinHisdat(code)
                 if DataSources.data_mode == DataSources.datafrom.custom:
                     df = datasource_fn(code, '5')
-            df = df.ix[start_day:end_day]
+            df = df.loc[start_day:end_day]
             #复权
             df_fenhong = getFenHong(code)
             df = calc_fuquan_use_fenhong(df, df_fenhong)

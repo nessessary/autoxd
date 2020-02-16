@@ -10,7 +10,7 @@ import os
 
 """在线策略入口"""
 import numpy as np
-import sys
+import sys, copy
 from autoxd import agl,stock,help,ui
 from autoxd import backtest_policy
 import pylab as pl
@@ -78,7 +78,7 @@ class BackTestPolicy:
             for code in self.codes:
                 df = self.panel_hisdat[code]
                 assert(len(df)>0)
-                list_closes.append((code, df.ix[-1]['c']))
+                list_closes.append((code, df.iloc[-1]['c']))
             #输出账号结果
             for policy in self.policys:
                 if 0: policy = qjjy.Strategy(data)
@@ -119,7 +119,7 @@ class BackTestPolicy:
                 continue
             for strategy in self.policys:
                 if self.mode == self.enum.tick_mode:
-                    df = self.dict_fenshi[code].ix[day] #以时间为索引
+                    df = self.dict_fenshi[code].loc[day] #以时间为索引
                     #fenshi_length = len(df) #只迭代当天的
                     #分时遍历, 按分钟走
                     for t in ts:
@@ -184,6 +184,7 @@ class BackTestPolicy:
                 bars.at[index,'positions'] = agl.where(bSell, -1, 1)
         #同步资金到bar
         df_zhijing.is_copy = False
+        df_zhijing = copy.deepcopy(df_zhijing)  # 为了避免赋值警告
         df_zhijing['changwei'] = changwei
         if self.mode == self.enum.hisdat_mode:
             df_zhijing.index = df_zhijing.index.map(lambda x: agl.datetime_to_date(x))

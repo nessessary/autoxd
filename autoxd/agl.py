@@ -1006,11 +1006,11 @@ def get_string_digit(s):
     return float(s_result)
 def df_get_pre_date(df, date):
     """获取当前日期的上一个索引日期 return : str(date)"""
-    d = df.ix[:date].index[-2]
+    d = df.loc[:date].index[-2]
     d = datetime_to_date(d)
     if d == date:
         #5分钟
-        indexs = df.ix[:date].index
+        indexs = df.loc[:date].index
         for index in indexs.sort_values(ascending=False):
             d = datetime_to_date(index)
             if d != date:

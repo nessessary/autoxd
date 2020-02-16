@@ -39,7 +39,7 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
         return: df"""
         if dtype == '5min':
             return self.get_fiveminhisdat(code)
-        return self.panel_hisdat.ix[code][:self.day]
+        return self.panel_hisdat[code].loc[:self.day]
     def get_fenshi(self, code):
         """
         col名字说明：t - 时间 ; b - 买卖 ; p - 价格; v - 手数; d - 多少账号在交易;
@@ -47,7 +47,7 @@ class Backtest(live_policy.Live, account.BackTestingDelegate):
         """
         pre_day = help.MyDate.s_Dec(self.day, -10)
         df = self.dict_fenshi[code]
-        df = df.ix[pre_day:self.tick]
+        df = df.loc[pre_day:self.tick]
         return df
     def get_fiveminhisdat(self, code):
         df = self.panel_fiveminhisdat[code]
