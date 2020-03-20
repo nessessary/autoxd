@@ -1,0 +1,30 @@
+用wingide进行远程调试
+
+1. 安装wingide6, putty
+
+2. 配置ssh
+	1）设置linux ssh密钥, 
+在Linux主机执行ssh-keygen 一路按Enter。
+添加公钥到要访问的远程机器:
+cd ~/.ssh
+cat id_rsa.pub >>authorized_keys
+复制.ssh文件夹下的私钥id_rsa到本地。
+
+	2) 转换密钥格式为putty格式
+Win按键+R，输入PUTTYGEN执行。点击“load”，选择刚复制下来的私钥文件（从文件名后的下拉框选择All files），然后“save private key”。
+保存的文件在下一步用到。
+
+	3) 执行putty
+Session：主机ip，端口
+Connection：用户名		connection->data->auto login name
+Connection—SSH-Auth:选择Private key为上一步保存的文件。
+Session：在Saved Sessions中填个名字并“Save”. ( 必须使用缺省， 设置完成后保存)
+点击Open，如果提示信任主机key，点击“是”。此时各项正确的话应当能登入远程机器，确认正常后关掉putty。
+
+	5)  创建工程，工程文件来自远程计算机。
+Project-new project，从下拉列表选择有ssh的一项。
+
+Identifier：IDE自己内部的唯一名称，随便起。	
+Host Name：上一步putty保存的名称，一模一样。
+WINGHOME: wingide的安装目录，若已安装则指定为已安装的目录；否则就是步骤6要自动安装到的目录。
+Python 程序：不选择的话wingide从linux 的path中去找python。如果没有安装wingide，也不能选择，可以在安装wingide agent后再修改。

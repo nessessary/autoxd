@@ -32,6 +32,10 @@ def getModuleName(f_path):
     module_name = os.path.basename(f_path)
     module_name = module_name.replace('.py', '')
     return module_name
+
+def get_exec_file_path():
+    """获取执行文件的目录"""
+    return os.path.abspath(sys.argv[0])
 def getFunctionDoc():
     pass
 def tic():
