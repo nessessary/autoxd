@@ -2,7 +2,7 @@
 
 """处理labels表, 用csv处理"""
 from __future__ import print_function
-import os
+import os,sys
 import pandas as pd
 #from autoxd import agl
 from autoxd.cnn_boll.pearson_clust import get_result_csv_path
@@ -18,11 +18,13 @@ class LabelTable(object):
             self.df = pd.DataFrame([])
         #print(self.df)
     def _get_datas_dir(self):
-        cur_dir = os.path.abspath(os.path.dirname(__file__) + '/..')
+        cur_dir = os.path.abspath(os.path.dirname(sys.argv[0]) + '/..')
         cur_dir += '/datas'
         return cur_dir
     def query(self):
         """return: list"""
+        if len(self.df) == 0:
+            return []
         return self.df[self.df.columns[0]].values
     def save(self, new_label):
         """需要保持唯一

@@ -28,6 +28,7 @@ from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
 from autoxd import myredis
+from autoxd.cnn_boll import env
 import time
 from itertools import combinations
 from sklearn.cluster import KMeans
@@ -247,6 +248,8 @@ def genImgToFile(code):
     indexs = df['datas_index'].values
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     fname = cur_dir + '/img_labels/imgs'
+    if not os.path.exists(fname):
+        agl.createDir(fname)
     for i in indexs:
         i = int(i)
         fname1 =fname + '/%s_%d.png'%(code, i)
@@ -394,18 +397,21 @@ def test_second_myhclust():
     df.to_csv(fname)
     
 def get_cur_path():
-    return os.path.dirname(os.path.abspath(__file__))
+    """因为多个地方在引用, 只能配置成绝对目录"""
+    if os.path.exists(env.win_root_path):
+        return env.win_root_path
+    return env.root_path
 def get_result_path():
     cur_dir = get_cur_path()
     dir_path = 'datas/' + MyCode.get() + '/'
     cur_dir += '/'
     cur_dir += dir_path
     agl.createDir(cur_dir)
-    return dir_path
+    return cur_dir
 def get_result_mid_csv_path():
-    return get_cur_path() + '/' + get_result_path() + g_fname_mid_csv
+    return get_result_path() + g_fname_mid_csv
 def get_result_csv_path():
-    return get_cur_path() + '/' + get_result_path() + g_fname_csv
+    return get_result_path() + g_fname_csv
 
 def test_multi_myhclust():
     datas = load_data()

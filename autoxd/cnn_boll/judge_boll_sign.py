@@ -65,14 +65,27 @@ def drawBoll(pl,closes, boll_up, boll_mid, boll_low):
     pl.axis('off')
 class data_sources():
     def _getPath(self):
-        """冗余 库路径， 入口路径， 其它路径"""
+        """冗余 库路径， 入口路径， 其它路径
+        记录执行入口文件的目录， 
+        """
         sources_path = 'datasources/'
         data_path = agl.combin_cur_dir(sources_path)
-        if not os.path.exists(data_path):
+        if not os.path.exists(data_path):   #local path
             data_path += '/..'
             data_path = os.path.abspath(data_path) + '/' + sources_path
-        if not os.path.exists(data_path):
+        if not os.path.exists(data_path):   #local path
             data_path = os.path.abspath(os.path.dirname(__file__)) + '/' + sources_path
+        if not os.path.exists(data_path):   # exec_path
+            data_path = os.path.abspath(agl.get_exec_file_path())
+            data_path += '/' + sources_path
+        if not os.path.exists(data_path):
+            #cnn_boll/.../datasources
+            #去除中间的目录
+            key1 = 'cnn_boll'
+            pos1 = data_path.find(key1)+len(key1)
+            pos2 = data_path.find(sources_path)
+            if pos1>=0 and pos2>=0:
+                data_path = data_path[:pos1]+data_path[pos2-1:]
         return data_path        
     def loadData(self, code):
         """ return: df  five hisdat"""
