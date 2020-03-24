@@ -28,7 +28,7 @@ from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
 from autoxd import myredis
-from autoxd.cnn_boll import env
+from autoxd.cnn_boll.env import get_root_path
 import time
 from itertools import combinations
 from sklearn.cluster import KMeans
@@ -329,15 +329,7 @@ def myhclust(datas, indexs):
                 #draw_multi(l, j, offset, elements, center_index)
     
     #hcluster.draw_dendrogram(tree,imlist,filename='./sunset.png')                
-    def combine_clusters():
-        """合并一些相近的集合"""
-        #watch 
-        for i, j in combinations(clusters, 2):
-            i = i.get_cluster_elements()
-            j = j.get_cluster_elements()
-            d = distfn(np.array([i[0]]), np.array([j[0]]))
-            print(len(i), len(j), d)
-    #combine_clusters()    
+  
     ShowResult()
     df = pd.DataFrame(center_indexs, columns=center_indexs_columns)
     print(df)
@@ -375,7 +367,13 @@ def test_myhclust():
     #df = myhclust(load_data(), a)
     df = myclust_split_run(a)
     #np.savetxt('center_indexs.txt', center_indexs)
-    fname = get_cur_path() + '/' + get_result_path() + g_fname_mid_csv
+    save_result(df)
+def save_result(df):    
+    fname = get_result_mid_csv_path()
+    cur_dir = os.path.dirname(fname)
+    print(cur_dir)
+    agl.createDir(cur_dir)
+    assert(os.path.exists(cur_dir))
     df.to_csv(fname)
     
 def test_second_myhclust():
@@ -396,13 +394,9 @@ def test_second_myhclust():
     fname = get_result_csv_path()
     df.to_csv(fname)
     
-def get_cur_path():
-    """因为多个地方在引用, 只能配置成绝对目录"""
-    if os.path.exists(env.win_root_path):
-        return env.win_root_path
-    return env.root_path
+
 def get_result_path():
-    cur_dir = get_cur_path()
+    cur_dir = get_root_path()
     dir_path = 'datas/' + MyCode.get() + '/'
     cur_dir += '/'
     cur_dir += dir_path
@@ -418,10 +412,7 @@ def test_multi_myhclust():
     #datas = datas[:6000]
     a = range(len(datas))
     df, = MultiSubProcess.run_fn(myclust_split_run, a, __file__)
-    #np.savetxt('center_indexs.txt', center_indexs)
-    fname = get_result_mid_csv_path()
-    df.to_csv(fname)
-    #print(df[0].head())
+    save_result(df)
     
 if __name__ == "__main__":
     parser = optparse.OptionParser()

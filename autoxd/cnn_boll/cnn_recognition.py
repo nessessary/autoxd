@@ -10,11 +10,13 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from autoxd.cnn_boll.load_img import load_data
 
 # the data, split between train and test sets
 #(x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epochs=12):
+    """来自mnist_cnn"""
     if K.image_data_format() == 'channels_first':
         x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
         x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
