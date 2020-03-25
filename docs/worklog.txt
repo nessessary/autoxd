@@ -23,3 +23,23 @@
 - 尝试微信提醒
 	1) 因为运行时间太长， 因此有必要设置微信提醒. 查baidu发现只有一个老的实现库， 而且容易被封，放弃。
 	2) https://www.cnblogs.com/chengxyuan/p/11957509.html ; 一种专用的手机通知, ifttt
+
+2020/3/24
+- 调整ubuntu目录问题
+	1) os.path不支持用户目录， 需要用绝对目录
+
+- gen_stock_pinyin改为python3
+	1) 文件需要保存为utf8
+
+
+2020/3/25
+- 实现ifttt手机通知
+	1) 注册
+	2) 生成一个面板
+	3) 已经不支持创建自定义面板, 废弃
+
+- 还是研究微信通知
+	1) itchat
+- 调整run_pearson_clust
+	1) stock.get_codes与数据源不符
+	2) 以数据源的codes为准

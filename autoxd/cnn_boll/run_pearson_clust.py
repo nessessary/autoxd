@@ -1,15 +1,16 @@
 import os
 from autoxd import stock
 import optparse,sys
-#from autoxd.agl import array_val_to_pos
+from autoxd.cnn_boll import judge_boll_sign
 
 def run(start_code, num):
     cmds = ['python pearson_clust.py --multi --code=%s',\
             'python pearson_clust.py --second --code=%s',\
             'python pearson_clust.py --genimg --code=%s'\
             ]
-    codes = stock.get_codes()
-    #index = array_val_to_pos(codes, start_code)
+    codes = judge_boll_sign.codes
+    codes.sort()
+    #print(codes)
     index = codes.index(start_code)+1
     codes = codes[index:index+num]
     for code in codes:
@@ -26,5 +27,12 @@ if __name__ == "__main__":
     
     options, args = parser.parse_args(sys.argv[1:])
     
+    class MyOptions:
+        start_code = 0
+        num = 0
+    if 0: options = MyOptions()
+    if options.start_code is None or options.num is None:
+        print('--start_code=x --num=1-n')
+        exit(0)
     run(options.start_code, options.num)
         
