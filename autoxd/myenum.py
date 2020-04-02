@@ -60,6 +60,18 @@ class FenshiBetaTinPaiException(Exception):
     """分时日期区间与板块日期区间不匹配, 主要是因为个股停牌引起"""
     pass
 
+class MYCOLS_NAME:
+    close = 'c'
+    high = 'h'
+    low = 'l'
+    open = 'o'
+    val = 'v'
+    boll_upper = 'upper'
+    boll_middle = 'middle'
+    boll_lower = 'lower'
+    adx = 'adx'
+    pdi = 'pdi'
+    mdi = 'mdi'
 
 #回测模式
 #见backtest_runner.BackTestPolicy.enum.tick_mode

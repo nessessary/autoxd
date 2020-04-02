@@ -43,6 +43,9 @@ import matplotlib.pylab as plt
 import psutil
 from autoxd.MultiSubProcess import MultiSubProcess
 
+#数据源取值间隔步长
+g_data_interval = 3
+
 g_report = []   #比较的结果
 #pl = publish.Publish(explicit=False)
 class MyCode:
@@ -147,7 +150,7 @@ def load_data():
         upper, middle, lower, df, adx = datas
         if len(df) < 100:
             continue
-        for index in range(100, len(df) - jbs.g_scope_len):
+        for index in range(100, len(df) - jbs.g_scope_len, g_data_interval):
             l.append(getBolls(index, datas))
     return l
 
@@ -429,6 +432,8 @@ if __name__ == "__main__":
     if options.code is not None:
         code = options.code
         MyCode.set(code)
+    else:
+        print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n')
         
     #run_myclust()
     if options.single is not None:
@@ -440,7 +445,5 @@ if __name__ == "__main__":
     elif options.genimg is not None:
         code = MyCode.get()
         genImgToFile(code)
-    else:
-        print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n')
     
     agl.toc()

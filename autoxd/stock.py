@@ -1286,8 +1286,11 @@ def ATR(highs, lows, closes):
     closes = np.array(closes)
     return talib.ATR(highs, lows, closes)
 def TDX_ADX(highs, lows, closes):
+    adx, pdi, mdi = TDX_ADX2(highs, lows, closes)
+    return adx
+def TDX_ADX2(highs, lows, closes):
     """通达信版本的ADX, 单元测试见test_adx
-    return: np.ndarray
+    return: adx,pdi,mdi (np.ndarray, np.ndarray, np.ndarray)
 MTR:=EXPMEMA(MAX(MAX(HIGH-LOW,ABS(HIGH-REF(CLOSE,1))),ABS(REF(CLOSE,1)-LOW)),N);
 HD :=HIGH-REF(HIGH,1);
 LD :=REF(LOW,1)-LOW;
@@ -1341,7 +1344,7 @@ ADXR:EXPMEMA(ADX,MM);
         else:
             adx[i] = abs(mdi[i]-pdi[i]) / (divd_val)*100 
     adx = talib.EMA(adx, mm)
-    return adx
+    return adx, pdi, mdi
 def ADX(highs, lows, closes):
     """平均趋向指数, ADX指数是反映趋向变动的程度，而不是方向的本身
     DMI包含ADX，DX"""
@@ -1350,6 +1353,7 @@ def ADX(highs, lows, closes):
     closes = np.array(closes)
     return talib.ADX(highs, lows, closes, timeperiod=14)
 def ADXR(highs, lows, closes):
+    """(ADX+REF(ADX,M))/2，m=6"""
     highs = np.array(highs)
     lows = np.array(lows)
     closes = np.array(closes)

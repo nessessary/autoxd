@@ -159,6 +159,15 @@ def _DrawVLine(pl, i, ts):
     pl.plot([i,i], [ts[i]-ts[i]*0.1, ts[i]+ts[i]*0.1], 'r')
 def DrawHLine(pl, v, n, clr='r'):
     pl.plot([0, n], [v, v], clr)
+    
+def drawTsAndHlines(pl, ts, *lines):
+    pl.figure
+    pl.plot(ts)
+    for l in lines:
+        DrawHLine(pl, l, len(ts))
+    pl.show()
+    pl.close()
+
 def DrawClosesAndVolumes(pl, closes, volumes, zz=None, avg=None, trade_index=None,\
                          title=None, closes_dp=None, closes_bankuai=None):
     """画closes，非df模式，

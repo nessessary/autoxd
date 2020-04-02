@@ -3,7 +3,8 @@
 set exec="C:\MyApp\putty\PSCP.EXE"
 set z="c:\Program Files\7-Zip\7z.exe"
 
-rmdir /s /q ..\autoxd\cnn_boll\img_labels
+if exist ..\autoxd\cnn_boll\img_labels ( rmdir /s /q ..\autoxd\cnn_boll\img_labels )
+if exist ..\autoxd\cnn_boll\datas ( rmdir /s /q ..\autoxd\cnn_boll\datas )
 if exist autoxd.tar ( del autoxd.tar )
 if exist autoxd.tar.gz ( del autoxd.tar.gz)
 %z% a -ttar autoxd.tar ../../autoxd/

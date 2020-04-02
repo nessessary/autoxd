@@ -33,6 +33,7 @@ def getFive(code):
     df.columns = list('ochl')
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
+
 def getHisdat(code):
     from autoxd import stock
     api = create()
@@ -43,6 +44,8 @@ def getHisdat(code):
     df.columns = list('ochl')
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
+
+    
 def test():
     print(getFive(jx.HWWH))
     
