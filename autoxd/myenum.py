@@ -72,6 +72,8 @@ class MYCOLS_NAME:
     adx = 'adx'
     pdi = 'pdi'
     mdi = 'mdi'
+    rsi = 'rsi'
+    
 
 #回测模式
 #见backtest_runner.BackTestPolicy.enum.tick_mode

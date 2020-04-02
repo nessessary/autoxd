@@ -10,7 +10,7 @@
 from autoxd.stock import getFiveHisdatDf, ZigZag
 from autoxd import stock
 from autoxd.pinyin import stock_pinyin3 as jx
-from autoxd.agl import ClustList2
+from autoxd.agl import ClustList2, float_to_2
 from autoxd import ui, myredis
 import pylab as pl
 from single_boll import get_data, colname, pd
@@ -27,12 +27,21 @@ def getCenterPoint():
     boll_up = df[colname.boll_upper].values
     boll_mid = df[colname.boll_middle].values
     boll_low = df[colname.boll_lower].values
+    adx = pd.Series(df[colname.adx]).values
+    pdi = pd.Series(df[colname.pdi]).values
+    mdi = pd.Series(df[colname.mdi]).values
+    rsi = pd.Series(df[colname.rsi]).values    
+    
+    if (rsi[-1] < 70 and rsi[-1] > 30 ) or (adx[-1]<50):
+        return
     
     #计算斜率
-    zz = ZigZag(boll_low, percent=0.1)
+    boll_z = boll_up if closes[-1]>boll_mid[-1] else boll_low
+    zz = ZigZag(boll_z, percent=0.05)
     zz = zz[-2:]
     v_slope = slope(zz)
-    print(v_slope)
+    #print(v_slope)
+    v_slope = float_to_2(v_slope)
     
     #计算聚类点
     ary, line = ClustList2(2, closes)
@@ -41,6 +50,7 @@ def getCenterPoint():
     
     #绘制
     pl.figure
+    pl.subplot(211)
     pl.plot(closes)
     pl.plot(boll_up)
     pl.plot(boll_mid)
@@ -48,6 +58,13 @@ def getCenterPoint():
     pl.plot(zz[:,0], zz[:,1])
     for l in lines:
         ui.DrawHLine(pl, l, len(closes))
+    pl.legend([v_slope],  loc='upper left')
+    pl.subplot(212)
+    pl.plot(adx)
+    pl.plot(pdi)
+    pl.plot(mdi)
+    pl.plot(rsi)
+    pl.legend([colname.adx, colname.pdi, colname.mdi, colname.rsi], loc='upper left')        
     pl.show()
     pl.close()
     
@@ -69,28 +86,10 @@ def slope(line):
     k = (y2-y1)*unit_change/(x2-x1)
     return k
 
-def calc_adx():
-    df = get_data(jx.HLE)
-    closes = pd.Series(df[colname.close]).values
-    adx = pd.Series(df[colname.adx]).values
-    pdi = pd.Series(df[colname.pdi]).values
-    mdi = pd.Series(df[colname.mdi]).values
-    
-    pl.figure
-    pl.subplot(211)
-    pl.plot(closes)
-    pl.subplot(212)
-    pl.plot(adx)
-    pl.plot(pdi)
-    pl.plot(mdi)
-    pl.legend([colname.adx, colname.pdi, colname.mdi])
-    pl.show()
-    pl.close()
     
 def main():
-    #getCenterPoint()
-    for i in range(12):
-        calc_adx()
+    for i in range(50):
+        getCenterPoint()
     
 if __name__ == "__main__":
     main()

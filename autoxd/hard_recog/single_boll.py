@@ -38,6 +38,8 @@ def load_data(code):
     df[colname.adx] = adx
     df[colname.pdi] = pdi
     df[colname.mdi] = mdi
+    rsi = stock.RSI(closes)
+    df[colname.rsi] = rsi
     
     return df
 
@@ -68,6 +70,7 @@ def get_data(code):
     """
     return: df ['o', 'c', 'h', 'l', 'upper', 'middle', 'lower']"""
     #df = load_data(code)
+    #myredis.delkey(myredis.gen_keyname(__file__, get_data))
     df = myredis.createRedisVal(myredis.gen_keyname(__file__, get_data),
                                 lambda: load_data(code)).get()
     size = len(df)

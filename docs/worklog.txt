@@ -127,3 +127,5 @@ https://blog.csdn.net/weixin_40475396/article/details/78693408
 
 2020/4/2
 - 观察adx
+
+- 遍历输出， 看符合条件的情况出现的几率
