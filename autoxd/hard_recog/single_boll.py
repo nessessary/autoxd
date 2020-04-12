@@ -12,7 +12,10 @@ import pylab as pl
 import pandas as pd
 import random
 import numpy as np
+from collections import Iterator, Iterable
 
+#private
+import mysql
 
 class recorg_boll:
     def __init__(self, data_boll):
@@ -23,7 +26,7 @@ def gen_random_int(a, b):
     return random.randint(a, b)
 
 def load_data(code):
-    df = stock.getFiveHisdatDf(code, method='tdx')
+    df = stock.getFiveHisdatDf(code, method='mysql')
     upper, middle, lower = stock.TDX_BOLL(df['c'].values)
     
     df['upper'] = upper
@@ -65,6 +68,28 @@ def recorg(df_boll):
     #输出判断
     
     pass
+
+class boll_data_Iterator(Iterator):
+    def __init__(self, code):
+        df = load_data(code)
+        self.df = df
+        self.index = g_scope_len
+    def __next__(self):
+        if self.index == len(self.df):
+            raise StopIteration        
+        index = self.index
+        df = self.df[index: index+g_scope_len]
+        self.index += 1
+        return df
+    def __len__(self):
+        return len(self.df) - g_scope_len
+class boll_data_Iterable(Iterable):
+    def __init__(self, code):
+        self.code = code
+    def __iter__(self):
+        return boll_data_Iterator(self.code)
+    def __len__(self):
+        return len(boll_data_Iterator(self.code))
 
 def get_data(code):
     """

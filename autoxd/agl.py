@@ -195,6 +195,11 @@ def array_val_to_pos(a, v):
     pos = np.where(a == v)
     return pos[0][0]
     
+def array_gen(size):
+    #a = np.zeros(size)
+    #a = np.ones(size)
+    a = np.arange(0, size)
+    return a
 def array_reverse(a):
     """数组倒序"""
     return np.fliplr([a])[0]

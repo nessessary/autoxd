@@ -10,10 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.font_manager as fm
-try:
-    import matplotlib.finance as mpf
-except:
-    import mpl_finance as mpf
+import mpl_finance as mpf
 from matplotlib.pylab import date2num
 import matplotlib.dates as mdates
 import matplotlib

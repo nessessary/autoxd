@@ -23,6 +23,8 @@ from autoxd import warp_pytdx as tdx
 from autoxd.pypublish import publish
 #pl = publish.Publish()
 
+import mysql
+
 def get_codes(flag=myenum.all, n=100):
     """获取有效的股票列表, enum现在改为myenum
     flag : enum.all 等枚举 
