@@ -14,8 +14,6 @@ import random
 import numpy as np
 from collections import Iterator, Iterable
 
-#private
-import mysql
 
 class recorg_boll:
     def __init__(self, data_boll):
@@ -102,6 +100,17 @@ def get_data(code):
     if size > g_scope_len:
         index = gen_random_int(0, size - g_scope_len)
         df = load_data_at_point(df, index, length=g_scope_len)
+    return df
+
+def get_data_rand(code):
+    """随机在结果集中取一个数据
+    return : df
+    """
+    df = load_data(code)
+    size = len(df)
+    assert(size > g_scope_len)
+    index = gen_random_int(g_scope_len, size - g_scope_len)
+    df = load_data_at_point(df, index, length=g_scope_len)
     return df
 
 if __name__ == "__main__":

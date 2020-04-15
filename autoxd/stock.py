@@ -20,10 +20,9 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from autoxd import grabThsWebStockInfo
 from autoxd import warp_pytdx as tdx
+from autoxd import mysql
 from autoxd.pypublish import publish
 #pl = publish.Publish()
-
-import mysql
 
 def get_codes(flag=myenum.all, n=100):
     """获取有效的股票列表, enum现在改为myenum
