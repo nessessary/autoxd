@@ -59,4 +59,4 @@ def get_img(imageid):
 
 if __name__ == '__main__':
     #app.debug = True # 设置调试模式，生产模式的时候要关掉debug
-    app.run(host='0.0.0.0')
+    app.run(host='127.0.0.1')

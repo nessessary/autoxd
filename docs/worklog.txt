@@ -129,3 +129,12 @@ https://blog.csdn.net/weixin_40475396/article/details/78693408
 - 观察adx
 
 - 遍历输出， 看符合条件的情况出现的几率
+
+
+2020/7/17
+- 在win10中搭建环境， 运行cnn_boll
+	1) install autoxd
+	2) run autoxd.cnn_boll
+
+2020/7/20
+- 跑测试

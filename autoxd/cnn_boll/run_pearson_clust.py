@@ -1,8 +1,11 @@
 import os
+from autoxd.cnn_boll import env
+env.registe_root_path(os.path.dirname(os.path.abspath(__file__)))
 from autoxd import stock, agl
 import optparse,sys
 from autoxd.cnn_boll import judge_boll_sign
 from autoxd.notify import use_smtp
+
 
 def run(start_code, num):
     cmds = ['python pearson_clust.py --multi --code=%s',\
@@ -36,9 +39,10 @@ if __name__ == "__main__":
         print('--start_code=x --num=1-n')
         exit(0)
 
+   
     agl.tic()        
     run(options.start_code, options.num)
     agl.toc()
     
-    use_smtp.MySend()    
+    #use_smtp.MySend()    
     

@@ -162,7 +162,7 @@ def load_csv_data(islast=False):
         fname = get_result_csv_path()
     df = pd.read_csv(fname)
     df = df[df.columns[0]]
-    indexs = df.get_values()
+    indexs = np.array(df.tolist())
     datas = load_data()
     datas = np.array(datas)
     return datas[indexs]
@@ -191,8 +191,8 @@ def distfn(v1, v2, l):
     (up + down)/2 - up_down_distance*a
     return: float
     """
-    assert(type(v1[0]) == np.int64)
-    assert(type(v2[0]) == np.int64)
+    assert(type(v1[0]) == np.int64 or type(v1[0]) == np.int32)
+    assert(type(v2[0]) == np.int64 or type(v2[0]) == np.int32)
     #print(v1, v2)
     v1 = int(v1[0])
     v2= int(v2[0])
@@ -392,7 +392,7 @@ def test_second_myhclust():
         index = row['datas_index']
         df.at[i, 'datas_index'] = df_mid.iloc[index]['datas_index']
         col = 'dt'
-        df.at[i, col] = df_mid.iloc[index][col]
+        df.at[i, col] = pd.Timestamp(df_mid.iloc[index][col])
     
     fname = get_result_csv_path()
     df.to_csv(fname)

@@ -12,9 +12,18 @@
 - 使用手册
     1) 跑一次聚类,   在远程机跑 pearson_clust.py --multi/--single --code; remote machine run 1.5 hours
     2) 再跑一次二次聚类 pearson_clust.py --second --code
+		数据输出到datas\
     3) 针对结果生成图片 pearson_clust.py --genimg --code
+		数据输出到img\
     4) 手工对二次聚类的表打标签 启动页面, python label_submit/flask_submit.py
+		标签文件datas\cnn_boll_label.csv
     localhost:5000, 提交标签, 查询csv, 输出到datas\code\
     5) pearson_clust.py --code=000001   设置当前处理的code
     6）刷新页面， 处理当前的code
 
+- 标签设定
+	1) 上升
+	2）水平
+	3）下降
+	4）开口
+	5）闭口
