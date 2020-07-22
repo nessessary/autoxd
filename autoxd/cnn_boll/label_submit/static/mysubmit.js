@@ -53,7 +53,7 @@ function update_labels() {
         var y = -160;
         array_label.forEach(element => {
             x += 80;
-            if(id%2 == 0) {
+            if(id%3 == 0) {
                 x = 0;
                 y += 30;
             }

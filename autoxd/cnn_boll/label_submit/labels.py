@@ -6,6 +6,7 @@ import os,sys
 import pandas as pd
 #from autoxd import agl
 from autoxd.cnn_boll.pearson_clust import get_result_csv_path
+from autoxd.cnn_boll import env
 
 class LabelTable(object):
     """标签表, datas/cnn_boll_label.csv"""
@@ -18,7 +19,8 @@ class LabelTable(object):
             self.df = pd.DataFrame([])
         #print(self.df)
     def _get_datas_dir(self):
-        cur_dir = os.path.abspath(os.path.dirname(sys.argv[0]) + '/..')
+        #cur_dir = os.path.abspath(os.path.dirname(sys.argv[0]) + '/..')
+        cur_dir = env.get_root_path()
         cur_dir += '/datas'
         return cur_dir
     def query(self):

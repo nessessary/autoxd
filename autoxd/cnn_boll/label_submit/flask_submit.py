@@ -49,7 +49,8 @@ def get_img(imageid):
     imageid = int(imageid)
     df = labels.get_data_table()
     imageid = int(df.iloc[imageid]['datas_index'])
-    cur_path = os.path.abspath(os.path.dirname(__file__)+'/..')
+    cur_path = os.path.dirname(os.path.abspath(__file__))
+    cur_path = os.path.join(cur_path, '..')
     code = MyCode.get() #使用genimg设置的code from redis
     fname = cur_path + "/%s/%s_%d.png"%('img_labels/imgs', code, imageid)
     print(fname)
