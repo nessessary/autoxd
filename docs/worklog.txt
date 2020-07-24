@@ -138,3 +138,17 @@ https://blog.csdn.net/weixin_40475396/article/details/78693408
 
 2020/7/20
 - 跑测试
+2020/7/21
+- 解决mpl_finance的警告 https://blog.csdn.net/wuwei_201/article/details/105781844
+2020/7/22
+- 人工设置标签
+- 调整提交页面的ui
+	1) 标签按3格排列
+
+2020/7/23
+- 复习cnn
+- 安装win10 tf https://blog.csdn.net/qq_35077107/article/details/94555320
+	1) 查看版本nvidia-smi
+	2) 下载对应版本的cuda
+
+- 编写cnn_study.txt
