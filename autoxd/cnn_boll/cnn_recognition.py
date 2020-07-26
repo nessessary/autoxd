@@ -17,6 +17,11 @@ from autoxd.cnn_boll.load_img import load_data
 def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epochs=12):
     """来自mnist_cnn"""
     (x_train, y_train), (x_test, y_test) = datas
+    img_cols = x_train.shape[-1]
+    img_rows = x_train.shape[-2]    
+    img_cols, img_rows = (3, 30)
+    assert(x_train.shape[-2:] == (img_cols, img_rows))
+    
     if K.image_data_format() == 'channels_first':
         x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
         x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
@@ -66,5 +71,6 @@ def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epo
 
 if __name__ == '__main__':
     #datas = mnist.load_data()
-    datas = load_data()
-    run_cnn(datas)
+    datas = load_data(1000)
+    
+    run_cnn(datas, num_classes=81)

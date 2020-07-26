@@ -1,7 +1,7 @@
 #coding:utf8
 from __future__ import print_function
 import os
-import cv2  #opencv-python
+#import cv2  #opencv-python
 import matplotlib.pyplot as pl
 import matplotlib.ticker as tic
 from PIL import Image
@@ -75,6 +75,12 @@ class Label2Id:
         row = self.df.iloc[id]
         return row[self.df.columns[-1]]
     
+def genImgData(code, data_index):
+    """重新生成cnn里的格式
+    return: np.ndarray np.shape=(3,30)
+    """
+    pass
+    
 def load_data():
     """加载imgs
     return: (x_train, y_train), (x_test, y_test)
@@ -105,14 +111,14 @@ def load_data():
         labels.append(label_id)
         
         #img
-        img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
-        img = cv2.resize(img, (640, 480))
-        img = np.array(img)
-        img[img==255] = 0
-        imgs.append(img)
+        #img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
+        #img = cv2.resize(img, (640, 480))
+        #img = np.array(img)
+        #img[img==255] = 0
+        #imgs.append(img)
         
     data = np.array(imgs)
-    labels = np.array(labels)
+    labels = np.array(labels).astype(np.uint8)
     len_data = len(data)
     len_labels = len(labels)
     assert(len_data == len_labels)
@@ -135,6 +141,7 @@ if __name__ == "__main__":
     
     (x_train, y_train), (x_test, y_test)  = load_data()
     print(x_train.shape)
+    print(y_train.shape)
     #print(data[0])
     from autoxd import agl
     agl.print_ary(x_train[0])
