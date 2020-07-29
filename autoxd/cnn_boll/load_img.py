@@ -7,7 +7,7 @@ import matplotlib.ticker as tic
 from PIL import Image
 import numpy as np
 from autoxd.cnn_boll import env
-from autoxd.cnn_boll.pearson_clust import g_fname_csv
+from autoxd.cnn_boll.pearson_clust import g_fname_csv, load_data as main_load_data
 import pandas as pd
 
 # the data, split between train and test sets
@@ -75,13 +75,15 @@ class Label2Id:
         row = self.df.iloc[id]
         return row[self.df.columns[-1]]
     
-def genImgData(code, data_index):
-    """重新生成cnn里的格式
-    return: np.ndarray np.shape=(3,30)
+def BollsToImg(bolls):
+    """归一化处理boll数据, 以mid的平均值作为基准点
+    return: np.ndarray, np.shape (3, )
     """
-    pass
+    up,mid,low = bolls
+    base = np.average(mid)
+    return (bolls-base)/base*10000
     
-def load_data():
+def load_data(num=-1):
     """加载imgs
     return: (x_train, y_train), (x_test, y_test)
     x_train, np.dnarray  (num, row, col)
@@ -89,6 +91,9 @@ def load_data():
     """
     img_path = os.path.join(env.get_root_path(),'img_labels/imgs/')
     files = os.listdir(img_path)
+    files = files[:num]
+    datas = None
+    pre_code = ''
     imgs = []
     labels = []
     n = 28
@@ -99,6 +104,7 @@ def load_data():
         #这里和pearson_clust里的数据加载有区别， 这里是遍历
         f = f.split('.')[0]
         code, datas_index = str(f).split('_')
+        datas_index = int(datas_index)
         label_path = os.path.join(env.get_root_path() ,('datas/%s/%s')%(code, g_fname_csv))
         #... 等待人工标签结果， 人工标签最后再进行归类
         table_colmns = "id,datas_index,code,dt,tick_period,clust_id,label_id,label_desc".split(',')
@@ -111,11 +117,14 @@ def load_data():
         labels.append(label_id)
         
         #img
-        #img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
-        #img = cv2.resize(img, (640, 480))
-        #img = np.array(img)
-        #img[img==255] = 0
-        #imgs.append(img)
+        if pre_code != code:
+            datas = main_load_data(code)
+        #归一化
+        bolls = datas[datas_index]
+        img = BollsToImg(bolls)
+        img = img.astype(np.uint8)
+        #print(img)
+        imgs.append(img)
         
     data = np.array(imgs)
     labels = np.array(labels).astype(np.uint8)
@@ -136,6 +145,7 @@ if __name__ == "__main__":
     #from keras.datasets import mnist
     #datas = mnist.load_data()
     #(x_train, y_train), (x_test, y_test) = datas
+    ##x_train dtype=uint8
     #print(x_train.shape)
     #exit(0)
     

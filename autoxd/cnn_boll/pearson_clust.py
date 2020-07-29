@@ -33,7 +33,6 @@ import time
 from itertools import combinations
 from sklearn.cluster import KMeans
 from scipy.cluster import hierarchy
-
 import scipy
 import scipy.cluster.hierarchy as sch
 from scipy.cluster.vq import vq,kmeans,whiten
@@ -138,12 +137,13 @@ def cmp_boll_two(tuple1, tuple2, id1, id2):
         g_report.append([v_up, v_down, id1, id2, fimg1, fimg2])    
     return v_up, v_down
 
-def load_data():
-    """加载数据
+def load_data(code=''):
+    """加载数据, 加载注册的code
     return: list, bolls
     """
     l = []
-    code = MyCode.get()
+    if code == "":
+        code = MyCode.get()
     codes = [code]
     for code in codes:
         datas = jbs.getData(code)   # from local
@@ -249,7 +249,7 @@ def genImgToFile(code):
     #    indexs: list 数据偏移索引
     df = pd.read_csv(get_result_csv_path(), index_col=0)
     indexs = df['datas_index'].values
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    cur_dir = get_root_path()
     fname = cur_dir + '/img_labels/imgs'
     if not os.path.exists(fname):
         agl.createDir(fname)
