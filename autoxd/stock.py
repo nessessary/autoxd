@@ -26,25 +26,17 @@ from autoxd.pypublish import publish
 
 def get_codes(flag=myenum.all, n=100):
     """获取有效的股票列表, enum现在改为myenum
-    flag : enum.all 等枚举 
+    flag : enum.all 等枚举 , enum.exclude_cyb 排除创业板, enum.rand10 随机选10个
     n : enum.rand时使用
     return: list """
     def readTDXlist():
         #从本地csv读取
         cur_path = os.path.dirname(os.path.abspath(__file__))
         fname = cur_path + '/datas/tdx_codes.csv'
-        df = pd.read_csv(fname, dtype=str, header=None)
-        codes = df[0].tolist()    
-        if len(codes)>0:
-            #默认去除大盘的代码
-            dapans = ['399001', '999999','399005','399002','399006','510050']
-            codes = [str(code) for code in codes if code not in dapans]
-            #codes = filter(lambda x: x[:2] != '88', codes)
-        return codes
-    key = myredis.enum.KEY_CODES    #更新ths F10时删除
-    #这里不能使用从THS来读， 当重新拉取时， 会引起递归
-    val = myredis.createRedisVal(key, readTDXlist)
-    codes = val.get()
+        df = pd.read_csv(fname, index_col=0, dtype=str)
+        return df[df.columns[0]].values
+        
+    codes = readTDXlist()    
     if flag == myenum.randn:
         from sklearn.utils import shuffle
         codes = shuffle(codes)
@@ -64,7 +56,7 @@ def get_bankuai_codes(bankuai):
     key = myredis.enum.KEY_THS_GAIYAO
     val = myredis.createRedisVal(key, lambda: createThs().getDf(0))
     codes = []
-    names = ['所属行业', '涉及概念','概念强弱排名']
+    names = ['所属申万行业', '概念贴合度排名']
     df = val.get()
     for i in range(len(df)):
         r = df.iloc[i]
@@ -825,31 +817,24 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
 def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
+    if code[:3] == '688':
+        return 2
     if code[0] == '6' and code[1] == '0':
         return 1
     return 0
 def GetCodeName(code):
-    """从redis中取出名称 return: str"""
+    """从tdx_codes.csv取名称 return: str"""
     if code=='510050':
         return '50ETF'
-    #从拼音文件里获取中文名称
-    fname = os.path.dirname(__file__) +'/pinyin/stock_pinyin3.py'
-    fname = os.path.abspath(fname)
-    name = ''
-    f = open(fname)
-    if sys.version > '3':
-        f = open(fname, encoding='utf8')
+    cur_path = os.path.dirname(os.path.abspath(__file__))
+    fname = cur_path + '/datas/tdx_codes.csv'
+    df = pd.read_csv(fname,index_col=0, dtype=str)
     try:
-        for line in f.readlines():
-            line = str(line)
-            if line.find(code)>0:
-                if line.find('#')>0:
-                    name = line.split('#')[-1]
-                    name = name[:-1]
-                    break
+        name = df[df[df.columns[0]] == code][df.columns[-1]].values[0]
+        name = name.replace(' ', '')
+        return name
     except:
-        pass
-    return name
+        return '新股'
         
 def load_ths_custom_codes():
     '先用ths导出自选股到桌面 获取自选股列表 return: list'
@@ -1556,7 +1541,7 @@ def IsWhiteHorse(code):
     """白马股"""
     ths = THS.getInstance()
     df_gaiyao = ths.df_gaiyao
-    s = df_gaiyao[df_gaiyao['code'] == code]['概念强弱排名'].tolist()[0]
+    s = df_gaiyao[df_gaiyao['code'] == code]['概念贴合度排名'].tolist()[0]
     return s.find('白马股')>=0
 def IsLanChouGu(code):
     """蓝筹股"""
