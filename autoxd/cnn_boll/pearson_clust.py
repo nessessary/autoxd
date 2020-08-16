@@ -27,7 +27,7 @@ import autoxd.cnn_boll.hcluster_person as hcluster
 from itertools import combinations
 from scipy.cluster.vq import *
 from PIL import Image
-from autoxd import myredis
+from autoxd import myredis, stock
 from autoxd.cnn_boll.env import get_root_path
 import time
 from itertools import combinations
@@ -431,9 +431,22 @@ if __name__ == "__main__":
     agl.tic()
     if options.code is not None:
         code = options.code
-        MyCode.set(code)
+        if code == 'next':
+            code = MyCode.get()
+            codes = stock.get_codes()
+            codes = np.array(codes)
+            index = int(np.argwhere(codes == code))
+            if index +1 < len(codes):
+                code = codes[index+1]
+                MyCode.set(code)
+                print("index=%d"%(index))
+            else:
+                print("end")
+        else:
+            MyCode.set(code)
+        print("current_code=%s"%(code))
     else:
-        print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n')
+        print('\t--single\t单进程执行\n\t--multi\t多进程执行\n\t--second \t第二阶段\n\t--code=code or next\t\n')
         
     #run_myclust()
     if options.single is not None:

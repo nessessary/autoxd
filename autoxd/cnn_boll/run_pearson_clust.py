@@ -15,7 +15,7 @@ def run(start_code, num):
     codes = judge_boll_sign.codes
     codes.sort()
     #print(codes)
-    index = codes.index(start_code)+1
+    index = codes.index(start_code)
     codes = codes[index:index+num]
     for code in codes:
         for cmd in cmds:
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         num = 0
     if 0: options = MyOptions()
     if options.start_code is None or options.num is None:
-        print('--start_code=x --num=1-n')
+        print('--start_code=x --num=n')
         exit(0)
 
    

@@ -108,6 +108,10 @@ class Val(object):
     def set(self, v):
         set_obj(self.key, v)
 
+        
+def gen_data(filename, call_fn, process_fn):
+    key = gen_keyname(filename, call_fn)
+    return createRedisVal(key, process_fn).get()
 #记录一些公用的key
 class enum:
     KEY_CODES = 'stock.Codes'

@@ -11,6 +11,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from autoxd.cnn_boll.load_img import load_data
+from autoxd.cnn_boll.my_recognition import get_data
 
 # the data, split between train and test sets
 
@@ -19,8 +20,8 @@ def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epo
     (x_train, y_train), (x_test, y_test) = datas
     img_cols = x_train.shape[-1]
     img_rows = x_train.shape[-2]    
-    img_cols, img_rows = (3, 30)
-    assert(x_train.shape[-2:] == (img_cols, img_rows))
+    #img_cols, img_rows = (3, 30)
+    #assert(x_train.shape[-2:] == (img_cols, img_rows))
     
     if K.image_data_format() == 'channels_first':
         x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
@@ -70,7 +71,10 @@ def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epo
 
 
 if __name__ == '__main__':
-    #datas = mnist.load_data()
-    datas = load_data(1000)
+    datas = mnist.load_data()
+    num = 10
     
-    run_cnn(datas, num_classes=81)
+    #datas = load_data(1000)
+    #datas = get_data()
+    
+    run_cnn(datas, num_classes=num)

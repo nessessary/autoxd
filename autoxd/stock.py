@@ -34,6 +34,7 @@ def get_codes(flag=myenum.all, n=100):
         cur_path = os.path.dirname(os.path.abspath(__file__))
         fname = cur_path + '/datas/tdx_codes.csv'
         df = pd.read_csv(fname, index_col=0, dtype=str)
+        df = df.sort_values(by=df.columns[0])
         return df[df.columns[0]].values
         
     codes = readTDXlist()    

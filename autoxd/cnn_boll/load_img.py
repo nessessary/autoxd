@@ -39,15 +39,16 @@ def show_imgs():
 
 class Label2Id:
     fname = 'label_desc.csv'
-    def __init__(self):
+    def __init__(self, reinit=False):
         self.fname = os.path.join(env.get_root_path(), 'datas',self.fname)
-        if os.path.exists(self.fname):
+        if os.path.exists(self.fname) and reinit==False:
             self.df = pd.read_csv(self.fname)
             #print(self.df)
         else:
             result = self._initLabeDescTable()
             self.df = pd.DataFrame(result)
             self.df.to_csv(self.fname)
+            print(self.df)
             print('write label_desc_table')
     def _initLabeDescTable(self):
         decss=[]
@@ -55,7 +56,7 @@ class Label2Id:
             for j in range(3):
                 for m in range(3):
                     for n in range(3):    
-                        s = ("%d,%d,%d,%d")%(i,j,m,n)
+                        s = ("%d,%d,%d,%d")%(i,j+3,m+6,n+9)
                         decss.append(s)
         return decss
         
@@ -67,7 +68,7 @@ class Label2Id:
         #return a*3+b*3+c*3+d*3
         try:
             row = self.df[self.df[self.df.columns[-1]] == label_desc]
-            id = row[self.df.columns[0]].values[0]
+            id = row.index[0]
         except:
             return np.nan
         return id
@@ -104,6 +105,7 @@ def load_data(num=-1):
         #这里和pearson_clust里的数据加载有区别， 这里是遍历
         f = f.split('.')[0]
         code, datas_index = str(f).split('_')
+        print(code)
         datas_index = int(datas_index)
         label_path = os.path.join(env.get_root_path() ,('datas/%s/%s')%(code, g_fname_csv))
         #... 等待人工标签结果， 人工标签最后再进行归类
@@ -113,6 +115,8 @@ def load_data(num=-1):
         label_id = np.nan
         if len(label)>0:
             label = label[table_colmns[-1]].values[0]
+            if isinstance(label, str) and label[-1] == ',':
+                label = label[:-1]
             label_id = label_converter.label_desc_to_label_id(label)
         labels.append(label_id)
         
@@ -126,6 +130,9 @@ def load_data(num=-1):
         #print(img)
         imgs.append(img)
         
+    #for i in range(5):
+        #imgs += imgs
+        #labels += labels
     data = np.array(imgs)
     labels = np.array(labels).astype(np.uint8)
     len_data = len(data)
@@ -136,11 +143,11 @@ def load_data(num=-1):
 
 if __name__ == "__main__":
     #test
-    #obj = Label2Id()
-    #id = obj.label_desc_to_label_id('5,5,5,5')
-    #print(id)
-    #print(obj.get_desc(40))
-    #exit(0)
+    obj = Label2Id(reinit=True)
+    id = obj.label_desc_to_label_id('2,3,7,9')
+    print(id, obj.get_desc(id))
+    print(obj.get_desc(0))
+    exit(0)
     
     #from keras.datasets import mnist
     #datas = mnist.load_data()
