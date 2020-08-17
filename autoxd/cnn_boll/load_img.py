@@ -1,7 +1,7 @@
 #coding:utf8
 from __future__ import print_function
 import os
-#import cv2  #opencv-python
+import cv2  #opencv-python
 import matplotlib.pyplot as pl
 import matplotlib.ticker as tic
 from PIL import Image
@@ -84,8 +84,9 @@ def BollsToImg(bolls):
     base = np.average(mid)
     return (bolls-base)/base*10000
     
-def load_data(num=-1):
+def load_data(num=-1, method='img'):
     """加载imgs
+    method: str img/data
     return: (x_train, y_train), (x_test, y_test)
     x_train, np.dnarray  (num, row, col)
     y_train, (num, [0,0,0,1,0,0]) 分类标签
@@ -121,13 +122,19 @@ def load_data(num=-1):
         labels.append(label_id)
         
         #img
-        if pre_code != code:
-            datas = main_load_data(code)
-        #归一化
-        bolls = datas[datas_index]
-        img = BollsToImg(bolls)
-        img = img.astype(np.uint8)
-        #print(img)
+        if method == 'img':
+            img = cv2.imread(fname, cv2.IMREAD_GRAYSCALE)
+            img = cv2.resize(img, (64*3, 48*3))
+            img = np.array(img)
+            img[img==255] = 0
+        if method == 'data':
+            if pre_code != code:
+                datas = main_load_data(code)
+            #归一化
+            bolls = datas[datas_index]
+            img = BollsToImg(bolls)
+            img = img.astype(np.uint8)
+            #print(img)
         imgs.append(img)
         
     #for i in range(5):

@@ -71,10 +71,11 @@ def run_cnn(datas, img_rows=28, img_cols=28, batch_size=128, num_classes=10, epo
 
 
 if __name__ == '__main__':
-    datas = mnist.load_data()
-    num = 10
+    #datas = mnist.load_data()
+    #num = 10
     
-    #datas = load_data(1000)
+    datas = load_data()
+    num = 81
     #datas = get_data()
     
     run_cnn(datas, num_classes=num)
