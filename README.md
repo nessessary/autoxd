@@ -55,8 +55,8 @@ autoxd v0.4 回测框架
   * 跑strategy/five_chengben.py, 策略都放在该目录
 
 - 数据维护
-  datas目录下的数据是需要维护的， 一般一个月更新股票列表， 一个季度更新分红表
-  
+  * datas目录下的数据是需要维护的， 一般一个月更新股票列表， 一个季度更新分红表
+
 - 使用
 
 1. 跑five_chengben.py, 定义参数  setParams函数
