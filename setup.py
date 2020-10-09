@@ -24,6 +24,6 @@ setup (
     #py_modules=['autoxd'],
     packages= find_packages(exclude=myexclude),
     data_files = [('autoxd/pypublish',['autoxd/pypublish/test.html']),
-                  ('autoxd/datas', ['autoxd/datas/tdx_codes.csv'])
+                  ('autoxd/datas', ['autoxd/datas/tdx_codes.csv', 'autoxd/datas/fenhong.csv', 'autoxd/datas/astockchange.csv'])
                   ]
 )
