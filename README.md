@@ -11,6 +11,7 @@ autoxd v0.4 回测框架
   * 自创FOUR指标， 简单计算多空
 
 - 变更
+  * v0.4.4 复权计算使用的分红表原来是动态抓网页， 现在使用静态方式， 从数据目录中取
   * v0.4.3 废弃python2支持，python3.6 pandas 1.0
   * v0.4.1 支持macos
   * v0.4 大幅优化速度
@@ -53,6 +54,9 @@ autoxd v0.4 回测框架
   * 安装redis
   * 跑strategy/five_chengben.py, 策略都放在该目录
 
+- 数据维护
+  datas目录下的数据是需要维护的， 一般一个月更新股票列表， 一个季度更新分红表
+  
 - 使用
 
 1. 跑five_chengben.py, 定义参数  setParams函数
@@ -61,7 +65,7 @@ autoxd v0.4 回测框架
   cd strategy
   python five_changben.py
   ```
-  
+
 2. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
       * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
