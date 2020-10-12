@@ -18,7 +18,6 @@ import numpy as np
 import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
-from autoxd import grabThsWebStockInfo
 from autoxd import warp_pytdx as tdx
 from autoxd import fenhong
 from autoxd.pypublish import publish
