@@ -9,17 +9,10 @@ prettytable>=0.7.2
 charade>=1.0.3
 tushare>=1.1.7
 matplotlib>=1.5.1
-#BeautifulSoup>=3.2.1
 Pillow>=5.3.0
 beautifulsoup4>=4.6.3
 python_dateutil>=2.7.5
 psutil>=5.4.8
 #pyh>=0.1
 pytdx>=1.67
-six>=1.12.0
-#talib>=0.1.1
-#win32gui>=221.6
-gym
 mplfinance
-opencv-python
-tensorflow
