@@ -42,8 +42,11 @@ class Strategy:
         #注意， 现在只能支持一个账户
         if self.data != None:
             self.data.createAccount(account_type, user, pwd)
-    if 0:get = live_policy.Live()	
-    def get(self):
+    def _getAccount(self):
+        if self.is_backtesting:
+            return self.data.account	#LocalAccount
+        return tc.TcAccount(self.data)  
+    def get(self) -> live_policy.Live:
         return self.data
     def _log(self, s):
         if self.is_backtesting:
@@ -62,7 +65,9 @@ class Strategy:
         return self.class_member
     def setParams(self, *args, **kwargs):
         """设置策略参数, 由派生类实现"""
-        pass
+        #必须实现
+        for k, v in kwargs.items():
+            setattr(self, k, v)
     def _recordClassMember(self):
         """记录类成员"""
         #纪录类成员
@@ -131,7 +136,8 @@ class Strategy:
             #s_trace = traceback.extract_stack()
             #s_trace = agl.TraceToStr(s_trace)
             #self._log(s_trace)    	
-
+    def Report(self):
+        pass
 
 def set_params(code):
     """定义区间交易的总买卖点，区间幅度等"""

@@ -176,14 +176,14 @@ class BackTestPolicy:
         changwei = df_changwei[cols[1]].cumsum()
         if self.mode == self.enum.hisdat_mode:
             df.index = df.index.map(lambda x: agl.datetime_to_date(x))
-        bars.is_copy = False
+        #bars.is_copy = False
         for i in range(len(df)):
             index = df.index[i]
             bSell = bool(df.iloc[i]['买卖标志']=='证券卖出')
             if index in bars.index:
                 bars.at[index,'positions'] = agl.where(bSell, -1, 1)
         #同步资金到bar
-        df_zhijing.is_copy = False
+        #df_zhijing.is_copy = False
         df_zhijing = copy.deepcopy(df_zhijing)  # 为了避免赋值警告
         df_zhijing['changwei'] = changwei
         if self.mode == self.enum.hisdat_mode:

@@ -29,8 +29,8 @@ def getFive(code):
     market = stock.IsShangHai(code)
     data = api.get_security_bars(category=0, market=market, code=code, start=0, count=800)
     data = api.to_df(data)
-    df = data[['open','close', 'high','low']]
-    df.columns = list('ochl')
+    df = data[['open','close', 'high','low','vol']]
+    df.columns = list('ochlv')
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
 
@@ -40,8 +40,8 @@ def getHisdat(code):
     market = stock.IsShangHai(code)
     data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
     data = api.to_df(data)
-    df = data[['open','close', 'high','low']]
-    df.columns = list('ochl')
+    df = data[['open','close', 'high','low', 'vol']]
+    df.columns = list('ochlv')
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
 

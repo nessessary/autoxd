@@ -14,6 +14,7 @@ import redis, pickle
 
 g_redis = None
 def createRedis():
+    #assert(False)
     global g_redis
     if g_redis is None:
         try:
@@ -34,12 +35,14 @@ def gen_keyname(fname, fn):
 
 def set_str(key, s):
     r = createRedis()
-    r.set(key, s)
+    if r is not None:
+        r.set(key, s)
 def set_obj(key, o):
     """无返回值, 记录数据"""
     r = createRedis()
-    b = pickle.dumps(o)
-    r.set(key, b)
+    if r is not None:
+        b = pickle.dumps(o)
+        r.set(key, b)
 def get_obj(key):
     """用key取值 return: obj 或者 None"""
     r = createRedis()

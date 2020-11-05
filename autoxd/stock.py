@@ -18,9 +18,8 @@ import numpy as np
 import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
-from autoxd import grabThsWebStockInfo
 from autoxd import warp_pytdx as tdx
-from autoxd import mysql
+from autoxd import fenhong
 from autoxd.pypublish import publish
 #pl = publish.Publish()
 
@@ -692,54 +691,18 @@ def test_calc_fuquan_use_fenhong():
     print(calc_fuquan_use_fenhong(df, df_fenhong))
 
 ###基本面#######
-def getFenHong(code, update=False):
-    ths = grabThsWebStockInfo.GrabThsWeb(code)
-    key = ths.GetFenHongKey()
-    if update:
-        myredis.delkey(key)
-    def convert_fenhong(df):
-        """转换分红表格式为数据格式
-        分红记录 (说明, 股， 派现，除权日)
-        return: df columns('股，现金, 日期')"""
-        #获取分红表
-        df_fenhong = pd.DataFrame([])#股，现金, 日期
-        for i in range(len(df)):
-            #方案说明
-            content = df.iloc[i]['分红方案说明']
-            #content = '送1.2转增2.4股派3.45元'
-            #取派股信息
-            gu = agl.find_str_use_re('^(.*)送([\d.]+)(.*)$', content, 1)
-            if gu == '': gu=0
-            gu = float(gu)
-            gu2 = agl.find_str_use_re('^(.*)转([\d.]+)(.*)$', content, 1)
-            if gu2 == '':
-                gu2 = agl.find_str_use_re('^(.*)转增([\d.]+)(.*)$', content, 1)
-            if gu2 == '': gu2 = 0
-            gu2 = float(gu2)
-            gu = gu + gu2
-            money = agl.find_str_use_re('^(.*)派([\d.]+)元(.*)$', content, 1)
-            if money == '':
-                money = agl.find_str_use_re('^(.*)现金([\d.]+)元(.*)$', content, 1)
-            if money == '': money = 0
-            money = float(money)
-            #print gu, money
-            if gu > 0 or money > 0:
-                date = df.iloc[i]['A股除权除息日']
-                if agl.is_valid_date(date):
-                    df_fenhong = pd.concat([df_fenhong, pd.DataFrame([gu, money, date]).T])
-        return df_fenhong    
-    def impl():
-        return convert_fenhong(ths.getFenHong())
-    return myredis.createRedisVal(key, impl).get()
-def getGubenbiangen(code, update=False):
-    ths = grabThsWebStockInfo.GrabThsWeb(code)
-    key = ths.GetGubenbiangenKey()
-    if update:
-        myredis.delkey(key)
-    def impl():
-        return ths.getGubenbiangen()
-    return myredis.createRedisVal(key, impl).get()
-###############    
+g_table_fenhong = None    
+def getFenHong(code):
+    global g_table_fenhong
+    if g_table_fenhong is None:
+        g_table_fenhong = fenhong.FenHongTable()
+    return g_table_fenhong.getOne(code)
+g_table_astockchange = None
+def getGubenbiangen(code):
+    global g_table_astockchange
+    if g_table_astockchange is None:
+        g_table_astockchange = fenhong.AStockChangeTable()
+    return g_table_astockchange.getOne(code)
 
 def convertVolToStockTrunover(df, df_GuBen_change):
     """成交量转换手率, 通过历史股本变更表来计算
@@ -748,11 +711,8 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     """
     #股本变动表
     col = '变动后流通A股(股)'
-    #调整一下col
-    df_GuBen_change.columns = df_GuBen_change.iloc[0]
-    df_GuBen_change = df_GuBen_change.drop(index=0)
+
     #防止有超过当前日期的数据
-    df_GuBen_change.index = pd.DatetimeIndex(df_GuBen_change[df_GuBen_change.columns[0]])
     df_GuBen_change = df_GuBen_change.sort_index(ascending=True)    #与df顺序一致
     last_day = agl.datetime_to_date(df.index[-1].to_pydatetime())
 
@@ -767,23 +727,29 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     if len(df_GuBen_change) > 0:
         df2 = pd.merge_asof(df, df_GuBen_change,left_index=True,right_index=True)
         df2 = df2.fillna(method='backfill') #降序， 前面的Nan用第一个有数的值填充
-        df2['v'] = df2['v']*100/df2[col]
+        df2['v'] = df2['v']*10000/df2[col]
         df['v'] = df2['v']
     else:   #有些老股因为送股太早，因此这里为空
-        df['v'] = df['v']*100/(self.get_ltgb()*myenum.YI)
-
+        assert(False)
     #df['v'].plot()
     #pl.show()
 
     return df    
 
 
-def getHisdatDf(code, is_fuquan=True , is_Trunover=False):
+def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' , is_Trunover=False):
     """从数据库获取日线, 复权 
     is_fuquan : 使用前复权
     is_Trunover: 转换为换手率
     return: df"""
-    df = LiveData().getHisdat(code)
+    if method == 'tdx':
+        df = tdx.getHisdat(code)
+    if method == 'tushare':
+        import tushare as ts
+        df = ts.get_hist_data(code)[['high','low','open','close','volume']]
+        df.index = pd.DatetimeIndex(df.index)
+        df.columns = list('hlocv')
+        df = df.sort_index()
     if is_fuquan:
         df_fenhong = getFenHong(code)
         df = calc_fuquan_use_fenhong(df, df_fenhong)    
@@ -1587,9 +1553,20 @@ def test_hisdat_redis():
         getHisdatDataFrameFromRedis(code, start_day, end_day)
 
 #----------------------------------------------------------------------
+def test_fenhong():
+    code = jx.THS
+    df = getHisdatDf(code)
+    df1 = getHisdatDf(code, is_fuquan=False)
+    assert(df['c'][:-1].tolist() != df1['c'][:-1].tolist())
+    
+    df = getHisdatDf(code, is_Trunover=True)
+    print(df)
+    assert(int(df.loc['2020-10-9']['v']*1000) == 27)
+    
 def main():
     """"""
-    unittest.main()
+    #unittest.main()
+    test_fenhong()
 if __name__ == "__main__":
     main()
     print('end')

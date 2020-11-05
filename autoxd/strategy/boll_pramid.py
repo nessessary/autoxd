@@ -48,7 +48,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
         self.trade_four=[-0.1, 0.3]
         self.is_compensate = False   #仓位补偿
         #必须实现
-        for k, v in kwargs.iteritems():
+        for k, v in kwargs.items():
             setattr(self, k, v)
         self.min_sell_price = 1000
         self.max_buy_price = 0

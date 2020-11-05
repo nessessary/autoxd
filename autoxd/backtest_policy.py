@@ -10,7 +10,7 @@ import os
 import numpy as np
 import pandas as pd
 import sys, datetime
-from autoxd import live_policy,stock,agl,help,account
+from autoxd import live_policy,stock,agl,help,account, myredis
 from dateutil.parser import parse
  
 class Backtest(live_policy.Live, account.BackTestingDelegate):
@@ -100,6 +100,7 @@ def MultiProcessRun(cpu, codes, fn_name, mod):
     fn_name : 执行函数
     mod : 调用者__file__
     """
+    assert(cpu>1)
     from autoxd.MultiSubProcess import MultiSubProcess
     multi = MultiSubProcess.MultiSubProcess()
     multi.Map(cpu, mod, fn_name, codes)
