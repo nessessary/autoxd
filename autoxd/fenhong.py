@@ -18,7 +18,7 @@ def _convert_fenhong(df):
     """转换分红表格式为数据格式
     分红记录 (说明, 股， 派现，除权日)
     return: df columns('股，现金, 日期, code')"""
-    cloumns = []
+    #cloumns = []
     #获取分红表
     df_fenhong = pd.DataFrame([])#股，现金, 日期
     for i in range(len(df)):
@@ -124,11 +124,11 @@ def test_fuquan():
     
     table = FenHongTable()
     df_fenhong = table.getOne(code)
-    print(df_fenhong)
+    #print(df_fenhong)
     df = stock.calc_fuquan_use_fenhong(df_close, df_fenhong)
-    agl.print_df(df)
-    # 复权后应该是不相等
-    print(df['c'][:-1].tolist() == df_close2['c'][:-1].tolist())
+    #agl.print_df(df)
+    result = df['c'][:-1].tolist() == df_close2['c'][:-1].tolist()
+    print(not result and 'successful' or 'failed')
  
 def test_astockchange():
     code = jx.THS
@@ -143,6 +143,6 @@ def test_astockchange():
     print(df)
         
 if __name__ == "__main__":
-    #_dump()
+    _dump()
     #test_fuquan()
-    test_astockchange()
+    #test_astockchange()
