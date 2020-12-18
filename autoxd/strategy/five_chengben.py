@@ -273,7 +273,7 @@ def main_run():
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
     #agl.startDebug()
     if agl.IsDebug():
-        codes = [jx.ZCKJ.b]
+        codes = [jx.ZCKJ至纯科技]
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
