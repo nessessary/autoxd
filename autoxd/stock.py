@@ -42,7 +42,14 @@ def get_codes(flag=myenum.all, n=100):
         codes = shuffle(codes)
         return list(codes[:n])
     return codes
-
+def get_gan_codes():
+    """港股通股票列表 """
+    cur_path = os.path.dirname(os.path.abspath(__file__))
+    fname = cur_path + '/datas/tdx_gan_codes.csv'
+    df = pd.read_csv(fname, index_col=0, dtype=str)
+    df = df.sort_values(by=df.columns[0])
+    return df[df.columns[0]].values
+    
 def get_bankuais():
     """获取同花顺的全部板块名称列表 return: list"""
     key = myredis.enum.KEY_BANKUAIS
@@ -801,8 +808,21 @@ def GetCodeName(code):
         name = name.replace(' ', '')
         return name
     except:
+        return getGanCodeName(code)
+
+def getGanCodeName(code):
+    """港股通名称"""
+    cur_path = os.path.dirname(os.path.abspath(__file__))
+    fname = cur_path + '/datas/tdx_gan_codes.csv'
+    df = pd.read_csv(fname,index_col=0, dtype=str)
+    try:
+        name = df[df[df.columns[0]] == code][df.columns[-1]].values[0]
+        name = name.replace(' ', '')
+        name += 'hk'
+        return name
+    except:
         return '新股'
-        
+
 def load_ths_custom_codes():
     '先用ths导出自选股到桌面 获取自选股列表 return: list'
     fname = 'C:/Users/Administrator/Desktop/table.txt'

@@ -101,7 +101,7 @@ def DateTimeCmp(dt1, dt2):
 def DateDec(day1, day2):
     """日期相减
     day1, day2: str
-    return :  int 日期数
+    return :  int 日期数, 天数
     """
     return (dateutil.parser.parse(day1) - dateutil.parser.parse(day2)).days
 def DateYearAdd(d, n):
@@ -186,6 +186,8 @@ def arrary_fillna(t1):
         temp_col[np.isnan(temp_col)] = temp_not_nan_col.mean()
     return t1
 
+def array_equal(a1,a2):
+    return (a1[np.isnan(a1)==False] == a2[np.isnan(a2)==False]).all()
 def array_val_to_pos(a, v):
     """由值取下标 
     agl.array_val_to_pos(np.array([1,2,3]),3)
@@ -218,6 +220,7 @@ def array_transpose(a):
         return a.T
 def array_shuffle(ary):
     """搅乱"""
+    from sklearn.utils import shuffle
     return shuffle(ary)    
 def Unittest_array_transpose():
     a = np.array([1,2,3])
@@ -495,7 +498,9 @@ def StrToFloat(s):
         unit = myenum.YI
     if s.find('万')>0:
         unit = myenum.WAN
-    s = re.sub('\D','', s)
+    #s = re.sub('\.','', s)
+    s = filter(lambda x: str.isdigit(x) or x=='.' or x == '-', s)       #保留小数部分
+    s = ''.join(list(s))
     if s == '':
         return np.nan
     return float(s)*unit
@@ -952,12 +957,18 @@ def df_to_html(df):
         s += str(df.irow(i)[0])
         s += '<br>'
     return s
+def df_to_array(df):
+    return df.values
+
 def print_df(df):
     """完整的打印df"""
     #s = df.to_string()
     #s = s.encode('utf8')
     #pprint.pprint(s)
     if 0: df = pd.DataFrame
+    pd.set_option('max_columns',200)    #显示全部cols
+    #pd.set_option('max_colwidth', 200)
+    pd.set_option('display.width', 2000)    #不换行
     i=0
     while i<len(df):
         start_index = i
@@ -1035,6 +1046,8 @@ def df_get_pre_date(df, date):
             if d != date:
                 break
     return d
+def df_eq(df1,df2):
+    return (df1.values == df2.values).all()
 def where(con, a, b):
     """条件选择， con条件， 同c的con ? a : b
     (1) variable = a if exper else b
