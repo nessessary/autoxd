@@ -101,11 +101,19 @@ def DrawDvs(pl, closes, curve, sign, dvs, pandl, sh, title, leag=None, lad=None 
     pl.show()
     pl.close()    
 
-def DrawZZ(pl, zz, c='r'):
-    pl.figure
+class draw_style:
+    none = 0
+    head = 1
+    mid = 2
+    end = 3
+
+def DrawZZ(pl, zz, c='r', is_append=draw_style.none):
+    if is_append == draw_style.none or is_append == draw_style.head:
+        pl.figure
     pl.plot(zz[:,0], zz[:,1],c)
-    pl.show()
-    pl.close()
+    if is_append == draw_style.none or is_append == draw_style.end:
+        pl.show()
+        pl.close()
 def drawZZAndKstpZZ(pl, zz, zz_kstp, yestoday_close):
     pl.figure
     pl.plot(zz[:,0], zz[:,1])

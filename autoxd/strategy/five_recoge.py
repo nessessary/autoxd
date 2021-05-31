@@ -24,6 +24,7 @@ import talib
 from autoxd.stock import DataSources
 from autoxd.pypublish import publish
 from autoxd import pattern_recognition as pr
+from autoxd.cnn_boll import env
 
 class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
     """boll分仓"""
@@ -292,8 +293,11 @@ def main_run():
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
     #agl.startDebug()
     if agl.IsDebug():
-        codes = [jx.HCGD]
-    exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
+        codes = [jx.HCGD华灿光电]
+    if not env.enum.use_redis:
+        Run(codes)
+    else:
+        exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
     main_run()
