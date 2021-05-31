@@ -24,6 +24,7 @@ autoxd 回测框架
   * datas目录下的数据是需要维护的， 一般一个月更新股票列表， 一个季度更新分红表
   * 更新时间2020-11-5
   * 2021/3/24
+  * 2021/5/27
 
 - 日线例子
 
@@ -44,8 +45,8 @@ autoxd 回测框架
 
 
 - 依赖
-1. redis 非必须
-2. 支持py2及py3 windows; macos支持py3， linux(非图形状态下)支持py3
+1. redis 推荐
+2. 支持各平台py3, py2已不维护
 3. 用pip install -r requirements.txt安装相关依赖包
 
 - 安装
