@@ -161,7 +161,7 @@ def get_boll_up_base():
     """获取一个用来作为标准的曲线
     return : np.ndarray
     """
-    code = jx.HCGD
+    code = jx.HCGD华灿光电
     t = '2018-12-3 10:30:00'
     t = '2018-11-30 10:00:00'
     key = myredis.gen_keyname(__file__, get_boll_up_base)

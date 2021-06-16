@@ -9,6 +9,7 @@ if sys.version > '3':
 else:
     from autoxd import stock_pinyin as jx
 import pandas as pd
+import time
 
 g_api = None
 def create():
@@ -27,19 +28,37 @@ def getFive(code):
     from autoxd import stock
     api = create()
     market = stock.IsShangHai(code)
-    data = api.get_security_bars(category=0, market=market, code=code, start=0, count=800)
-    data = api.to_df(data)
+    for i in range(3):
+        data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
+        data = api.to_df(data)
+        if DataIsValid(data):
+            break
+        time.sleep(5)
+    if not DataIsValid(data):
+        raise ValueError("tdx data error")
     df = data[['open','close', 'high','low','vol']]
     df.columns = list('ochlv')
     df.index = pd.DatetimeIndex(data['datetime'])
     return df
 
+def DataIsValid(df:pd.DataFrame):
+    if df.shape == (1,1) and df.iloc[0][0] is None:
+        return False
+    return True
+
 def getHisdat(code):
     from autoxd import stock
     api = create()
     market = stock.IsShangHai(code)
-    data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
-    data = api.to_df(data)
+    for i in range(3):
+        data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
+        data = api.to_df(data)
+        if DataIsValid(data):
+            break
+        time.sleep(5)
+        
+    if not DataIsValid(data):
+        raise ValueError("tdx data error")
     df = data[['open','close', 'high','low', 'vol']]
     df.columns = list('ochlv')
     df.index = pd.DatetimeIndex(data['datetime'])

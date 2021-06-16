@@ -13,7 +13,8 @@ import pandas as pd
 import random
 import numpy as np
 from collections import Iterator, Iterable
-
+from autoxd.pypublish import publish
+pl = publish.Publish()
 
 class recorg_boll:
     def __init__(self, data_boll):
@@ -24,7 +25,7 @@ def gen_random_int(a, b):
     return random.randint(a, b)
 
 def load_data(code):
-    df = stock.getFiveHisdatDf(code, method='mysql')
+    df = stock.getFiveHisdatDf(code, method='tdx')
     upper, middle, lower = stock.TDX_BOLL(df['c'].values)
     
     df['upper'] = upper
@@ -47,7 +48,8 @@ def load_data(code):
 def load_data_at_point(df, index, length):
     return df.iloc[index: index+length]
     
-def recorg(df_boll):
+def recorg(pl, df_boll):
+    sign = 0
     df = df_boll
     if 0: df = pd.DataFrame
     #计算参数
@@ -58,14 +60,26 @@ def recorg(df_boll):
     boll_up = df[colname.boll_upper].values
     boll_mid = pd.Series(df[colname.boll_middle]).values
     boll_low = pd.Series(df[colname.boll_lower]).values
-    
     ui.drawBoll(pl, closes, boll_up, boll_mid, boll_low)
+    
+    #转zz
+    zz_boll_up = stock.ZigZag(boll_up)
+    zz_boll_mid = stock.ZigZag(boll_mid)
+    zz_boll_low = stock.ZigZag(boll_low)
+    zz_close = stock.ZigZag(closes, percent=5)
+    zz_close_short = stock.ZigZag(closes, percent=.5)
+    ui.DrawZZ(pl, zz_boll_up, is_append=ui.draw_style.head)
+    ui.DrawZZ(pl, zz_boll_mid, is_append=ui.draw_style.mid)
+    ui.DrawZZ(pl, zz_close, c='b', is_append=ui.draw_style.mid)
+    ui.DrawZZ(pl, zz_close_short, c='g', is_append=ui.draw_style.mid)
+    ui.DrawZZ(pl, zz_boll_low, is_append=ui.draw_style.end)
+    #数值判断
+    
     
     #输出添加了参数的图片
     
     #输出判断
-    
-    pass
+
 
 class boll_data_Iterator(Iterator):
     def __init__(self, code):
@@ -114,11 +128,13 @@ def get_data_rand(code):
     return df
 
 if __name__ == "__main__":
-    df = load_data(jx.PAYH)
+    df = load_data(jx.PAYH平安银行)
     size = len(df)
     if size > g_scope_len:
         index = gen_random_int(0, size - g_scope_len)
+        index = 148
         df = load_data_at_point(df, index, length=g_scope_len)
-        recorg(df)
+        recorg(pl,df)
+        pl.publish()    
     else:
         raise Exception('长度太短') #在调试中会直接停在这里
