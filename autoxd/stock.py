@@ -1251,6 +1251,10 @@ def TDX_BOLL_df(df):
     df['boll_mid'] = mid
     df['boll_lower'] = lower
     return df
+def BOLLW(boll_ups, boll_lows, closes, timeperiod=20):
+    """计算boll宽度, (boll_up-boll_low)/sma"""
+    smas = talib.SMA(closes, timeperiod)
+    return (boll_ups - boll_lows) / smas
 #波动率指标
 def ATR(highs, lows, closes):
     """真实波幅"""
@@ -1454,7 +1458,10 @@ def analyzeZZ(zz):
     #return: np.darray [[direction0, y0],[direction1, y1]] 方向1为上涨， -1为下跌, 价格差比, 前一个价格作为基准
     return: (y0, y1)
     """
-    assert(len(zz)>2)
+    if len(zz) == 0 or len(zz) == 1:
+        return (0,0)
+    if len(zz )== 2:
+        return (0, (zz[1,1]-zz[0, 1])/zz[0,1])
     zz = zz[-3:]
     y0 = (zz[1,1]-zz[0, 1])/zz[0,1]
     y1 = (zz[2,1]-zz[1,1])/zz[1,1]

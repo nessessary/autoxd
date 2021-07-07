@@ -74,6 +74,7 @@ autoxd 回测框架
       * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
       * 5分钟线使用的是pytdx的例子
+	  * tdx行情ip查询connect.cfg, 然后修改warp_pytdx.py里的ip
 
 3. 调用
 ```python

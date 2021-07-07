@@ -17,6 +17,7 @@ def create():
     if g_api == None:
         g_api = tdx()
         ip = '202.130.235.189'
+        #ip = '140.207.241.60'
         b = g_api.connect(ip, 7709)
         if not b:
             #换一个ip， list见通达信目录的connect.cfg
@@ -35,6 +36,7 @@ def getFive(code):
             break
         time.sleep(5)
     if not DataIsValid(data):
+        print("tdx get data failed")
         raise ValueError("tdx data error")
     df = data[['open','close', 'high','low','vol']]
     df.columns = list('ochlv')

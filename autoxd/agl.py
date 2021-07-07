@@ -1152,6 +1152,11 @@ def MD5(s):
     m2.update(s)   
     return m2.hexdigest()       
 
+def get_print_object(obj):
+    """打印类里面的成员变量"""
+    return ('\n<br>'.join(['%s:%s' % item for item in obj.__dict__.items() if item[0][0]!= "_"]))
+
+
 class Marco:
     """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
     #调试状态使用单进程
