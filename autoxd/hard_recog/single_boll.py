@@ -13,7 +13,7 @@ import pylab as pl
 import pandas as pd
 import random
 import numpy as np
-from collections import Iterator, Iterable
+from collections.abc import Iterator, Iterable
 from autoxd.pypublish import publish
 pl = publish.Publish(is_clear_path=True)
 
@@ -30,6 +30,9 @@ class calc_property:
     adx = 0
     boll_x = 0   # x, 时间周期
     boll_y = 0.1    # (mid-v)/(mid-low)
+    choice = -1
+    result2 = 0     # 两日内最高点
+    result5 = 0
 
 class recorg_boll:
     def __init__(self, data_boll):
@@ -123,15 +126,24 @@ def recorg(pl, df_boll):
     techs.boll_x = get_x_boll(closes[-1], boll_low)
     techs.boll_y = boll_y
     techs.boll_y = "%.2f%%"%(techs.boll_y*100)
+    
+    
     sign = False
-    select = 1
+    n = 1   # 如果是日线，n=10
     #第二次机会
-    if sign_observation.assemble(1, obj.h1 <0, adx>25, bollw[-1]>0.2, boll_y<0.2, techs.boll_x>10):
+    if sign_observation.assemble(1, obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
+        techs.choice = 2
         sign = True
     #第一次机会
-    if sign_observation.assemble(0, obj.h1 <0, adx>25, bollw[-1]>0.2, float(techs.boll_low_zz_1)<-0.1, 
-                                 techs.boll_x>1, boll_y>0.8):
+    if sign_observation.assemble(1, obj.h1 <0, 
+                                 adx>25,
+                                 bollw[-1]>0.02*n,
+                                 float(techs.boll_low_zz_1)<-0.01*n,
+                                 techs.boll_x>1,
+                                 boll_y>0.8,
+                                 1):
         sign = True
+        techs.choice = 1
 
     #输出判断
     if sign:
@@ -218,7 +230,7 @@ def run(code):
     
 def main():
     codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
-    codes = stock.get_codes(stock.myenum.randn, n=10)
+    codes = stock.get_codes(stock.myenum.randn, n=20)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
