@@ -8,6 +8,7 @@ from autoxd import stock, ui, myredis, agl, sign_observation
 from autoxd.cnn_boll.judge_boll_sign import getBolls
 from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd.myenum import MYCOLS_NAME as colname
+from autoxd.hard_recog import kurtosis
 from autoxd.cnn_boll.judge_boll_sign import g_scope_len
 import pylab as pl
 import pandas as pd
@@ -30,9 +31,10 @@ class calc_property:
     adx = 0
     boll_x = 0   # x, 时间周期
     boll_y = 0.1    # (mid-v)/(mid-low)
+    jzd = ()
     choice = -1
-    result2 = 0     # 两日内最高点
-    result5 = 0
+    #result2 = 0     # 两日内最高点
+    #result5 = 0
 
 class recorg_boll:
     def __init__(self, data_boll):
@@ -126,16 +128,25 @@ def recorg(pl, df_boll):
     techs.boll_x = get_x_boll(closes[-1], boll_low)
     techs.boll_y = boll_y
     techs.boll_y = "%.2f%%"%(techs.boll_y*100)
-    
+    #集中度计算, 使用黄金分割或者是三分之一
+    techs.jzd = kurtosis.calc_kurtosis(stock.GuiYiHua(closes[-int(len(closes)*(1-0.618)):]))
     
     sign = False
     n = 1   # 如果是日线，n=10
     #第二次机会
-    if sign_observation.assemble(1, obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
+    if sign_observation.assemble(0, obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
         techs.choice = 2
         sign = True
-    #第一次机会
     if sign_observation.assemble(1, obj.h1 <0, 
+                                 adx>10, bollw[-1]>0.03*n, boll_y<0.5*n, techs.boll_x>10,
+                                 techs.jzd[1] * 1000 < 2,   #标准差与集中度相关， 偏度与峰度与集中度没有发现关联
+                                 #abs(techs.jzd[-2]) < 1,
+                                 #abs(techs.jzd[-1]) < 0.5,
+                                 1):
+        techs.choice = 3
+        sign = True
+    #第一次机会
+    if sign_observation.assemble(0, obj.h1 <0, 
                                  adx>25,
                                  bollw[-1]>0.02*n,
                                  float(techs.boll_low_zz_1)<-0.01*n,
@@ -161,7 +172,12 @@ def recorg(pl, df_boll):
         pl.insertHtml("</td><td>")
         vals = agl.get_print_object(techs)
         pl.insertHtml(vals)
-        pl.insertHtml("</td></tr>")
+        pl.insertHtml("<br>%.2f,%.3f,%.2f,%.2f"%techs.jzd)
+        pl.insertHtml("</td>")
+        #pl.insertHtml("<td>")
+        #pl.insertHtml("</td>")
+        pl.insertHtml("</tr>")
+        
     return sign
 
 class boll_data_Iterator(Iterator):
@@ -230,7 +246,7 @@ def run(code):
     
 def main():
     codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
-    codes = stock.get_codes(stock.myenum.randn, n=20)
+    codes = stock.get_codes(stock.myenum.randn, n=10)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
