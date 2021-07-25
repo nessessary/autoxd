@@ -205,6 +205,8 @@ class Publish:
             self.cur_img_fname = fname
             #self.figs[-1].savefig(fname, dpi=70)
             pl.savefig(fname, dpi=70)
+            if self.myimgs != "":
+                self.myimgs += '<img vspace="5" hspace="5" src="'+os.path.basename(fname)+'" alt="">\n'
     def get_CurImgFname(self):
         return self.cur_img_fname
     def attach_imgs(self, new_imgs_html):
@@ -213,6 +215,8 @@ class Publish:
         self.myimgs = new_imgs_html
     def reset(self, html):
         self.attach_imgs(html)
+    def insertHtml(self, html):
+        self.myimgs += html
         
     def AddTitle(self,title):
         self.t_html = self.t_html.replace('<%title%>', title)

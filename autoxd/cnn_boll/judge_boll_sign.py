@@ -77,8 +77,9 @@ class data_sources():
         return stock.getFiveHisdatDf(code, method='path', path=data_path)
     def loadCodes(self):
         data_path = self._getPath()
-        assert(os.path.isdir(data_path))
-        return [ str(f).split('.')[0] for f in os.listdir(data_path)]
+        if os.path.isdir(data_path):
+            return [ str(f).split('.')[0] for f in os.listdir(data_path)]
+        return []
 class data_tdx(data_sources):
     def loadCodes(self):
         return [jx.HCGD]

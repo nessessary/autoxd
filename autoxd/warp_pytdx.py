@@ -17,6 +17,7 @@ def create():
     if g_api == None:
         g_api = tdx()
         ip = '202.130.235.189'
+        #ip = '140.207.241.60'
         b = g_api.connect(ip, 7709)
         if not b:
             #换一个ip， list见通达信目录的connect.cfg
@@ -29,12 +30,13 @@ def getFive(code):
     api = create()
     market = stock.IsShangHai(code)
     for i in range(3):
-        data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
+        data = api.get_security_bars(category=0, market=market, code=code, start=0, count=800)
         data = api.to_df(data)
         if DataIsValid(data):
             break
         time.sleep(5)
     if not DataIsValid(data):
+        print("tdx get data failed")
         raise ValueError("tdx data error")
     df = data[['open','close', 'high','low','vol']]
     df.columns = list('ochlv')
