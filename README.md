@@ -29,6 +29,7 @@ autoxd 回测框架
   * 2021/6/15
 	* 2021/7/25
 	* 2021/8/8
+	* 2021/10/10
 
 - 日线例子
 
@@ -51,7 +52,7 @@ autoxd 回测框架
 - 依赖
 1. redis 推荐
 2. 支持各平台py3, py2已不维护
-3. 用pip install -r requirements.txt安装相关依赖包
+3. 用pip install -r requirements.txt安装相关依赖包; python=3.7.4
 
 - 安装
   * 安装Anaconda
