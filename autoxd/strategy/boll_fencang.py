@@ -29,7 +29,7 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                          [-0.5, 0.2, 0],
                          ]
                             #跌幅， 当前资金占比 
-        self.base_four = [-0.4, 0.3]		#第一次买卖的技术指标阀值
+        self.base_four = [-0.1, 0.1]		#第一次买卖的技术指标阀值
         self.first_price = 0
         if sys.version > '3':
             for k, v in kwargs.items():
@@ -40,7 +40,7 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
     def OnFirstRun(self):
         self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
         self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())
-        myredis.delKeys('BollFenCangKline')
+        #myredis.delKeys('BollFenCangKline')
     def _Fire(self, yinkui):
         for i, (r1, r2, f) in enumerate(self.fenchang):
             if f==0 and yinkui < r1:
@@ -176,7 +176,7 @@ def Run(codes='', task_id=0):
                     pl=publish.Publish(explicit=True),
                     )
     backtest_policy.test_strategy(codes, BollFenCangKline, setParams, mode=myenum.hisdat_mode, 
-                                  start_day='2017-4-10', end_day='2018-9-15',
+                                  start_day='', end_day='',
                                   datasource_mode=DataSources.datafrom.custom,
                                   datasource_fn=fnSample
                                   )    
@@ -187,13 +187,14 @@ def calcYinKui(price, chengben):
 
 def test_strategy():
     cpu_num = 2
+    if myredis.createRedis() is None:
+        cpu_num = 1
     codes = stock.get_codes(flag=myenum.randn, n=cpu_num)
     #codes = ['300434']
     #agl.startDebug()
     #if agl.IsDebug():
         #codes = [jx.ZCKJ.b]
-    backtest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)
-    #exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
+    exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
     test_strategy()

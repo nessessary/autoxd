@@ -1160,7 +1160,7 @@ def get_print_object(obj):
 class Marco:
     """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
     #调试状态使用单进程
-    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
+    IMPLEMENT_MULTI_PROCESS = 'if cpu_num>1:\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
 def test_post():
     import requests
