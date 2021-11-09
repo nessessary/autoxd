@@ -261,7 +261,7 @@ def Run(codes, task_id=0):
             pl=publish.Publish(),
         )
     backtest_policy.test_strategy(codes, Strategy_Boll_Pre, setParams,
-                                  start_day='2018-11-1', end_day='',
+                                  start_day='', end_day='',
                                   #start_day='2017-12-2', end_day='2017-12-13', 
                                   mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode,
                                   datasource_mode=DataSources.datafrom.custom,
@@ -270,10 +270,12 @@ def Run(codes, task_id=0):
 
 def main_run():        
     cpu_num = 2
+    if myredis.createRedis() is None:
+        cpu_num = 1
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
     #agl.startDebug()
-    if agl.IsDebug():
-        codes = [jx.ZCKJ至纯科技]
+    #if agl.IsDebug():
+        #codes = [jx.ZCKJ至纯科技]
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":

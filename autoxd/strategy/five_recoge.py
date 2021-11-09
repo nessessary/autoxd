@@ -290,14 +290,12 @@ def Run(codes, task_id=0):
 
 def main_run():        
     cpu_num = 2
+    assert(myredis.createRedis() is not None)
     codes = stock.get_codes(stock.myenum.randn, cpu_num)
     #agl.startDebug()
-    if agl.IsDebug():
-        codes = [jx.HCGD华灿光电]
-    if not env.enum.use_redis:
-        Run(codes)
-    else:
-        exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
+    #if agl.IsDebug():
+        #codes = [jx.HCGD华灿光电]
+    exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
     main_run()

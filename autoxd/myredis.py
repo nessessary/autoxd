@@ -22,7 +22,8 @@ def createRedis():
             g_redis.info()
         except:
             #把myredis.com写入hosts
-            g_redis = redis.Redis(host='myredis.com', port=6379, db=0) 
+            #g_redis = redis.Redis(host='myredis.com', port=6379, db=0) 
+            return None
     return g_redis
 def gen_keyname(fname, fn):
     """根据函数堆栈来确定函数名称, 当使用内嵌函数时， 模块为父函数的名称
@@ -61,7 +62,8 @@ def isexist(key):
     return key in r.keys()
 def delkey(key):
     r = createRedis()
-    r.delete(key)
+    if r is not None:
+        r.delete(key)
 def delKeys(k):
     """删除包含关键字的key
     k: str 关键字"""

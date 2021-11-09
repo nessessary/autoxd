@@ -590,23 +590,18 @@ class SerialMgr:
                 return pd.DataFrame(a)
             print(SerialMgr.serialAuto(genDf, [1,3,23,34,5,'中文'], restart=True))
         def Test3():
-            import stock
-            codes = stock.get_codes()
-            #codes = codes[:10]
-            print(SerialMgr.serialAuto(stock.Guider.getDf, codes, ('',''), restart=True))
+            SerialMgr.serial([1,2,3],'datas/test.list')
+            print(SerialMgr.unserial('datas/test.list'))
         Test3()
     @staticmethod
     def serial(result, fname = "temp.bin"):
-        if isinstance(result, pd.DataFrame) or isinstance(result, pd.Panel):
+        if isinstance(result, pd.DataFrame):
             fname = str(fname).replace('.searial','.df')
         elif isinstance(result, np.ndarray):
             fname = str(fname).replace('.searial','.csv')
 
-        if charade.detect(fname)['encoding'] == 'utf-8':
-            fname = convert(fname)
-        if isinstance(result, pd.DataFrame) or isinstance(result, pd.Panel):
+        if isinstance(result, pd.DataFrame):
             result.to_pickle(fname)
-            #result.to_csv(fname)
         elif isinstance(result, np.ndarray):
             np.savetxt(fname, result, delimiter=',', fmt='%.3f')
         else:	
@@ -1135,6 +1130,11 @@ def ClustMatrix(n, m):
     """
     #用kmeans聚类
     k = KMeans(n_clusters=n)
+    if type(m) == list:
+        results_n = np.zeros((len(X),2))
+        results_n[:,0] = 1
+        results_n[:,1] = np.array(X)
+        m = results_n    
     k.fit(m)    
     result = k.cluster_centers_
     total = len(X)
@@ -1160,7 +1160,7 @@ def get_print_object(obj):
 class Marco:
     """模拟c的宏机制, 定义一个字符串，然后用eval执行"""
     #调试状态使用单进程
-    IMPLEMENT_MULTI_PROCESS = 'if not agl.IsDebug():\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
+    IMPLEMENT_MULTI_PROCESS = 'if cpu_num>1:\n\tfrom autoxd import backtest_policy\n\tbacktest_policy.MultiProcessRun(cpu_num, codes, Run, __file__)\nelse:\n\tRun(codes)\n'
 
 def test_post():
     import requests
@@ -1185,7 +1185,7 @@ def main(args):
     #MatrixToCsv([[1,2,3,2],[2,3,3,4],[23,23,2,3],[23,2,3,3]], "B.txt")
     #print convert_html(u'\xca\xd0\xd3\xaf\xc2\xca(\xb6\xaf\xcc\xac)\xa3\xba70.54')
 
-    #SerialMgr.unittest()
+    SerialMgr.unittest()
     #NetTest()
     #Logger.Test()
     #removeDir(os.getcwd()+'/html')
@@ -1194,7 +1194,7 @@ def main(args):
     #print(ClustList(3, [100,300,600,300,600,300,600,1200]))
     #print(ClustList(2, [200]))
     #print(IsRunAtCmd())
-    test_post()
+    #test_post()
 
 if __name__ == "__main__":
     args = sys.argv[1:]
