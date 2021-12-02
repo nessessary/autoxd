@@ -2,7 +2,7 @@
 # Copyright (c) Kang Wang. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-# QQ: 1764462457
+# mail: nessessary@qq.com
 
 
 """关于boll分仓策略的实现
