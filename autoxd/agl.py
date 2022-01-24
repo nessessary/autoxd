@@ -914,7 +914,7 @@ def df_set(df, i, col, v):
     df.at[i, col] = v
 def df_concat(df1, l):
     """添加list到df1中
-    df1: pd.DataFrame
+    df1: pd.DataFrame columns必须为默认的0,1,2...
     l : list
     """
     df2 = pd.DataFrame(l).T

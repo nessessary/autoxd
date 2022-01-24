@@ -8,19 +8,21 @@ import time
 from autoxd.account import AccountMgr
 from autoxd import agl
 import os
+from autoxd.pinyin import stock_pinyin3 as jx
 
 def test():
     
     agent = DQN()    
     
-    df = trading_gym.getData()
+    code = jx.YHGF洋河股份
+    df = trading_gym.getData(code)
     #为了测试缩短df
     test_len = int(len(df)*0.2)
     df = df[-test_len:]
     df = trading_gym.genTradeDf(df, int(len(df)/10))
     
     #train
-    env = trading_gym.ATgymEnv(df)
+    env = trading_gym.ATgymEnv(code, df)
     for i in range(30): #现在的速度一天只能跑30次
         observation = env.reset()
         assert(observation is not None)

@@ -1489,6 +1489,64 @@ def SYL(price, mgsy):
 def PE(shizhi, jll):
     """shizhi: 市值(亿), jll: 净利润(亿)"""
     return float(shizhi)/float(jll)
+
+def calcChips(df, first_price=0.0):
+    """计算筹码分布, 按最简单平均移动分布，需要移动的成交量平均分配到每一个价位
+    不给定发行价， 初始筹码都在中间值
+    df: 日k, 成交量必须转换为换手率
+    return: df [price, chip]
+    """
+    if first_price <0.1:
+        first_price = float(agl.float_to_2(np.mean(df['c'])))
+    print(first_price)
+    
+    columns=('price','chip')
+    df_chips = pd.DataFrame([[first_price, 100.0]])
+    for i, row in df.iterrows():
+        price = float(agl.float_to_2(row['c']))
+        v = row['v']
+        #记录当前的成交
+        if price in df_chips[0].tolist():
+            index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
+            old_v = df_chips.iloc[index][1]
+            df_chips.iloc[index][1] = old_v + v
+        else:
+            df_chips = agl.df_concat(df_chips, [price, v])
+        
+        #均摊消减其它价位的筹码, 如果某一价位不够均摊,找一最高的价位减仓
+        df_chips = df_chips.sort_values(by=df_chips.columns[0], ascending=False)
+        avg_v = v/ (len(df_chips)-1)
+        remain_v = 0
+        for i in range(len(df_chips)):
+            chip_price = df_chips.iloc[i][0]
+            if chip_price == price:
+                continue
+            chip = df_chips.iloc[i][1]
+            dec_chip = chip - avg_v
+            if dec_chip < 0:
+                remain_v += abs(dec_chip)
+                dec_chip = 0
+            df_chips.iloc[i][1] = dec_chip
+
+        #处理不够均摊的部分
+        if remain_v > 0:
+            for i in range(len(df_chips)):
+                chip_price = df_chips.iloc[i][0]
+                if chip_price == price:
+                    continue
+                chip = df_chips.iloc[i][1]
+                if chip > remain_v:
+                    df_chips.iloc[i][1] = chip - remain_v
+                    remain_v = 0
+                    break
+                else:
+                    df_chips.iloc[i][1] = 0
+                    remain_v -= chip
+            
+    #print(df_chips)        
+    return df_chips
+    
+
 def getMainBanCode(code):
     """获取大盘代码"""
     if code[0] == '3':
@@ -1581,19 +1639,27 @@ def test_hisdat_redis():
 
 #----------------------------------------------------------------------
 def test_fenhong():
-    code = jx.THS
+    code = jx.THS同花顺
     df = getHisdatDf(code)
     df1 = getHisdatDf(code, is_fuquan=False)
     assert(df['c'][:-1].tolist() != df1['c'][:-1].tolist())
     
     df = getHisdatDf(code, is_Trunover=True)
     print(df)
-    assert(int(df.loc['2020-10-9']['v']*1000) == 27)
+    
+def test_calcChips():
+    code = jx.THS同花顺
+    df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
+    print(len(df))
+    df_chips = calcChips(df)
+    df_chips = df_chips[df_chips[1]>0]
+    ui.drawChips(pl, df_chips, df)
     
 def main():
     """"""
     #unittest.main()
-    test_fenhong()
+    #test_fenhong()
+    test_calcChips()
 if __name__ == "__main__":
     main()
     print('end')

@@ -285,6 +285,19 @@ def DrawScatt(pl, x,y, title='', label_legend=None):
     pl.show()
     pl.close()
 
+def drawChips(pl, df, df_close):
+    """画一个竖向的直方图, 坐标显示价位, 值为仓位比率
+    df: df_chips
+    """
+    pl.figure
+    pl.subplot(121)
+    df_close['c'].plot()
+    pl.subplot(122)
+    chips = df[df.columns[1]].values
+    pl.barh(df[df.columns[0]].values, chips)
+    pl.show()
+    pl.close()    
+
 def DrawHist(pl, shs):	
     """画直方图统计, shs: 夏普率 array"""
     shs = np.array(shs, dtype=float)

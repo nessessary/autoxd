@@ -14,7 +14,7 @@ id = 'autoxd-gym-v0'
 data_interval = 30
 
 class ATgymEnv(gym.Env):
-    def __init__(self, df):
+    def __init__(self, code, df):
         #v = randn(10)
         #self._plot(v)
         df = df.dropna()
@@ -22,7 +22,7 @@ class ATgymEnv(gym.Env):
         self.index = 0
         self.viewer = None
         self.df_trade = df['trade']
-        self.code = "002304"
+        self.code = code
         #clrs = []
         #for i in range(4):
             #clr = agl.GenRandomArray(255, 3) / 255
@@ -33,7 +33,7 @@ class ATgymEnv(gym.Env):
         clrs = [[1,0,0],[0,1,0],[0,0,1],[0,0,0]]
         self.clrs = clrs
 
-        self.imgs = myplot.df_to_imgs(self.df, data_interval, 128, bInit=False)
+        self.imgs = myplot.df_to_imgs(self.df, data_interval, 128, bInit=True)
         
         self._gen_label()
         
@@ -74,7 +74,7 @@ class ATgymEnv(gym.Env):
 
     def reset(self):
         #print('reset')
-        self.index = data_interval-1
+        self.index = data_interval
         observation = self._get_observation()
         backtester = account.BackTesting()
         self.account = account.LocalAcount(backtester)
@@ -163,19 +163,19 @@ class ATgymEnv(gym.Env):
             v = np.array([[x,y], [x1,y1], [x2,y2],[x,y]])
             self.viewer.draw_polygon(v, color=[1,0,0])
     
-def getData():
-    def get():
+def getData(code):
+    def get(code):
         from autoxd.warp_pytdx import getFive
         from autoxd.pinyin import stock_pinyin3 as jx
         code = jx.YHGF洋河股份
         df = getFive(code)
         df = stock.TDX_BOLL_df(df)
         return df
-    def getLocal():
+    def getLocal(code):
         import pandas as pd
         from autoxd.cnn_boll import env
-        fname = '../datas/002304.csv'
-        fname = env.get_root_path() + '/datas/002304.csv'
+        fname = '../datas/%s.csv'%(code)
+        fname = env.get_root_path() + '/datas/%s.csv'%(code)
         import os
         print(os.path.abspath(fname))
         df = pd.read_csv(fname)
@@ -186,7 +186,7 @@ def getData():
     ##myredis.delkey(key)
     #return myredis.createRedisVal(key, getLocal).get()
     #return getLocal()
-    return get()
+    return get(code)
 
 def genTradeDf(df, num):
     """产生随机交易位置
