@@ -737,7 +737,8 @@ def convertVolToStockTrunover(df, df_GuBen_change):
         df2['v'] = df2['v']*10000/df2[col]
         df['v'] = df2['v']
     else:   #有些老股因为送股太早，因此这里为空
-        assert(False)
+        #assert(False)
+        raise
     #df['v'].plot()
     #pl.show()
 
@@ -1490,60 +1491,61 @@ def PE(shizhi, jll):
     """shizhi: 市值(亿), jll: 净利润(亿)"""
     return float(shizhi)/float(jll)
 
-def calcChips(df, first_price=0.0):
-    """计算筹码分布, 按最简单平均移动分布，需要移动的成交量平均分配到每一个价位
-    不给定发行价， 初始筹码都在中间值
+def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
+    """计算筹码分布, 筹码分布计算是一个模拟过程， 为了简便及提高计算速度， 这里使用一种作者自己想的方法。
+	过程如下，从后向前遍历日k线， 填充换手率到筹码表， 每个填充的换手率按顺序消减，消减比例是线性的，
+        比如第二个换手率为v*0.98, 第三个为v*0.96..., 第j个为v*(1-2n*j) n=0.01
+	当筹码填充到100%后既不再填充， 忽略掉后面的计算.
     df: 日k, 成交量必须转换为换手率
+    n: 削减的线性基数
+    m: 削减的线性系数
     return: df [price, chip]
     """
-    if first_price <0.1:
-        first_price = float(agl.float_to_2(np.mean(df['c'])))
-    print(first_price)
-    
-    columns=('price','chip')
-    df_chips = pd.DataFrame([[first_price, 100.0]])
+    df_chips = None
+    df = df.sort_index(ascending=False)
+    #last_price = float(agl.float_to_2(df.iloc[0]['c']))
+    j = 0
     for i, row in df.iterrows():
         price = float(agl.float_to_2(row['c']))
-        v = row['v']
-        #记录当前的成交
-        if price in df_chips[0].tolist():
-            index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
-            old_v = df_chips.iloc[index][1]
-            df_chips.iloc[index][1] = old_v + v
-        else:
-            df_chips = agl.df_concat(df_chips, [price, v])
-        
-        #均摊消减其它价位的筹码, 如果某一价位不够均摊,找一最高的价位减仓
-        df_chips = df_chips.sort_values(by=df_chips.columns[0], ascending=False)
-        avg_v = v/ (len(df_chips)-1)
-        remain_v = 0
-        for i in range(len(df_chips)):
-            chip_price = df_chips.iloc[i][0]
-            if chip_price == price:
-                continue
-            chip = df_chips.iloc[i][1]
-            dec_chip = chip - avg_v
-            if dec_chip < 0:
-                remain_v += abs(dec_chip)
-                dec_chip = 0
-            df_chips.iloc[i][1] = dec_chip
+        v = row['v'] /100
+        if df_chips is None:
+            df_chips = pd.DataFrame([[price, v]])
+        else :
+            chip_total_turnover = df_chips[1].sum()
+            if chip_total_turnover > 1:
+                break
+            x = 1-m*(j*n)
+            if x < 0.01:
+                x = 0.01
+            if v*x + chip_total_turnover > 1:
 
-        #处理不够均摊的部分
-        if remain_v > 0:
-            for i in range(len(df_chips)):
-                chip_price = df_chips.iloc[i][0]
-                if chip_price == price:
-                    continue
-                chip = df_chips.iloc[i][1]
-                if chip > remain_v:
-                    df_chips.iloc[i][1] = chip - remain_v
-                    remain_v = 0
-                    break
+                v = 1- chip_total_turnover
+                #记录当前的成交
+                if price in df_chips[0].tolist():
+                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
+                    exist_v = df_chips.iloc[index][1]
+                    df_chips.iloc[index][1] = exist_v + v
                 else:
-                    df_chips.iloc[i][1] = 0
-                    remain_v -= chip
-            
-    #print(df_chips)        
+                    #添加到chip表
+                    df_chips = agl.df_concat(df_chips, [price, v])
+                break
+            else:
+                v *= x
+                #记录当前的成交
+                if price in df_chips[0].tolist():
+                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
+                    exist_v = df_chips.iloc[index][1]
+                    df_chips.iloc[index][1] = exist_v + v
+                else:
+                    #添加到chip表
+                    df_chips = agl.df_concat(df_chips, [price, v])
+        if j%k==0:
+            j += 1
+    
+        max_price = df['c'].max()
+        min_price = df['c'].min()
+        df_chips = agl.df_concat(df_chips, [max_price, 0.0001])
+        df_chips = agl.df_concat(df_chips, [min_price, 0.0001])
     return df_chips
     
 
@@ -1647,19 +1649,44 @@ def test_fenhong():
     df = getHisdatDf(code, is_Trunover=True)
     print(df)
     
-def test_calcChips():
+def debug_calcChips():
+    pl = publish.Publish()
     code = jx.THS同花顺
     df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
     print(len(df))
-    df_chips = calcChips(df)
-    df_chips = df_chips[df_chips[1]>0]
-    ui.drawChips(pl, df_chips, df)
+    for n in range(1,20):
+        for m in range(2, 10):
+            for k in range(1,2):
+                #print(n, m , k)
+                title = '%d,%d,%d'%(n,m, k)
+                df_chips = calcChips(df, n*0.01, m , k)
+                #df_chips = df_chips[df_chips[1]>0]
+                ui.drawChips(pl, df_chips, df,title)
     
+def test_calcChips():
+    pl = publish.Publish()
+    #code = jx.THS同花顺
+    codes = get_codes(myenum.randn, n=10)
+    for code in codes:
+        try:
+            df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
+            print(len(df))
+            n = 2
+            m = 2
+            k = 1
+            title = '%d,%d,%d'%(n,m, k)
+            df_chips = calcChips(df, n*0.01, m , k)
+            #df_chips = df_chips[df_chips[1]>0]
+            ui.drawChips(pl, df_chips, df,title)
+        except:
+            pass
+            
 def main():
     """"""
     #unittest.main()
     #test_fenhong()
     test_calcChips()
+    #debug_calcChips()
 if __name__ == "__main__":
     main()
     print('end')
