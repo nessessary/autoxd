@@ -2,7 +2,7 @@ PyPrind>=2.10.0
 redis>=2.10.5
 pandas==1.0.1
 #ta-lib
-numpy==1.18.1	# for fix 3.6 testing error
+numpy==1.21.0	# for fix 3.6 testing error
 scipy==1.4.1
 scikit_learn==0.22.1
 prettytable>=0.7.2
