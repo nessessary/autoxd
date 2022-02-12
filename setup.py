@@ -18,7 +18,7 @@ setup (
     version = autoxd.__version__,
     description ="backtest framework",
     author = "Kang Wang",
-    author_email = "1764462457@qq.com",
+    author_email = "nessessary@qq.com",
     url="https://github.com/nessessary/autoxd.git",
     license = "BSD 3",
     #py_modules=['autoxd'],

@@ -788,6 +788,14 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
         df = pd.read_csv(fname)
         df.index = pd.DatetimeIndex( df[df.columns[0]])
         return df
+    if method == 'tushare':
+        import tushare as ts
+        df = ts.get_hist_data(code, ktype='5')[['high','low','open','close','volume']]
+        df.index = pd.DatetimeIndex(df.index)
+        df.columns = list('hlocv')
+        df = df.sort_index()
+        return df
+    
         
 def IsShangHai(code):
     """判断股票代码属于那个市场
