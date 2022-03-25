@@ -13,7 +13,7 @@ from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd.agl import ClustList2, float_to_2
 from autoxd import ui, myredis, mysql
 import pylab as pl
-from autoxd.hard_recog.single_boll import get_data, colname, pd, get_data_rand
+from autoxd.hard_recog.single_boll import colname, pd, get_data_rand
 from autoxd.hard_recog.single_boll import boll_data_Iterable as mydata
 from autoxd.pypublish import publish
 import numpy as np
@@ -266,5 +266,5 @@ def find_near(df1, df2):
 
 if __name__ == "__main__":
     #main()
+    test_read_cur_slope()    
     #pl.publish()
-    test_read_cur_slope()

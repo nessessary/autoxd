@@ -16,7 +16,6 @@ import random
 import numpy as np
 from collections.abc import Iterator, Iterable
 from autoxd.pypublish import publish
-pl = publish.Publish(is_clear_path=True)
 
 #需要处理的字段
 #col_names = [""]
@@ -160,6 +159,7 @@ def recorg(pl, df_boll):
     if sign:
         
         pl:publish.Publish
+        assert(type(pl) == publish.Publish)
         pl.insertHtml("<tr><td>")
         ui.drawBoll(pl, closes, boll_up, boll_mid, boll_low)
         pl.insertHtml("</td><td>")
@@ -228,7 +228,7 @@ def get_data_rand(code):
 
 count = 0
 g_c2 = 0    #total_count
-def run(code):
+def run(pl, code):
     global count
     global g_c2
     df_data = load_data(code)
@@ -245,18 +245,20 @@ def run(code):
         raise Exception('长度太短') #在调试中会直接停在这里
     
 def main():
+    pl = publish.Publish(is_clear_path=True)
+
     codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
     codes = stock.get_codes(stock.myenum.randn, n=10)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
         pl.myimgs += "<tr><td><table>"
-        run(code)
+        run(pl, code)
         pl.myimgs += "</table></td></tr>"
     pl.myimgs += "</table>"
     print(g_c2, count)
+    pl.publish()    
     
 if __name__ == "__main__":
     main()    
-    pl.publish()    
     

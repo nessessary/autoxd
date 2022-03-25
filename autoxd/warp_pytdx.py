@@ -24,13 +24,13 @@ def create():
             g_api.connect('119.147.212.81', 7709)
     return g_api
 
-def getFive(code):
+def getFive(code, count=800):
     """return: df"""
     from autoxd import stock
     api = create()
     market = stock.IsShangHai(code)
     for i in range(3):
-        data = api.get_security_bars(category=0, market=market, code=code, start=0, count=800)
+        data = api.get_security_bars(category=0, market=market, code=code, start=0, count=count)
         data = api.to_df(data)
         if DataIsValid(data):
             break
