@@ -22,16 +22,18 @@ from autoxd.pypublish import publish
 #cols = ["close_zz_0", "close_zz_1", "boll_low_zz_0", "boll_low_zz_1", "boll_w"]
 
 class calc_property:
-    close_zz_0 = np.nan
+    close_zz_0 = np.nan #zz的最后两段
     close_zz_1 = np.nan
     boll_low_zz_0 = np.nan
     boll_low_zz_1 = np.nan
+    boll_low_zz_slope = np.nan
     boll_w = np.nan
     adx = 0
     boll_x = 0   # x, 时间周期
     boll_y = 0.1    # (mid-v)/(mid-low)
     jzd = ()
     choice = -1
+    
     #result2 = 0     # 两日内最高点
     #result5 = 0
 
@@ -129,6 +131,8 @@ def recorg(pl, df_boll):
     techs.boll_y = "%.2f%%"%(techs.boll_y*100)
     #集中度计算, 使用黄金分割或者是三分之一
     techs.jzd = kurtosis.calc_kurtosis(stock.GuiYiHua(closes[-int(len(closes)*(1-0.618)):]))
+    zz_slope = stock.analyzeZZSlope(zz_boll_low)
+    techs.boll_low_zz_slope = "%.5f"%zz_slope
     
     sign = False
     n = 1   # 如果是日线，n=10
@@ -136,9 +140,12 @@ def recorg(pl, df_boll):
     if sign_observation.assemble(0, obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
         techs.choice = 2
         sign = True
+    # 第三次, 在空旷处， 波动收敛, close趋近于水平时
     if sign_observation.assemble(1, obj.h1 <0, 
                                  adx>10, bollw[-1]>0.03*n, boll_y<0.5*n, techs.boll_x>10,
-                                 techs.jzd[1] * 1000 < 2,   #标准差与集中度相关， 偏度与峰度与集中度没有发现关联
+                                 float(techs.boll_low_zz_0) < 0.01,
+                                 zz_slope < 0.0005 and zz_slope > -0.0005,
+                                 #techs.jzd[1] * 1000 < 2,   #标准差与集中度相关， 偏度与峰度与集中度没有发现关联
                                  #abs(techs.jzd[-2]) < 1,
                                  #abs(techs.jzd[-1]) < 0.5,
                                  1):
@@ -247,13 +254,16 @@ def run(pl, code):
 def main():
     pl = publish.Publish(is_clear_path=True)
 
-    codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
+    #codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
     codes = stock.get_codes(stock.myenum.randn, n=10)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
         pl.myimgs += "<tr><td><table>"
-        run(pl, code)
+        try:
+            run(pl, code)
+        except:
+            pass
         pl.myimgs += "</table></td></tr>"
     pl.myimgs += "</table>"
     print(g_c2, count)

@@ -113,6 +113,16 @@ def getHisdatDataFrameFromRedis(code, start_day='', end_day=''):
     return df
 
 
+def is_livetime():
+    c = agl.getCurTime()
+    start = agl.CurDay() + ' 9:30:00'
+    end = agl.CurDay() +' 15:00:00'
+    c = time.strptime(c, '%Y-%m-%d %H:%M:%S')
+    end = time.strptime(end, '%Y-%m-%d %H:%M:%S')
+    start = time.strptime(start, '%Y-%m-%d %H:%M:%S')
+    r = c < end and c > start
+    return r
+    
 class FenshiCodeCache:
     """用redis作为分时的cache"""
     keyhead = 'fenshicode_'
@@ -1476,6 +1486,14 @@ def analyzeZZ(zz):
     y1 = (zz[2,1]-zz[1,1])/zz[1,1]
     return (y0, y1)    
 
+def analyzeZZSlope(zz):
+    """计算最后一根的斜率
+    return: slope (y/x , x为周期单位, 如果是5分钟线， 一个周期就是5分钟, y为涨幅百分比)
+    """
+    x0 = zz[-1,0]-zz[-2,0]
+    y0 = (zz[-1,1]-zz[-2,1])/zz[0,1]
+    return y0/x0
+
 def zz_to_dfzz(zz,df):
     """把数组格式的zz转成df"""
     indexs = np.zeros(len(df))
@@ -1556,6 +1574,28 @@ def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
         df_chips = agl.df_concat(df_chips, [min_price, 0.0001])
     return df_chips
     
+def boll_poss(upper, middle, lower):
+    boll_poss = [
+        upper[-1],
+     (upper[-1] - middle[-1])/2+middle[-1],
+     middle[-1],
+     (middle[-1] - lower[-1])/2+lower[-1],	     
+     lower[-1],
+    ]
+    return boll_poss
+
+def calc_boll_left(upper, middle, lower, closes):
+    close = closes[-1]
+    pos = np.nan
+    if closes[-1] > middle[-1]:
+        if closes[-1] < upper[-1]:
+            pos = np.where(upper < close)
+            pos = pos[0][0]
+    else:
+        if close > lower[-1]:
+            pos = np.where(lower > close)
+            pos = pos[0][0]
+    return pos
 
 def getMainBanCode(code):
     """获取大盘代码"""
@@ -1690,11 +1730,13 @@ def test_calcChips():
             pass
             
 def main():
+    
     """"""
     #unittest.main()
     #test_fenhong()
-    test_calcChips()
+    #test_calcChips()
     #debug_calcChips()
+    print(is_livetime())
 if __name__ == "__main__":
     main()
     print('end')
