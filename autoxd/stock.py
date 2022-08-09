@@ -792,7 +792,7 @@ def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
     if code[:3] == '688':
-        return 2
+        return 1
     if code[0] == '6' and code[1] == '0':
         return 1
     return 0
