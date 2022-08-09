@@ -285,12 +285,13 @@ def DrawScatt(pl, x,y, title='', label_legend=None):
     pl.show()
     pl.close()
 
-def drawChips(pl, df, df_close):
+def drawChips(pl, df, df_close, title=""):
     """画一个竖向的直方图, 坐标显示价位, 值为仓位比率
     df: df_chips
     """
     pl.figure
     pl.subplot(121)
+    pl.title(title)
     df_close['c'].plot()
     pl.subplot(122)
     chips = df[df.columns[1]].values

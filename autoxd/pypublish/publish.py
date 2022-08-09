@@ -85,12 +85,12 @@ class Publish:
         self.is_run_shell = is_run_shell
         
     def __del__(self):
-        if self.explicit == False:
-            self.publish()
+        #if self.explicit == False:
+            #self.publish() #python 3 can't call open
         # 解除stdout
         sys.stdout = self.oldstdout
     def publish(self):
-        """如果执行了publish, 那么析构时就不要再执行了"""
+        """显示页面"""
         self.explicit = True
         
         self.logfile.close()

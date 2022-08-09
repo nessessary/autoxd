@@ -113,6 +113,16 @@ def getHisdatDataFrameFromRedis(code, start_day='', end_day=''):
     return df
 
 
+def is_livetime():
+    c = agl.getCurTime()
+    start = agl.CurDay() + ' 9:30:00'
+    end = agl.CurDay() +' 15:00:00'
+    c = time.strptime(c, '%Y-%m-%d %H:%M:%S')
+    end = time.strptime(end, '%Y-%m-%d %H:%M:%S')
+    start = time.strptime(start, '%Y-%m-%d %H:%M:%S')
+    r = c < end and c > start
+    return r
+    
 class FenshiCodeCache:
     """用redis作为分时的cache"""
     keyhead = 'fenshicode_'
@@ -737,7 +747,8 @@ def convertVolToStockTrunover(df, df_GuBen_change):
         df2['v'] = df2['v']*10000/df2[col]
         df['v'] = df2['v']
     else:   #有些老股因为送股太早，因此这里为空
-        assert(False)
+        #assert(False)
+        raise
     #df['v'].plot()
     #pl.show()
 
@@ -787,6 +798,14 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
         df = pd.read_csv(fname)
         df.index = pd.DatetimeIndex( df[df.columns[0]])
         return df
+    if method == 'tushare':
+        import tushare as ts
+        df = ts.get_hist_data(code, ktype='5')[['high','low','open','close','volume']]
+        df.index = pd.DatetimeIndex(df.index)
+        df.columns = list('hlocv')
+        df = df.sort_index()
+        return df
+    
         
 def IsShangHai(code):
     """判断股票代码属于那个市场
@@ -1467,6 +1486,14 @@ def analyzeZZ(zz):
     y1 = (zz[2,1]-zz[1,1])/zz[1,1]
     return (y0, y1)    
 
+def analyzeZZSlope(zz):
+    """计算最后一根的斜率
+    return: slope (y/x , x为周期单位, 如果是5分钟线， 一个周期就是5分钟, y为涨幅百分比)
+    """
+    x0 = zz[-1,0]-zz[-2,0]
+    y0 = (zz[-1,1]-zz[-2,1])/zz[0,1]
+    return y0/x0
+
 def zz_to_dfzz(zz,df):
     """把数组格式的zz转成df"""
     indexs = np.zeros(len(df))
@@ -1490,62 +1517,85 @@ def PE(shizhi, jll):
     """shizhi: 市值(亿), jll: 净利润(亿)"""
     return float(shizhi)/float(jll)
 
-def calcChips(df, first_price=0.0):
-    """计算筹码分布, 按最简单平均移动分布，需要移动的成交量平均分配到每一个价位
-    不给定发行价， 初始筹码都在中间值
+def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
+    """计算筹码分布, 筹码分布计算是一个模拟过程， 为了简便及提高计算速度， 这里使用一种作者自己想的方法。
+	过程如下，从后向前遍历日k线， 填充换手率到筹码表， 每个填充的换手率按顺序消减，消减比例是线性的，
+        比如第二个换手率为v*0.98, 第三个为v*0.96..., 第j个为v*(1-2n*j) n=0.01
+	当筹码填充到100%后既不再填充， 忽略掉后面的计算.
     df: 日k, 成交量必须转换为换手率
+    n: 削减的线性基数
+    m: 削减的线性系数
     return: df [price, chip]
     """
-    if first_price <0.1:
-        first_price = float(agl.float_to_2(np.mean(df['c'])))
-    print(first_price)
-    
-    columns=('price','chip')
-    df_chips = pd.DataFrame([[first_price, 100.0]])
+    df_chips = None
+    df = df.sort_index(ascending=False)
+    #last_price = float(agl.float_to_2(df.iloc[0]['c']))
+    j = 0
     for i, row in df.iterrows():
         price = float(agl.float_to_2(row['c']))
-        v = row['v']
-        #记录当前的成交
-        if price in df_chips[0].tolist():
-            index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
-            old_v = df_chips.iloc[index][1]
-            df_chips.iloc[index][1] = old_v + v
-        else:
-            df_chips = agl.df_concat(df_chips, [price, v])
-        
-        #均摊消减其它价位的筹码, 如果某一价位不够均摊,找一最高的价位减仓
-        df_chips = df_chips.sort_values(by=df_chips.columns[0], ascending=False)
-        avg_v = v/ (len(df_chips)-1)
-        remain_v = 0
-        for i in range(len(df_chips)):
-            chip_price = df_chips.iloc[i][0]
-            if chip_price == price:
-                continue
-            chip = df_chips.iloc[i][1]
-            dec_chip = chip - avg_v
-            if dec_chip < 0:
-                remain_v += abs(dec_chip)
-                dec_chip = 0
-            df_chips.iloc[i][1] = dec_chip
+        v = row['v'] /100
+        if df_chips is None:
+            df_chips = pd.DataFrame([[price, v]])
+        else :
+            chip_total_turnover = df_chips[1].sum()
+            if chip_total_turnover > 1:
+                break
+            x = 1-m*(j*n)
+            if x < 0.01:
+                x = 0.01
+            if v*x + chip_total_turnover > 1:
 
-        #处理不够均摊的部分
-        if remain_v > 0:
-            for i in range(len(df_chips)):
-                chip_price = df_chips.iloc[i][0]
-                if chip_price == price:
-                    continue
-                chip = df_chips.iloc[i][1]
-                if chip > remain_v:
-                    df_chips.iloc[i][1] = chip - remain_v
-                    remain_v = 0
-                    break
+                v = 1- chip_total_turnover
+                #记录当前的成交
+                if price in df_chips[0].tolist():
+                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
+                    exist_v = df_chips.iloc[index][1]
+                    df_chips.iloc[index][1] = exist_v + v
                 else:
-                    df_chips.iloc[i][1] = 0
-                    remain_v -= chip
-            
-    #print(df_chips)        
+                    #添加到chip表
+                    df_chips = agl.df_concat(df_chips, [price, v])
+                break
+            else:
+                v *= x
+                #记录当前的成交
+                if price in df_chips[0].tolist():
+                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
+                    exist_v = df_chips.iloc[index][1]
+                    df_chips.iloc[index][1] = exist_v + v
+                else:
+                    #添加到chip表
+                    df_chips = agl.df_concat(df_chips, [price, v])
+        if j%k==0:
+            j += 1
+    
+        max_price = df['c'].max()
+        min_price = df['c'].min()
+        df_chips = agl.df_concat(df_chips, [max_price, 0.0001])
+        df_chips = agl.df_concat(df_chips, [min_price, 0.0001])
     return df_chips
     
+def boll_poss(upper, middle, lower):
+    boll_poss = [
+        upper[-1],
+     (upper[-1] - middle[-1])/2+middle[-1],
+     middle[-1],
+     (middle[-1] - lower[-1])/2+lower[-1],	     
+     lower[-1],
+    ]
+    return boll_poss
+
+def calc_boll_left(upper, middle, lower, closes):
+    close = closes[-1]
+    pos = np.nan
+    if closes[-1] > middle[-1]:
+        if closes[-1] < upper[-1]:
+            pos = np.where(upper < close)
+            pos = pos[0][0]
+    else:
+        if close > lower[-1]:
+            pos = np.where(lower > close)
+            pos = pos[0][0]
+    return pos
 
 def getMainBanCode(code):
     """获取大盘代码"""
@@ -1647,19 +1697,46 @@ def test_fenhong():
     df = getHisdatDf(code, is_Trunover=True)
     print(df)
     
-def test_calcChips():
+def debug_calcChips():
+    pl = publish.Publish()
     code = jx.THS同花顺
     df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
     print(len(df))
-    df_chips = calcChips(df)
-    df_chips = df_chips[df_chips[1]>0]
-    ui.drawChips(pl, df_chips, df)
+    for n in range(1,20):
+        for m in range(2, 10):
+            for k in range(1,2):
+                #print(n, m , k)
+                title = '%d,%d,%d'%(n,m, k)
+                df_chips = calcChips(df, n*0.01, m , k)
+                #df_chips = df_chips[df_chips[1]>0]
+                ui.drawChips(pl, df_chips, df,title)
     
+def test_calcChips():
+    pl = publish.Publish()
+    #code = jx.THS同花顺
+    codes = get_codes(myenum.randn, n=10)
+    for code in codes:
+        try:
+            df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
+            print(len(df))
+            n = 2
+            m = 2
+            k = 1
+            title = '%d,%d,%d'%(n,m, k)
+            df_chips = calcChips(df, n*0.01, m , k)
+            #df_chips = df_chips[df_chips[1]>0]
+            ui.drawChips(pl, df_chips, df,title)
+        except:
+            pass
+            
 def main():
+    
     """"""
     #unittest.main()
     #test_fenhong()
-    test_calcChips()
+    #test_calcChips()
+    #debug_calcChips()
+    print(is_livetime())
 if __name__ == "__main__":
     main()
     print('end')

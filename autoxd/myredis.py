@@ -9,17 +9,56 @@ import numpy as np
 import pandas as pd
 import sys
 import redis, pickle
+from datetime import datetime
 
 """保存对象至redis"""
 
 g_redis = None
+g_redis: redis.Redis
+class Expire(object):
+    """记录key过期时间"""
+    EXPIRE_KEY = 'REDIS.EXPIRE'
+    def __init__(self):
+        self.data = get_obj(self.EXPIRE_KEY)
+        self.data : dict
+        if self.data is None:
+            self.data = {}
+    def expire(self, key):
+        """if the key is expire, del it"""
+        if key in self.data.keys():
+            save_time, expire_time = self.data[key]
+            delta = datetime.now()-save_time
+            if delta.seconds > expire_time:
+                delkey(key)
+            #test
+            #else:
+                #if delta.seconds > expire_time:
+                    #delkey(key)
+                
+    def update(self, key, expire_time):
+        is_update = False
+        if key in self.data.keys():
+            _, _expire_time = self.data[key]
+            if _expire_time != expire_time:
+                is_update = True
+        else :
+            is_update = True
+        if is_update:
+            self.data[key] = [datetime.now(), expire_time]
+            set_obj(self.EXPIRE_KEY, self.data)
+g_expire = None
+g_expire : Expire
+
 def createRedis():
     #assert(False)
     global g_redis
+    global g_expire
     if g_redis is None:
         try:
             g_redis = redis.Redis(host='localhost', port=6379, db=0) 
             g_redis.info()
+            if g_expire is None:
+                g_expire = Expire()
         except:
             #把myredis.com写入hosts
             #g_redis = redis.Redis(host='myredis.com', port=6379, db=0) 
@@ -38,15 +77,21 @@ def set_str(key, s):
     r = createRedis()
     if r is not None:
         r.set(key, s)
-def set_obj(key, o):
-    """无返回值, 记录数据"""
+def set_obj(key, o, expire_time=-1):
+    """无返回值, 记录数据
+    expire_time: 设置过期时间, seconds
+    """
     r = createRedis()
     if r is not None:
         b = pickle.dumps(o)
         r.set(key, b)
+        if expire_time != -1:
+            g_expire.update(key, expire_time)
 def get_obj(key):
     """用key取值 return: obj 或者 None"""
     r = createRedis()
+    if g_expire is not None:
+        g_expire.expire(key)
     o = r.get(key)
     try:
         if o is not None:
@@ -77,7 +122,8 @@ def clear():
     for key in r.keys():
         r.delete(key)
 def getKeys(k=''):
-    keys = list(createRedis().keys())
+    r = createRedis()
+    keys = r.keys()
     if k == '':
         return keys
     find_keys = []
@@ -139,22 +185,13 @@ def dump_redis(host, key='*'):
         v = db_host.get(key)
         db_me.set(key, v)
     
-import unittest
-class mytest(unittest.TestCase):
-    def _test_obj(self):
-        o = {'ad':1}
-        import pickle
-        key = 'temp'
-        b = pickle.dumps(o)
-        r = createRedis()
-        r.set(key, b)
-        print(pickle.loads(r.get(key)))
-    def test_obj2(self):
-        keys = getKeys()
-        print(len(keys))
-        #print(get_obj(keys[2]))
-    def _test_dump(self):
-        dump_redis(host='192.168.3.4', key='')
+def test():
+    o = '123'
+    key = 'test'
+    set_obj(key, o, expire_time=1*60*60)
+    
+    o = get_obj(key)
+    print(o)
     
 if __name__ == "__main__":
-    unittest.main()
+    test()
