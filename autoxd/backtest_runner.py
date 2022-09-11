@@ -65,6 +65,9 @@ class BackTestPolicy:
         if len(df) > 0:
             end_day = agl.datetime_to_date(df.index[-1])
         start_day = help.MyDate.s_Dec(start_day , 2)
+        data_start_day = agl.datetime_to_date(df.index[0])
+        if agl.DateDec(data_start_day, start_day) > 0:
+            start_day = data_start_day
                 
         return start_day, end_day
     def Run(self, start_day, end_day, is_report=False):

@@ -1188,6 +1188,13 @@ def MA(closes, day=5):
 
     return talib.MA(closes, day)
 
+def getMAs(closes, days=[5,10,20,60]):
+    mas = []
+    for day in days:
+        ma = MA(closes, day)
+        mas.append(ma)
+    return mas
+
 def RSI(closes, timeperiod=12):
     """相对强弱指标， 30以下超卖， 70以上超买 return: np.darray"""
     closes = np.array(closes)

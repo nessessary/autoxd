@@ -104,6 +104,8 @@ def DateDec(day1, day2):
     return :  int 日期数, 天数
     """
     return (dateutil.parser.parse(day1) - dateutil.parser.parse(day2)).days
+def DateCmp(day1, day2):
+    return DateDec(day1, day2)
 
 def DateYearAdd(d, n):
     """对日期进行年的加减

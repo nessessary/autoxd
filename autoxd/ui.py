@@ -23,8 +23,6 @@ if sys.version > '3':
 else:
     from autoxd import stock_pinyin as jx
 from autoxd import agl
-#x = [1,2,3,4,5,6]
-#y = [10,20,3,20,39,4]
 
 #动态设置中文字体
 #import matplotlib as mpl
@@ -46,7 +44,7 @@ def getFont():
         #fname = ""
         return fm.FontProperties(fname=fname)
     else:
-        return fm.FontProperties(fname="")  #如果您找到了可用的字体文件， 别忘了通知作者， 写issue
+        return fm.FontProperties(fname="")  
 
 #
 #----------------------------------------------------------------------
@@ -294,6 +292,15 @@ def drawChips(pl, df, df_close, title=""):
     pl.title(title)
     df_close['c'].plot()
     pl.subplot(122)
+    chips = df[df.columns[1]].values
+    pl.barh(df[df.columns[0]].values, chips)
+    pl.show()
+    pl.close()    
+    
+def drawChipMa(df_chips, mas):
+    """白线、黄线、紫线、绿线、蓝线依次分别表示:5、10、20、30、60日移动平均线"""
+    df = df_chips
+    pl.figure
     chips = df[df.columns[1]].values
     pl.barh(df[df.columns[0]].values, chips)
     pl.show()
