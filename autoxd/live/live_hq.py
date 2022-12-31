@@ -6,11 +6,12 @@ from autoxd import stock, myredis
 from autoxd import sign_observation as so
 from win32com import client
 import time
+from autoxd import profile
 
 class LiveHq(object):
     def __init__(self):
         self.speaker = client.Dispatch('SAPI.SPVOICE')
-        self.codes = [jx.XJN新洁能,jx.XSKJ兴森科技,]
+        self.codes = profile.g_live
         self.dict_speaked = {}# code, price
     def speak(self, s):
     

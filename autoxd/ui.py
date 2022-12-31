@@ -9,6 +9,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.patches as mp
 import matplotlib.font_manager as fm
 import mplfinance as mpf
 from matplotlib.pylab import date2num
@@ -598,17 +599,56 @@ def drawBeta(pl, df, title):
     pl.title(title, fontproperties=getFont())
     pl.show()
     pl.close()     
-def drawBoll(pl, closes, boll_up, boll_mid, boll_low):
+def drawBoll(pl, closes, boll_up, boll_mid, boll_low, save_file=""):
     pl.figure
-    pl.plot(closes)
+    ax = plt.gca()
+    ax.yaxis.set_ticks_position('both')
+    plt.tick_params(axis='y', which='both', labelleft='on', labelright='on')
+    ax.plot(closes)
+    pl.plot(boll_up)
+    pl.plot(boll_mid)
+    pl.plot(boll_low)
+    if len(save_file)>0:
+        pl.savefig(save_file)
+    pl.show()
+    pl.close()
+
+
+def drawBollAndChip(pl, closes, boll_up, boll_mid, boll_low, chips):
+    """按一个固定比例显示， 显示当前价的正负20%"""
+    last_price = closes[-1]
+    high_price = last_price * 1.1
+    low_price = last_price * 0.9
+    h_close = np.max(closes)
+    l_close = np.min(closes)
+    if (h_close- l_close) / last_price > 0.2:
+        pass
+    else :
+        h_close = high_price
+        l_close = low_price
+    h_sum = chips[1][chips[0]>=h_close].sum()
+    l_sum = chips[1][chips[0]<=l_close].sum()
+    chips = chips[chips[0]<h_close]
+    chips = chips[chips[0]>l_close]
+    chips = agl.df_concat(chips, [h_close, h_sum])
+    chips = agl.df_concat(chips, [l_close, l_sum])
+    
+    pl.figure
+    ax = plt.gca()
+    ax.yaxis.set_ticks_position('both')
+    plt.tick_params(axis='y', which='both', labelleft='on', labelright='on')
+    df = chips
+    chips = df[df.columns[1]].values 
+    chips = chips * 100
+    ax.barh(df[df.columns[0]].values, chips, height=0.5)    
+    
+    ax.plot(closes)
     pl.plot(boll_up)
     pl.plot(boll_mid)
     pl.plot(boll_low)
     pl.show()
     pl.close()
-
-
-
+    
 def weekday_candlestick(ohlc_data, ax, fmt='%b %d', freq=7, **kwargs):
     """ Wrapper function for matplotlib.finance.candlestick_ohlc
         that artificially spaces data to avoid gaps from weekends 

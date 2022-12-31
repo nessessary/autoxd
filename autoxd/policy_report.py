@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import sys
 import pyh
-import agl
+from autoxd import agl
 
 def df_to_html_table(df, color='white', df_img_col_indexs=[-1]):
     """df转化为html表格输出, 简单的columns为[txt, img]
@@ -28,14 +28,12 @@ def df_to_html_table(df, color='white', df_img_col_indexs=[-1]):
         if v.name == 0 and len(v.tolist()) == 1:
             v = v[0]
         s = str(v)
-        #if not agl.is_utf8(s):	#命令行时会碰到需要转码的情况
-            #try:
-                #s = s.decode('gb2312').encode('utf8')
-            #except:
-                #pass    
-        mytr << pyh.td('<pre>%s</pre>' % (s))	
+        mytr << pyh.td('<pre style="width:530px;">%s</pre>' % (s), width="20%")	
         for j in df_img_col_indexs:
-            mytr << pyh.td('Row %i, column <img src="%s"/>' % (i, os.path.basename(df.iloc[i][df.columns[j]])))	
+            img_url = df.iloc[i][df.columns[j]]
+            if img_url.find('http') != 0:
+                img_url = os.path.basename(img_url)
+            mytr << pyh.td('Row %i, column <img src="%s"/>' % (i, img_url))
     return page.render()
 def main(args):
     pass

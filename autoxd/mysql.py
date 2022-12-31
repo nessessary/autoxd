@@ -24,7 +24,7 @@ class StockMysql:
     #----------------------------------------------------------------------
     def __init__(self):
         """Constructor"""
-        self.conn = MySQLdb.connect(host='mydata.com', user='root', passwd='gochina', db='stock', charset='gb2312')
+        self.conn = MySQLdb.connect(host='localhost', user='root', passwd='gochina', db='stock', charset='gb2312')
         self.cursor = self.conn.cursor();	
 
     def getGupiao(self):
@@ -173,6 +173,21 @@ def putHisdatRow(code, date, o,h,l,c,v):
             (code, date, o, h, l, c, v)
     db.ExecSql(sql)
     db.ExecSql('commit')
+def putFundRow(row):
+    cols = 'code,code_name,report_date,ranking,stock_symbol,stock_name,ratio,stock_num,market_value'
+    rows = []
+    for col in cols.split(','):
+        rows.append(row[col])
+    db = createStockDb()
+    sql = "insert into fund (%s) VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%\
+            tuple([cols]+rows)
+    db.ExecSql(sql)
+    db.ExecSql('commit')
+def getFund():
+    """return: df"""
+    con = MySQLdb.connect(host='localhost', user='root', passwd='gochina', db='stock', charset='gb2312')
+    sql = "select * from fund"
+    return pdsql.read_sql(sql, con)
 
 def getFiveHisdat(code, start_day='', end_day=''):
     """return: pandas.DateFrame"""

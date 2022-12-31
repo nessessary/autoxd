@@ -19,7 +19,7 @@ import pylab as pl
 import pandas as pd
 from sklearn.cluster import KMeans
 from autoxd import warp_pytdx as tdx
-from autoxd import fenhong
+from autoxd import fenhong,mysql
 from autoxd.pypublish import publish
 #pl = publish.Publish()
 
@@ -34,7 +34,7 @@ def get_codes(flag=myenum.all, n=100):
         fname = cur_path + '/datas/tdx_codes.csv'
         df = pd.read_csv(fname, index_col=0, dtype=str)
         df = df.sort_values(by=df.columns[0])
-        return df[df.columns[0]].values
+        return df[df.columns[0]].tolist()
         
     codes = readTDXlist()    
     if flag == myenum.randn:
@@ -593,7 +593,7 @@ def summary_bankuai_zhangfu(codes, end_day):
             s =  intervals[i:i+2]
             v = df.iloc[j][0]
             if v>=s[0] and v<s[1]:
-                df.iloc[j] = df.iloc[j].set_value('type', str(s))
+                df.at[j, 'type'] = str(s)
     return df
 def test_summary_bankuai_zhangfu():
     codes = ['600100', '600601', '600680', '600850', '600855', '603019', '000021', '000066', '000748', '000938', '000948', '000977', '000997', '002027', '002152', '002177', '002197', '002236', '002308', '002312', '002376', '002383', '002415', '002528', '002577', '300042', '300045', '300065', '300130', '300155', '300177', '300202', '300270', '300302', '300333', '300367', '300368', '300386']    
@@ -755,6 +755,7 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     return df    
 
 
+
 def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' , is_Trunover=False):
     """从数据库获取日线, 复权 
     is_fuquan : 使用前复权
@@ -762,6 +763,9 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
     return: df"""
     if method == 'tdx':
         df = tdx.getHisdat(code)
+        df.index = pd.DatetimeIndex(df['datetime'].map(lambda x: agl.DateTimeToDate(x)))
+        df = df[['high','low','open','close','vol']]
+        df.columns = list('hlocv')
     if method == 'tushare':
         import tushare as ts
         df = ts.get_hist_data(code)[['high','low','open','close','volume']]
@@ -1063,6 +1067,22 @@ class DataSources:
         online = 4  #废弃
         custom = 5  #自定义实现
     data_mode = datafrom.livedata   #默认值, 影响日线模式
+    @staticmethod
+    def _downloadfile(code, mode=1):
+        """mode : 1|0 hisdat|five"""
+        type_name = ['kline_five', 'kline']
+        fname_2 = 'datas/datasource/%s/%s.hd5'%(type_name[mode],code)
+        fname_2 = help.abspath_join(__file__, fname_2)
+        if not help.FileExist(fname_2):
+            url = 'http://autoxd.applinzi.com/getfile.php?code=%s&type=%d'%(code, mode)
+            fname = 'datas/datasource/%s/%s.hd5.gz'%(type_name[mode],code)
+            fname = help.abspath_join(__file__, fname)
+            print('get file...')
+            help.get_file(url, fname)
+            agl.uncompress_file(fname, fname_2)
+            help.FileDelete(fname)
+        df = pd.read_hdf(fname_2)
+        return df
     @staticmethod
     def getHisdatPanl(codes, days):
         """k线的历史数据框面板
@@ -1524,6 +1544,27 @@ def PE(shizhi, jll):
     """shizhi: 市值(亿), jll: 净利润(亿)"""
     return float(shizhi)/float(jll)
 
+def calc_CAGR(jll:pd.Series):
+    """计算复合增长率"""
+    jll = jll.astype(float)
+    #print(jll)
+    #计算当前行比上一行增长的百分比
+    #r = jll.pct_change(1).apply(lambda x: format(x, '.2%'))
+    r = jll.pct_change(1)
+    #print(r)
+    #累计增长率
+    #jll = jll[-3:]
+    #first_val = jll.iloc[0]
+    #r = jll.apply(lambda x: (x-first_val)/first_val)
+    #r = r/range(len(jll))
+    #print(r)
+    return r[-2]
+
+def calc_PEG(pe:float, cagr:float):
+    """一般 在1到2之间， 越小越好"""
+    cagr = cagr * 100
+    peg = pe / cagr
+    return peg
 def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
     """计算筹码分布, 筹码分布计算是一个模拟过程， 为了简便及提高计算速度， 这里使用一种作者自己想的方法。
 	过程如下，从后向前遍历日k线， 填充换手率到筹码表， 每个填充的换手率按顺序消减，消减比例是线性的，

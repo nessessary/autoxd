@@ -122,12 +122,12 @@ def clear():
     for key in r.keys():
         r.delete(key)
 def getKeys(k=''):
-    r = createRedis()
-    keys = r.keys()
+    keys = list(createRedis().keys())
     if k == '':
         return keys
     find_keys = []
     for key in keys:
+        key = str(key, encoding='utf8')
         if key.find(k)>=0:
             find_keys.append(key)
     return find_keys

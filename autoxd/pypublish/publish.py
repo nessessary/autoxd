@@ -67,6 +67,10 @@ class Publish:
         self.name = name 
         self.fig_num = 1
 
+        #当前目录
+        self.path = os.getcwd() + "/html/"
+        if not os.path.isdir("html"):
+            os.mkdir("html")
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
         if self.platform_id == 0:
@@ -113,7 +117,7 @@ class Publish:
         #写入html
         fname = self.path+self.name+str(os.getpid())+'.html'
         if self.platform_id == 0:
-            f = open(fname,'w')
+            f = open(fname,'w', encoding='utf8')
         else:
             f = codecs.open(fname, 'w', encoding='utf_16')
         f.write(self.t_html)
