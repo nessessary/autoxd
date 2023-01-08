@@ -50,6 +50,9 @@ def get_gan_codes():
     df = df.sort_values(by=df.columns[0])
     return df[df.columns[0]].values
     
+def get_dapan_codes():
+    return ['399001', '999999','399005','399002','399006']
+    
 def get_bankuais():
     """获取同花顺的全部板块名称列表 return: list"""
     key = myredis.enum.KEY_BANKUAIS

@@ -8,6 +8,10 @@ from autoxd.pinyin import stock_pinyin3 as jx
 import pandas as pd
 import numpy as np
 import copy, os
+try:
+    import thsstockinfo
+except:
+    pass
 
 class enum:
     fname_fenhong = 'datas/fenhong.csv'
@@ -74,8 +78,7 @@ def _convert_stockchange(df):
     return df
 
 def _dump():
-    import stock as mystock
-    ths = mystock.createThs()
+    ths = thsstockinfo.createThs()
     df_fenhong = ths.getDf(-1)
     df_fenhong = _convert_fenhong(df_fenhong)
     fname = enum.fname_fenhong
