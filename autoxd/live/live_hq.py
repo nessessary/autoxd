@@ -5,13 +5,31 @@ from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd import stock, myredis
 from autoxd import sign_observation as so
 from win32com import client
-import time
-from autoxd import profile
+import time,os
+#from autoxd import profile
+import pandas as pd
+
+def get_custom_codes():
+    """获取通达信自选股导出"""
+    fname = r'I:\MyApp\new_zxjt_ctp\T0002\export\自选股%s.txt'
+    #获取最新文件
+    dir_path = os.path.dirname(fname)
+    #获取目录的文件名列表， 降序
+    files = os.listdir(dir_path)
+    files:list
+    files.sort(reverse=True)
+    filted_files = list(filter(lambda x: x.find('自选股')>=0, files))
+    fname = os.path.join(dir_path , filted_files[0])
+    
+    df = pd.read_csv(fname, sep='\t', encoding='gbk')
+    df = df[:-1][df.columns[:2]]    
+    
+    return df[df.columns[0]].tolist()
 
 class LiveHq(object):
     def __init__(self):
         self.speaker = client.Dispatch('SAPI.SPVOICE')
-        self.codes = profile.g_live
+        self.codes = get_custom_codes()
         self.dict_speaked = {}# code, price
     def speak(self, s):
     

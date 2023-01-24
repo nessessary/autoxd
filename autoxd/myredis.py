@@ -28,24 +28,16 @@ class Expire(object):
         if key in self.data.keys():
             save_time, expire_time = self.data[key]
             delta = datetime.now()-save_time
-            if delta.seconds > expire_time:
+            if delta.total_seconds() > expire_time:
                 delkey(key)
-            #test
-            #else:
-                #if delta.seconds > expire_time:
-                    #delkey(key)
                 
     def update(self, key, expire_time):
-        is_update = False
+        # update data
         if key in self.data.keys():
-            _, _expire_time = self.data[key]
-            if _expire_time != expire_time:
-                is_update = True
-        else :
-            is_update = True
-        if is_update:
-            self.data[key] = [datetime.now(), expire_time]
-            set_obj(self.EXPIRE_KEY, self.data)
+            if expire_time != -1:
+                self.data[key] = [datetime.now(), expire_time]
+                set_obj(self.EXPIRE_KEY, self.data)
+                
 g_expire = None
 g_expire : Expire
 
@@ -188,8 +180,13 @@ def dump_redis(host, key='*'):
 def test():
     o = '123'
     key = 'test'
-    set_obj(key, o, expire_time=1*60*60)
+    expire_time = 30
+    set_obj(key, o, expire_time)
     
+    o = get_obj(key)
+    print(o)
+    import time
+    time.sleep(expire_time+2)
     o = get_obj(key)
     print(o)
     
