@@ -1578,51 +1578,33 @@ def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
     m: 削减的线性系数
     return: df [price, chip]
     """
-    df_chips = None
     df = df.sort_index(ascending=False)
-    #last_price = float(agl.float_to_2(df.iloc[0]['c']))
+    max_price = agl.float_to_2(df['c'].max())
+    min_price = agl.float_to_2(df['c'].min())
+    df_chips = pd.DataFrame( [[max_price, 0.0001],[min_price, 0.0001]] )
     j = 0
     for i, row in df.iterrows():
-        price = float(agl.float_to_2(row['c']))
+        close = agl.float_to_2(row['c'])
         v = row['v'] /100
-        if df_chips is None:
-            df_chips = pd.DataFrame([[price, v]])
-        else :
-            chip_total_turnover = df_chips[1].sum()
-            if chip_total_turnover > 1:
-                break
-            x = 1-m*(j*n)
-            if x < 0.01:
-                x = 0.01
-            if v*x + chip_total_turnover > 1:
+        x = 1-m*(j*n)
+        if x < 0.01:
+            x = 0.01
+        v *= x
+        if close in df_chips[0]:
+            v_pre = df_chips[df_chips[0]==close][1]
+            df_chips.loc[df_chips[0]==close, 1] = v+v_pre
+        else:
+            df_chips = agl.df_concat(df_chips, [close, v])
+        
+        chip_total_turnover = df_chips[1].sum()
+        if chip_total_turnover > 1:
+            break
 
-                v = 1- chip_total_turnover
-                #记录当前的成交
-                if price in df_chips[0].tolist():
-                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
-                    exist_v = df_chips.iloc[index][1]
-                    df_chips.iloc[index][1] = exist_v + v
-                else:
-                    #添加到chip表
-                    df_chips = agl.df_concat(df_chips, [price, v])
-                break
-            else:
-                v *= x
-                #记录当前的成交
-                if price in df_chips[0].tolist():
-                    index = agl.array_val_to_pos( np.array((df_chips[0] == price).tolist()), True)
-                    exist_v = df_chips.iloc[index][1]
-                    df_chips.iloc[index][1] = exist_v + v
-                else:
-                    #添加到chip表
-                    df_chips = agl.df_concat(df_chips, [price, v])
         if j%k==0:
             j += 1
     
-        max_price = df['c'].max()
-        min_price = df['c'].min()
-        df_chips = agl.df_concat(df_chips, [max_price, 0.0001])
-        df_chips = agl.df_concat(df_chips, [min_price, 0.0001])
+    df_chips[0] = df_chips[0].astype(float)
+    df_chips = df_chips.sort_values(by=0, ascending=False)
     return df_chips
     
 def boll_poss(upper, middle, lower):
@@ -1762,13 +1744,12 @@ def debug_calcChips():
                 #df_chips = df_chips[df_chips[1]>0]
                 ui.drawChips(pl, df_chips, df,title)
     
-def test_calcChips():
+def test_chips(codes):
     pl = publish.Publish()
-    #code = jx.THS同花顺
-    codes = get_codes(myenum.randn, n=10)
+    
     for code in codes:
         try:
-            df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
+            df = getHisdatDf(code, method='tushare', is_fuquan= True, is_Trunover=True)
             print(len(df))
             n = 2
             m = 2
@@ -1776,18 +1757,27 @@ def test_calcChips():
             title = '%d,%d,%d'%(n,m, k)
             df_chips = calcChips(df, n*0.01, m , k)
             #df_chips = df_chips[df_chips[1]>0]
+            #agl.print_df(df_chips)
             ui.drawChips(pl, df_chips, df,title)
         except:
             pass
+    pl.publish()
+    
+def test_calcChips():
+    #code = jx.THS同花顺
+    codes = get_codes(myenum.randn, n=100)
+    from autoxd.MultiSubProcess import MultiSubProcess
+    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=7)
             
 def main():
     
     """"""
     #unittest.main()
     #test_fenhong()
-    #test_calcChips()
+    test_calcChips()
     #debug_calcChips()
-    print(is_livetime())
+    #print(is_livetime())
 if __name__ == "__main__":
     main()
     print('end')
+          

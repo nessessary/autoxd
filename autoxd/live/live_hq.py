@@ -8,6 +8,10 @@ from win32com import client
 import time,os
 #from autoxd import profile
 import pandas as pd
+try:
+    import get_detect_result
+except:
+    pass
 
 def get_custom_codes():
     """获取通达信自选股导出"""
@@ -42,7 +46,7 @@ class LiveHq(object):
         closes = df['c'].values
         if closes[-1] == 0:
             closes = closes[:-1]
-        four = stock.FOUR(closes, days=[5, 10, 20, 60])
+        #four = stock.FOUR(closes, days=[5, 10, 20, 60])
         close = closes[-1]
         boll_poss = stock.boll_poss(upper, middle, lower)
         
@@ -54,13 +58,30 @@ class LiveHq(object):
         sign = ''
         name = stock.GetCodeName(code)
         msg = ''
-        if code in self.dict_speaked.keys() and \
-           ((self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[2] and close > self.dict_speaked[code])):
-            msg = f"{close}"
-            self.dict_speaked[code] = close
         if code not in self.dict_speaked.keys():
             msg = "[%s %s %s]"%(name, sign, close)
             self.dict_speaked[code] = close
+        else:
+            if (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[2] and close > self.dict_speaked[code]):
+                msg = f"{close}"
+                self.dict_speaked[code] = close
+            
+            # hard_recog check ...
+            if 0:
+                
+                # shape recognize
+                try:
+                    label = get_detect_result.detect(code, df)
+                    label = label[-1][0]
+                    if label >= 0:
+                        labels = ['u1','u2','u3','d1','d2','d3']
+                        msg = f"{labels[label]}"
+                        self.dict_speaked[code] = close
+                    print('run shape recog', label)
+                except:
+                    pass
+            
+            
         if msg != '':
             t = time.strftime('%H:%M:%S', time.localtime(time.time()))
             print(f"{t} {msg}")

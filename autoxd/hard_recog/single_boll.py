@@ -51,11 +51,11 @@ def get_x_boll(close, boll):
             return len(boll) - i
     return -1
     
-def get_y_boll(close, boll, boll_mid):
-    """return: (y0, y1)"""
+def get_y_boll(close,  boll_mid):
+    """close到boll mid的percent
+    return: float"""
     mid = boll_mid[-1]
-    v = boll[-1]
-    return (mid-close)/(mid-v)
+    return (mid-close)/mid
 
 def gen_random_int(a, b):
     """在ab之间产生一个随机数"""
@@ -89,14 +89,15 @@ class boll_params:
 def load_data_at_point(df, index, length):
     return df.iloc[index: index+length]
     
+def calc_techs(df):
+    pass
+    
 def recorg(pl, df_boll):
     sign = 0
     df = df_boll
     if 0: df = pd.DataFrame
     #计算参数
     
-    #输出原始图片
-    #closes, boll_up, boll_mid, boll_low = df[['c', 'upper','middle', colname.boll_lower]].to_list()
     closes = df['c'].values
     boll_up = df[colname.boll_upper].values
     boll_mid = pd.Series(df[colname.boll_middle]).values
@@ -113,10 +114,8 @@ def recorg(pl, df_boll):
     
     #数值判断
     
-    obj = boll_params()
-    obj.h1 = closes[-1] - boll_mid[-1]
-    obj.h2 = closes[-1] - boll_low[-1]
-    boll_y = get_y_boll(closes[-1], boll_low, boll_mid)
+    boll_y = get_y_boll(closes[-1], boll_mid)
+    
     techs = calc_property()
     y1,y2 = stock.analyzeZZ(zz_close)
     techs.close_zz_0 = "%.3f"%y1
@@ -133,6 +132,11 @@ def recorg(pl, df_boll):
     techs.jzd = kurtosis.calc_kurtosis(stock.GuiYiHua(closes[-int(len(closes)*(1-0.618)):]))
     zz_slope = stock.analyzeZZSlope(zz_boll_low)
     techs.boll_low_zz_slope = "%.5f"%zz_slope
+    
+    
+    obj = boll_params()
+    obj.h1 = closes[-1] - boll_mid[-1]
+    obj.h2 = closes[-1] - boll_low[-1]
     
     sign = False
     n = 1   # 如果是日线，n=10

@@ -335,7 +335,7 @@ class Strategy_Boll_Pre(qjjy.Strategy):
             #print 'self.max_buy_price=', self.max_buy_price
         return self._getAccount().Order(bSell, code, price, num)
 
-
+from five_chengben import fnSample
 def Run(codes, task_id=0):
     #agl.LOG('sdf中')
     #codes = ['300033']
@@ -345,20 +345,20 @@ def Run(codes, task_id=0):
             pl=publish.Publish(),
         )
     backtest_policy.test_strategy(codes, Strategy_Boll_Pre, setParams,
-                                  start_day='2018-2-7', end_day='2018-3-16',
+                                  start_day='', end_day='',
                                   #start_day='2017-7-26', end_day='2017-12-13'
-                                  mode=BackTestPolicy.enum.tick_mode
+                                  mode=BackTestPolicy.enum.hisdat_mode|BackTestPolicy.enum.hisdat_five_mode,
+                                  datasource_mode=stock.DataSources.datafrom.custom,
+                                  datasource_fn=fnSample
                                   )
 def test_strategy():
-    assert(False & '已不支持')
-    codes = stock.DataSources.getCodes()
+
+    codes = stock.get_codes(flag=stock.myenum.randn, n=10)
     cpu_num = 5
     agl.startDebug()
     if agl.IsDebug():
         codes = [codes[0]]
-        codes = [jx.XYCZ]
-        codes = [jx.THS]
-        #codes = [jx.LTGF.b]
+        cpu_num = 1
     exec(agl.Marco.IMPLEMENT_MULTI_PROCESS)
 
 if __name__ == "__main__":
