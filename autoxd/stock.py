@@ -740,6 +740,11 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     df_GuBen_change[col] = df_GuBen_change[col].map(lambda x: agl.StrToFloat(x))
     df_GuBen_change = df_GuBen_change.dropna()
     first_day = agl.datetime_to_date(df.index[0].to_pydatetime())
+    last_day_guben = agl.datetime_to_date(df_GuBen_change.index[-1].to_pydatetime())
+    if agl.DateCmp(first_day, last_day_guben) > 0:  #行情日期大于最后 的股本变更日期
+        indexs = df_GuBen_change.index.astype(str).tolist()
+        indexs[-1] = first_day
+        df_GuBen_change.index = pd.DatetimeIndex(indexs)    
     df_GuBen_change = df_GuBen_change.loc[first_day:last_day]    
 
     #Merge时排序需要对应
@@ -766,9 +771,9 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
     return: df"""
     if method == 'tdx':
         df = tdx.getHisdat(code)
-        df.index = pd.DatetimeIndex(df['datetime'].map(lambda x: agl.DateTimeToDate(x)))
-        df = df[['high','low','open','close','vol']]
-        df.columns = list('hlocv')
+        df.index = pd.DatetimeIndex(df.index.map(lambda x: agl.DateTimeToDate(str(x))))
+        #df = df[['high','low','open','close','vol']]
+        #df.columns = list('hlocv')
     if method == 'tushare':
         import tushare as ts
         df = ts.get_hist_data(code)[['high','low','open','close','volume']]
@@ -1568,7 +1573,7 @@ def calc_PEG(pe:float, cagr:float):
     cagr = cagr * 100
     peg = pe / cagr
     return peg
-def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
+def calcChips(df:pd.DataFrame, n=0.01, m=1, k=1):
     """计算筹码分布, 筹码分布计算是一个模拟过程， 为了简便及提高计算速度， 这里使用一种作者自己想的方法。
 	过程如下，从后向前遍历日k线， 填充换手率到筹码表， 每个填充的换手率按顺序消减，消减比例是线性的，
         比如第二个换手率为v*0.98, 第三个为v*0.96..., 第j个为v*(1-2n*j) n=0.01
@@ -1579,7 +1584,7 @@ def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
     return: df [price, chip]
     """
     df = df.sort_index(ascending=False)
-    max_price = agl.float_to_2(df['c'].max())
+    max_price = agl.float_to_2(df['c'].max())   # for plot align
     min_price = agl.float_to_2(df['c'].min())
     df_chips = pd.DataFrame( [[max_price, 0.0001],[min_price, 0.0001]] )
     j = 0
@@ -1587,8 +1592,9 @@ def calcChips(df:pd.DataFrame, n=0.02, m=2, k=1):
         close = agl.float_to_2(row['c'])
         v = row['v'] /100
         x = 1-m*(j*n)
-        if x < 0.01:
-            x = 0.01
+        if x < 0.1:
+            x = 0.1
+        #print(x)
         v *= x
         if close in df_chips[0]:
             v_pre = df_chips[df_chips[0]==close][1]
@@ -1751,11 +1757,12 @@ def test_chips(codes):
         try:
             df = getHisdatDf(code, method='tushare', is_fuquan= True, is_Trunover=True)
             print(len(df))
-            n = 2
-            m = 2
+            n = 0.01
+            m = 1
             k = 1
             title = '%d,%d,%d'%(n,m, k)
-            df_chips = calcChips(df, n*0.01, m , k)
+            df_chips = calcChips(df, n, m , k)
+            print(df_chips[1].sum())
             #df_chips = df_chips[df_chips[1]>0]
             #agl.print_df(df_chips)
             ui.drawChips(pl, df_chips, df,title)
@@ -1764,10 +1771,11 @@ def test_chips(codes):
     pl.publish()
     
 def test_calcChips():
-    #code = jx.THS同花顺
+    code = jx.THS同花顺
     codes = get_codes(myenum.randn, n=100)
+    #codes = [code]
     from autoxd.MultiSubProcess import MultiSubProcess
-    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=7)
+    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=8)
             
 def main():
     

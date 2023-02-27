@@ -148,6 +148,8 @@ def run_fn(fn,args,mod,cpu_num=0):
     cpu_num: 分割参数， 任务数
     return: fn执行的结果
     """
+    if cpu_num == 1:
+        return fn(args)
     if cpu_num == 0:
         cpu_num = os.cpu_count()
     multi = MultiSubProcess()

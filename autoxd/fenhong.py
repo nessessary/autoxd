@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import copy, os
 try:
+    
     import thsstockinfo
 except:
     pass
@@ -57,9 +58,9 @@ def _convert_stockchange(df):
     row['code'] = 'code'
     df = df[df[0]!='变动日期']  # 删除col行
     #2015年之前的不记录
-    year = '2015-1-1'
+    #year = '2015-1-1'  # 在这个日期之前已经全流通
     df.index = pd.DatetimeIndex(df[df.columns[0]])
-    df = df[df.index > year]
+    #df = df[df.index > year]
     df.columns = row
     df = df[1:]
     df = df.drop([df.columns[1],df.columns[2], df.columns[4], df.columns[-1]], axis=1) # 删除不要的列
@@ -134,12 +135,12 @@ def test_fuquan():
     print(not result and 'successful' or 'failed')
  
 def test_astockchange():
-    code = jx.THS
+    code = jx.THS同花顺
     df = stock.getHisdatDf(code, method='tdx', is_fuquan=False)
-    df = df['2018-4-11':]
-    print(df['v'].head())
+    #df = df['2018-4-11':]
+    print(df['v'].tail())
     df = stock.getHisdatDf(code, method='tushare', is_fuquan=False)
-    print(df['v'].head())
+    print(df['v'].tail())
     table = AStockChangeTable()
     df_stockchange = table.getOne(code)
     df = stock.convertVolToStockTrunover(df, df_stockchange)
