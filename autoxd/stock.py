@@ -1755,9 +1755,15 @@ def test_chips(codes):
     
     for code in codes:
         try:
-            df = getHisdatDf(code, method='tushare', is_fuquan= True, is_Trunover=True)
+            #df = getHisdatDf(code, method='tdx', is_fuquan= True, is_Trunover=True)
+            #print(df['2023-2-3':]['v'].sum())
+            df = getFiveHisdatDf(code,method='tdx')
+            df['v'] = df['v']/100
+            df_gbbg = getGubenbiangen(code)
+            df = convertVolToStockTrunover(df, df_gbbg)
             print(len(df))
-            n = 0.01
+            n = 0.01    # for day
+            n = 0.0001  # for five
             m = 1
             k = 1
             title = '%d,%d,%d'%(n,m, k)
@@ -1773,9 +1779,12 @@ def test_chips(codes):
 def test_calcChips():
     code = jx.THS同花顺
     codes = get_codes(myenum.randn, n=100)
-    #codes = [code]
+    cpu_num = 6
+    if 0:
+        cpu_num = 1
+        codes = [code]
     from autoxd.MultiSubProcess import MultiSubProcess
-    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=8)
+    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=cpu_num)
             
 def main():
     
