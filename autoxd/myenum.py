@@ -9,6 +9,7 @@
 one = 0	    #一个
 some = 2    #固定的列表
 all = 3	    #全部遍历
+exlucde_st = 4 #不包含st
 randn = 11
 hang_ye = 12
 exclude_dapan = 15  #排除大盘指数

@@ -335,8 +335,8 @@ class Strategy_Boll_Pre(qjjy.Strategy):
             #print 'self.max_buy_price=', self.max_buy_price
         return self._getAccount().Order(bSell, code, price, num)
 
-from five_chengben import fnSample
 def Run(codes, task_id=0):
+    from five_chengben import fnSample
     #agl.LOG('sdf中')
     #codes = ['300033']
     def setParams(s):

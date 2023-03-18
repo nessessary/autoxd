@@ -62,7 +62,9 @@ class LiveHq(object):
             msg = "[%s %s %s]"%(name, sign, close)
             self.dict_speaked[code] = close
         else:
-            if (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[2] and close > self.dict_speaked[code]):
+            if so.assemble(
+               (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[2] and close > self.dict_speaked[code]),
+            ):
                 msg = f"{close}"
                 self.dict_speaked[code] = close
             

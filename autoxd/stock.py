@@ -34,6 +34,8 @@ def get_codes(flag=myenum.all, n=100):
         fname = cur_path + '/datas/tdx_codes.csv'
         df = pd.read_csv(fname, index_col=0, dtype=str)
         df = df.sort_values(by=df.columns[0])
+        if flag == myenum.exlucde_st:
+            df = df[df[df.columns[1]].map(lambda x: x.find('ST')<0)]
         return df[df.columns[0]].tolist()
         
     codes = readTDXlist()    
@@ -1785,15 +1787,21 @@ def test_calcChips():
         codes = [code]
     from autoxd.MultiSubProcess import MultiSubProcess
     MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=cpu_num)
-            
+          
+def test_codes():
+    codes = get_codes()
+    print(len(codes))
+    codes = get_codes(myenum.exlucde_st)    
+    print(len(codes))
 def main():
     
     """"""
     #unittest.main()
     #test_fenhong()
-    test_calcChips()
+    #test_calcChips()
     #debug_calcChips()
     #print(is_livetime())
+    test_codes()
 if __name__ == "__main__":
     main()
     print('end')

@@ -240,20 +240,22 @@ class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
         df.plot()
         cur_pl.show()
         cur_pl.close()
+        
+def fnSample(code, dtype='5'):
+    from autoxd import warp_pytdx as tdx
+    if dtype=='5':
+        df = tdx.getFive(code)
+        df = df.sort_index()
+        return df
+    if dtype=='d':
+        df = tdx.getHisdat(code)
+        df = df.sort_index()
+        return df
+        
 
 def Run(codes, task_id=0):
     #agl.LOG('sdf中')
     #codes = ['300033']
-    def fnSample(code, dtype='5'):
-        from autoxd import warp_pytdx as tdx
-        if dtype=='5':
-            df = tdx.getFive(code)
-            df = df.sort_index()
-            return df
-        if dtype=='d':
-            df = tdx.getHisdat(code)
-            df = df.sort_index()
-            return df
     
     def setParams(s):
         if 0: s = Strategy_Boll
