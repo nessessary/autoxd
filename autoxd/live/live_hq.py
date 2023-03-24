@@ -2,7 +2,7 @@
 
 from autoxd import warp_pytdx as tdx
 from autoxd.pinyin import stock_pinyin3 as jx
-from autoxd import stock, myredis
+from autoxd import stock, myredis, agl
 from autoxd import sign_observation as so
 from win32com import client
 import time,os
@@ -35,6 +35,11 @@ class LiveHq(object):
         self.speaker = client.Dispatch('SAPI.SPVOICE')
         self.codes = get_custom_codes()
         self.dict_speaked = {}# code, price
+        
+        self.d = {} # hisdat day kline
+        for code in self.codes:
+            self.d[code] = tdx.getHisdat(code)
+        
     def speak(self, s):
     
         self.speaker.Speak(s)
@@ -62,8 +67,12 @@ class LiveHq(object):
             msg = "[%s %s %s]"%(name, sign, close)
             self.dict_speaked[code] = close
         else:
+            zhangfu = stock.ZhangFu(close, yclose=self.d[code]['c'][-2]) *100
+            #print(agl.float_to_2(zhangfu))
             if so.assemble(
-               (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[2] and close > self.dict_speaked[code]),
+               (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[1] and close > self.dict_speaked[code]),
+               #1 if (code != jx.JSJD晶盛机电) else (close > 65.5 if close > boll_poss[2] else 1) ,  #对某一股票进行限定 
+               #abs(zhangfu) > 1,
             ):
                 msg = f"{close}"
                 self.dict_speaked[code] = close
