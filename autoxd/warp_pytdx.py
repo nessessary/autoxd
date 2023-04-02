@@ -38,6 +38,8 @@ def getFive(code, count=800):
     if not DataIsValid(data):
         print("tdx get data failed")
         raise ValueError("tdx data error")
+    if len(data) == 0:
+        return pd.DataFrame([])
     df = data[['open','close', 'high','low','vol']]
     df.columns = list('ochlv')
     df.index = pd.DatetimeIndex(data['datetime'])

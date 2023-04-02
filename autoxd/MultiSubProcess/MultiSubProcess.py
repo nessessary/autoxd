@@ -1,5 +1,4 @@
 #-*- coding:utf-8 -*-
-#把主目录放到路径中， 这样可以支持不同目录中的库
 from __future__ import print_function
 import os
 import numpy as np
@@ -146,7 +145,7 @@ def run_fn(fn,args,mod,cpu_num=0):
     args: fn使用的参数, 只能传数组
     mod: 模块名称， 必须有 __file__
     cpu_num: 分割参数， 任务数
-    return: fn执行的结果
+    return: list fn执行的结果 [df, ]
     """
     if cpu_num == 1:
         return fn(args)

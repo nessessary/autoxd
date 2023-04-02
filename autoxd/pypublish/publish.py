@@ -25,7 +25,7 @@ class Publish:
     def __init__(self, explicit=False, is_run_shell=True, is_clear_path=False):
         """编码默认为utf8
         info: 由pushlishinfo获取的元组
-        explicit: 弹出页面是否使用显式调用
+        explicit: 弹出页面是否使用显式调用; 可以 先静默生成图片，再统一输出
         is_run_shell: bool 是否跑生成后的start
         is_clear_path: bool 是否清空之前生成的目录文件
         """
@@ -89,8 +89,8 @@ class Publish:
         self.is_run_shell = is_run_shell
         
     def __del__(self):
-        #if self.explicit == False:
-            #self.publish() #python 3 can't call open
+        if self.explicit == False:
+            self.publish() #python 3 全局声明 不触发， local / member variant触发
         # 解除stdout
         sys.stdout = self.oldstdout
     def publish(self):
@@ -147,6 +147,8 @@ class Publish:
         self.figs.append(fig)
         #self.fig_num += 1
         return fig
+    def gca(self, **kwargs):
+        return pl.gca(**kwargs)
     def subplots_adjust(self, *args, **kwargs):    
         return pl.subplots_adjust(*args, **kwargs)
     def gcf(self):

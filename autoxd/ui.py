@@ -671,7 +671,8 @@ def weekday_candlestick(ohlc_data, ax, fmt='%b %d', freq=7, **kwargs):
         date_strings.append(date.strftime(fmt))
 
     # Plot candlestick chart
-    mpf.candlestick_ohlc(ax, ohlc_data_arr2, **kwargs)
+    #mpf.candlestick_ohlc(ax, ohlc_data_arr2, **kwargs)
+    mpf.plot(ohlc_data_arr2, type='candle')
 
     # Format x axis
     ax.set_xticks(ndays[::freq])
@@ -771,46 +772,19 @@ def Rectangle(pl,quotes, h,l, left, right,clr='b', linewidth=0.25):
     pl.plot([left,left],[h,l], clr, linewidth=linewidth)
     pl.plot([right, right], [h,l], clr, linewidth=linewidth)
 
-   
-def drawKlineUseDf(pl, df, rects=None, is_show=True):
-    """画k线图, 同步
-    df : 日线或5分钟线, cols('ohlcv')
-    rects: list [(h_price,l_price, left_index, right_index),...]
-    """
+def drawKlineUseDf(pl, df):
+    df = copy.deepcopy(df)
+    df.columns =  ('Open', 'Close','High', 'Low',  'Volume')
+    from autoxd.pypublish import publish
+    if type(pl) == publish.Publish:
+        pl: publish.Publish
+        pl.save()
+        img_path = pl.get_CurImgFname()
+        mpf.plot(df, type='candle',savefig=img_path, closefig=True)
+    else:
+        mpf.plot(df, type='candle')
+       
 
-    def df_to_matplotformat(df):
-        """
-        return: list[turpl(t,o,h,l,c)]
-        """
-        data_list = []
-        for dates,row in df.iterrows():
-            # 将时间转换为数字
-            #date_time = datetime.datetime.strptime(dates,'%Y-%m-%d')
-            t = date2num(dates)
-            open,high,low,close = row[:4]
-            datas = (t,open,high,low,close)
-            data_list.append(datas)	
-        return data_list
-    quotes = df_to_matplotformat(df)
-    pl.figure
-    # 创建一个子图 
-    ax = pl.gca()
-    pl.subplots_adjust(bottom=0.2)
-
-    #调整下面日期显示的密度
-    freq = len(quotes)/20
-    weekday_candlestick(quotes, ax, fmt='%b %d %H:%M', freq=freq, width=0.01, colorup='r',colordown='green')
-    
-    if rects is not None:
-        #left,right = 1000, 2000
-        #Rectangle(pl, quotes, h=quotes[left][2], l=quotes[right][3], left=left, right=right)
-        for rect in rects:
-            h,l,left,right = rect
-            Rectangle(pl, quotes, h, l, left, right)
-    
-    if is_show:
-        pl.show()
-        pl.close()
     
 
 def draw3d(df=None, titles=None, datas=None):
@@ -891,20 +865,39 @@ class MyTest(unittest.TestSuite):
     def _test_3d(self):
         draw3d()
     def _test_drawKline2(self):
-        code = jx.CYJM
-        start_day = '2017-8-25'
-        df = stock.getFiveHisdatDf(code, start_day=start_day)
-        drawKlineUseDf(pl, df)
+        code = jx.CYJM长盈精密
+        #drawKlineUseDf(pl, df)
     def _test_drawKlin(self):
         code = jx.THS
         df = stock.getHisdatDataFrameFromRedis(code)
         drawKline(pl, df, legend2=['成交量'])
 
+def test():
+    from autoxd import stock
+    code = jx.CYJM长盈精密
+    df = stock.getFiveFromRedis(code)
+    print(df.columns)
+    df.columns =  ('Open', 'Close','High', 'Low',  'Volume')
+    #mpf.plot(df, type='candle')
+    
+    from autoxd.pypublish.publish import Publish
+    pl = Publish()
+    drawKlineUseDf(pl, df)
+
+    df = stock.getHisdatDataFrameFromRedis(code)
+    drawKlineUseDf(pl, df)
+
+    pl.publish()
+    
+    
+        
 if __name__ == "__main__":
+    test()
+    
     #unittest.main()    
     
-    t = MyTest()
-    t.test_AsynDrawKline()
+    #t = MyTest()
+    #t.test_AsynDrawKline()
     ##t.debug()
     #suite = unittest.TestSuite()
     #suite.addTest(t)

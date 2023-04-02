@@ -140,12 +140,13 @@ def recorg(pl, df_boll):
     
     sign = False
     n = 1   # 如果是日线，n=10
+    switchs = [1,1,1]
     #第二次机会
-    if sign_observation.assemble(0, obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
+    if sign_observation.assemble(switchs[1], obj.h1 <0, adx>25, bollw[-1]>0.02*n, boll_y<0.02*n, techs.boll_x>10):
         techs.choice = 2
         sign = True
     # 第三次, 在空旷处， 波动收敛, close趋近于水平时
-    if sign_observation.assemble(1, obj.h1 <0, 
+    if sign_observation.assemble(switchs[2], obj.h1 <0, 
                                  adx>10, bollw[-1]>0.03*n, boll_y<0.5*n, techs.boll_x>10,
                                  float(techs.boll_low_zz_0) < 0.01,
                                  zz_slope < 0.0005 and zz_slope > -0.0005,
@@ -156,11 +157,11 @@ def recorg(pl, df_boll):
         techs.choice = 3
         sign = True
     #第一次机会
-    if sign_observation.assemble(0, obj.h1 <0, 
+    if sign_observation.assemble(switchs[0], obj.h1 <0, 
                                  adx>25,
-                                 bollw[-1]>0.02*n,
+                                 #bollw[-1]>0.02*n,
                                  float(techs.boll_low_zz_1)<-0.01*n,
-                                 techs.boll_x>1,
+                                 techs.boll_x<3,
                                  boll_y>0.8,
                                  1):
         sign = True
@@ -259,7 +260,7 @@ def main():
     pl = publish.Publish(is_clear_path=True)
 
     #codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
-    codes = stock.get_codes(stock.myenum.randn, n=10)
+    codes = stock.get_codes(stock.myenum.randn, n=100)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
@@ -270,7 +271,7 @@ def main():
             pass
         pl.myimgs += "</table></td></tr>"
     pl.myimgs += "</table>"
-    print(g_c2, count)
+    print('[%d|%d] %f'%(count, g_c2, count / g_c2))
     pl.publish()    
     
 if __name__ == "__main__":

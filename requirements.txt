@@ -20,6 +20,6 @@ six>=1.12.0
 #talib>=0.1.1
 #win32gui>=221.6
 gym
-mplfinance
+mplfinance>=0.12
 opencv-python==4.2.0
 tensorflow==1.13.1

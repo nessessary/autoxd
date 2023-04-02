@@ -23,6 +23,7 @@ autoxd 回测框架
 
 - 数据维护
   * datas目录下的数据是需要维护的， 不定期更新， 最晚一个季度
+  * 包括股票代码列表， 股票简写， 前复权使用的分红表， 成交量转换手率的股本变更表
 
 
 - 日线例子
@@ -45,7 +46,7 @@ autoxd 回测框架
 
 - 依赖
 1. redis 默认使用
-2. 支持各平台py3, py2已不维护
+2. 支持各平台py3, py2已不维护； 开发平台为win， 其它平台测试比较少， 可能有轻微的问题.
 3. 用pip install -r requirements.txt安装相关依赖包; python=3.7.4
 
 - 安装
@@ -61,7 +62,7 @@ autoxd 回测框架
 
 - 使用
 
-1. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了前复权<br>
+1. 数据源,使用自定义的数据; 注意,已使用ths分红表进行了[前复权](http://www.cppblog.com/wangkang2009/archive/2015/04/25/210437.html)<br>
       * 使用自定义的第三方数据源， 已实现了一个调用tushare的例子,
       datasource_mode=stock.DataSources.datafrom.custom
       * 5分钟线使用的是pytdx的例子

@@ -117,6 +117,9 @@ def getHisdatDataFrameFromRedis(code, start_day='', end_day=''):
         df = df.loc[:end_day]
     return df
 
+def getFiveFromRedis(code):
+    key = code + '_five_kline'
+    return myredis.get_obj(key)
 
 def is_livetime():
     c = agl.getCurTime()
@@ -731,6 +734,8 @@ def convertVolToStockTrunover(df, df_GuBen_change):
     df: hisdat
     return: df 换手率覆盖了v字段
     """
+    assert (len(df_GuBen_change) > 0)
+    
     #股本变动表
     col = '变动后流通A股(股)'
 
@@ -756,11 +761,6 @@ def convertVolToStockTrunover(df, df_GuBen_change):
         df2 = df2.fillna(method='backfill') #降序， 前面的Nan用第一个有数的值填充
         df2['v'] = df2['v']*10000/df2[col]
         df['v'] = df2['v']
-    else:   #有些老股因为送股太早，因此这里为空
-        #assert(False)
-        raise
-    #df['v'].plot()
-    #pl.show()
 
     return df    
 
@@ -790,8 +790,8 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
         df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
 
-def getFiveHisdatDf(code, start_day='', end_day='', method='mysql', path=''):
-    """
+def getFiveHisdatDf(code, start_day='', end_day='', method='tdx', path=''):
+    """tdx五分钟 的vol是日线的100倍
     method: mysql , tdx, local, path
     return: df col('ohlcu')"""
     if method == 'mysql':
@@ -1288,7 +1288,7 @@ def TDX_BOLL(closes):
     vart2 = np.abs(vart2)
     #for i, v in enumerate(vart2):
         #v = np.sqrt(v)
-    assert((vart2>0).all())
+    #assert((vart2>0).all())
     vart3 = np.sqrt(vart2)
     upper = mid + 2*vart3
     lower = mid - 2*vart3
@@ -1398,7 +1398,7 @@ def DX(highs, lows, closes):
     closes = np.array(closes)
     return talib.DX(highs, lows, closes)
 def FOUR(closes, days = [5,10,20,60]):
-    """四均线计算 return: fours"""
+    """四均线计算 return: fours(np.array)"""
     closes = np.array(closes)
     avgs = []
     for day in days:
@@ -1585,6 +1585,8 @@ def calcChips(df:pd.DataFrame, n=0.01, m=1, k=1):
     m: 削减的线性系数
     return: df [price, chip]
     """
+    assert (np.min(df['v']) < 100)  #确认转换 为换手率了
+    
     df = df.sort_index(ascending=False)
     max_price = agl.float_to_2(df['c'].max())   # for plot align
     min_price = agl.float_to_2(df['c'].min())

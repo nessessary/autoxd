@@ -63,7 +63,7 @@ def gen_keyname(fname, fn):
     return: str 模块名.函数名"""
     fname = os.path.basename(fname)
     fname = fname.split('.')[0]
-    return fname + '.' + fn.__name__
+    return str(fname + '.' + fn.__name__)
 
 def set_str(key, s):
     r = createRedis()
@@ -135,7 +135,7 @@ def ForceGetObj(k,v):
         set_obj(k, v1)
     return v1
 
-if 0: createRedisVal = Val
+
 def createRedisVal(key, v):
     """key: str
     v: object or function 值或者使用该函数返回的值
@@ -143,6 +143,7 @@ def createRedisVal(key, v):
     """
     ForceGetObj(key, v)
     return Val(key)
+
 class Val(object):
     def __init__(self, key):
         self.key = key
@@ -155,6 +156,17 @@ class Val(object):
 def gen_data(filename, call_fn, process_fn):
     key = gen_keyname(filename, call_fn)
     return createRedisVal(key, process_fn).get()
+
+def gen_data_at_curday(filename, call_fn, process_fn):
+    """跨天后重新调用fn; 一天 只跑一次"""
+    key = gen_keyname(filename, call_fn)
+    cur_day = str(datetime.now()).split(' ')[0]
+    keys = getKeys(key)
+    if str(key) + cur_day not in keys:
+        delKeys(key)
+    key = key + cur_day
+    return createRedisVal(key, process_fn).get()
+
 #记录一些公用的key
 class enum:
     KEY_CODES = 'stock.Codes'
@@ -177,7 +189,7 @@ def dump_redis(host, key='*'):
         v = db_host.get(key)
         db_me.set(key, v)
     
-def test():
+def test_expire():
     o = '123'
     key = 'test'
     expire_time = 30
@@ -190,5 +202,6 @@ def test():
     o = get_obj(key)
     print(o)
     
+    
 if __name__ == "__main__":
-    test()
+    test_expire()

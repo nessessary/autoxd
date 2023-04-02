@@ -19,3 +19,4 @@
 /autoxd/cnn_boll/html
 /autoxd/cnn_boll/img_labels
 /autoxd/cnn_boll/output_img
+/autoxd/live/get_detect_result.py
