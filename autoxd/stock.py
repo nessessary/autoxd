@@ -285,7 +285,8 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
         df_hisdat['shizhi'] = ltgb * df_hisdat['c']
         first_shizhi = df_hisdat.dropna().iloc[0]['shizhi']	
         if(first_shizhi < 0.1):
-            print(code,'流通股本为0，因为下载是编码异常， 因此这里要做异常处理')
+            #新股不处理
+            #print(code,'流通股本为0，因为下载是编码异常， 因此这里要做异常处理')
             continue
         assert(first_shizhi>0)
         df_hisdat['zhishu'] = df_hisdat['shizhi'] / first_shizhi
@@ -782,6 +783,8 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
         df.index = pd.DatetimeIndex(df.index)
         df.columns = list('hlocv')
         df = df.sort_index()
+    if method == 'mysql':
+        df = mysql.getHisdat(code)
     if is_fuquan:
         df_fenhong = getFenHong(code)
         df = calc_fuquan_use_fenhong(df, df_fenhong)    

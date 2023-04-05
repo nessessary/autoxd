@@ -53,7 +53,7 @@ class near_chip(object):
         return [stock.GetCodeName(code), chip_price_ratio, chip_price_ratio_percent, img_path_kline, img_path]
         
 def run(codes):
-    pl = publish.Publish(explicit=True)
+    pl = publish.Publish(explicit=True, is_clear_path=False) # 因为 是多进程 不能删除目录
     df = pd.DataFrame([])
     obj = near_chip(pl)
     for code in codes:
@@ -64,12 +64,13 @@ def run(codes):
 
 def report(df):
     pl = publish.Publish()
-    pl.reset(policy_report.df_to_html_table(df, df_img_col_indexs=[-2, -1]))
+    pl.reset(policy_report.df_to_html_table(df))
     pl.publish()
     
     
 if __name__ == "__main__":
     init()
+    tt = agl.tic_toc()
     codes = stock.get_codes()
     #codes = stock.get_codes(stock.myenum.randn, n=100)
     cpu_num = 0

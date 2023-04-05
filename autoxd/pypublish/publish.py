@@ -291,7 +291,7 @@ def example2():
         img_name = pl.get_CurImgFname()
         result.append([code, img_name, img_name])
     df = pd.DataFrame(result)
-    pl.reset(df_to_html_table(df, df_img_col_indexs=[-2,-1]))
+    pl.reset(df_to_html_table(df))
     pl.publish()
     
 def main(args):

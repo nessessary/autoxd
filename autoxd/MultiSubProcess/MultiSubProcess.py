@@ -98,6 +98,7 @@ class pp_func_param:
     def _split(self, params):
         """分割参数
         param: 如果是list， 那么就直接拆解， 如果是tuple，那么就拆解第一个，后面的合并上去"""
+        assert (type(params) == list or type(params) == tuple)
         other = None
         if isinstance(params, tuple):
             other = params[1:]

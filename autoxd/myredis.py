@@ -138,7 +138,7 @@ def ForceGetObj(k,v):
 
 def createRedisVal(key, v):
     """key: str
-    v: object or function 值或者使用该函数返回的值
+    v: object or function 值或者使用该函数返回的值; 如果 是函数必须有返回值
     return: class Val
     """
     ForceGetObj(key, v)
@@ -158,7 +158,8 @@ def gen_data(filename, call_fn, process_fn):
     return createRedisVal(key, process_fn).get()
 
 def gen_data_at_curday(filename, call_fn, process_fn):
-    """跨天后重新调用fn; 一天 只跑一次"""
+    """跨天后重新调用fn; 一天 只跑一次
+    return: process_fn()"""
     key = gen_keyname(filename, call_fn)
     cur_day = str(datetime.now()).split(' ')[0]
     keys = getKeys(key)
