@@ -39,7 +39,7 @@ class MultiSubProcess():
         fname = os.path.abspath(fname)
         
         #分割参数
-        splitted_args = pp_func_param(None, *args, cpu=cpus)._split(*args)
+        splitted_args = pp_func_param(None, *args, cpu=cpus).params
         for arg in splitted_args:
             self.pd_task = pd.concat([self.pd_task, pd.DataFrame([self.task_id, fname, fn.__name__, arg]).T])
         self.task_id += 1
@@ -98,11 +98,11 @@ class pp_func_param:
     def _split(self, params):
         """分割参数
         param: 如果是list， 那么就直接拆解， 如果是tuple，那么就拆解第一个，后面的合并上去"""
-        assert (type(params) == list or type(params) == tuple)
         other = None
         if isinstance(params, tuple):
             other = params[1:]
             params = params[0]
+        assert (type(params) == list or type(params) == tuple)
         # 1维
         if len(params) < self.cpu:
             self.cpu = len(params)
@@ -129,6 +129,18 @@ def test(a):
 def test2(b):
     print('test2', b)
     return pd.DataFrame(b)
+
+def test3(multi_arg):
+    indexs, a, b = multi_arg
+    df = pd.DataFrame([[1, 2], [2, 4]]) #df通过redis传递
+    df[df.columns[0]] = a
+    df[df.columns[1]] = b
+    return df
+def run_test3():
+    
+    df = run_fn(test3, (list(range(6)), 5, 6), __file__, 2)
+    print(df)
+
 def main(args):
     strs = ['adb','adf','dsfasd','adsf','dsf','sdf']
     multi = MultiSubProcess()
@@ -161,6 +173,7 @@ def run_fn(fn,args,mod,cpu_num=0):
 if __name__ == "__main__":
     try:
         args = sys.argv[1:]
-        main(args)
+        #main(args)
+        run_test3()
     except:
         main(None)
