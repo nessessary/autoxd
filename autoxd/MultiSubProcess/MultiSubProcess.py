@@ -132,13 +132,17 @@ def test2(b):
 
 def test3(multi_arg):
     indexs, a, b = multi_arg
-    df = pd.DataFrame([[1, 2], [2, 4]]) #df通过redis传递
+    key = myredis.gen_keyname(__file__, run_test3)
+    df = myredis.get_obj(key)
     df[df.columns[0]] = a
     df[df.columns[1]] = b
     return df
 def run_test3():
-    
+    df = pd.DataFrame([[1, 2], [2, 4]]) #df通过redis传递
+    key = myredis.gen_keyname(__file__, run_test3)
+    myredis.set_obj(key, df)
     df = run_fn(test3, (list(range(6)), 5, 6), __file__, 2)
+    myredis.delkey(key)
     print(df)
 
 def main(args):
