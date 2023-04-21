@@ -6,10 +6,7 @@
 from __future__ import print_function
 import os,sys
 from autoxd import help,agl,ui,myenum,myredis
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 import pyprind
 import time,datetime, dateutil,copy, warnings, unittest,struct, itertools,pickle,re
 import talib
@@ -53,8 +50,12 @@ def get_gan_codes():
     return df[df.columns[0]].values
     
 def get_dapan_codes():
-    return ['399001', '999999','399005','399002','399006']
+    #return ['399001', '999999','399005','399002','399006']
+    return myenum.DaPan.all_codes
     
+def get_etf_codes():
+    return myenum.ETF.all_codes
+
 def get_bankuais():
     """获取同花顺的全部板块名称列表 return: list"""
     key = myredis.enum.KEY_BANKUAIS
@@ -678,7 +679,6 @@ def calc_fuquan_use_fenhong(df, df_fenhong):
     df: 日k线
     df_fenhong: 分红表
     return: df"""
-    assert(len(df)>0)
     if len(df_fenhong) == 0:
         return df
     #有些分红表先把未来的日期写上了
@@ -785,6 +785,11 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
         df = df.sort_index()
     if method == 'mysql':
         df = mysql.getHisdat(code)
+    if len(df) == 0:
+        return df
+    if code in get_dapan_codes():
+        is_fuquan = False
+        is_Trunover = False
     if is_fuquan:
         df_fenhong = getFenHong(code)
         df = calc_fuquan_use_fenhong(df, df_fenhong)    
@@ -1560,6 +1565,8 @@ def PE(shizhi, jll):
 def calc_CAGR(jll:pd.Series):
     """计算复合增长率"""
     jll = jll.astype(float)
+    if np.isnan(jll.iloc[-1].var()):
+        return np.nan    
     #print(jll)
     #计算当前行比上一行增长的百分比
     #r = jll.pct_change(1).apply(lambda x: format(x, '.2%'))
@@ -1571,7 +1578,7 @@ def calc_CAGR(jll:pd.Series):
     #r = jll.apply(lambda x: (x-first_val)/first_val)
     #r = r/range(len(jll))
     #print(r)
-    return r[-2]
+    return r[-1]
 
 def calc_PEG(pe:float, cagr:float):
     """一般 在1到2之间， 越小越好"""
@@ -1645,6 +1652,8 @@ def calc_boll_left(upper, middle, lower, closes):
 
 def getMainBanCode(code):
     """获取大盘代码"""
+    if code[:3] == '688':
+        return myenum.DaPan.kechuanban
     if code[0] == '3':
         return myenum.DaPan.chuangyeban
     if code[0] == '6':

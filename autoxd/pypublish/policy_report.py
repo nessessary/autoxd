@@ -30,6 +30,8 @@ def df_to_html_table(df: pd.DataFrame, color='white'):
         s = ''
         row = df.iloc[i]
         row = row.drop(df.columns[df_img_col_indexs])
+        if len(row.tolist()) == 1:
+            row = row[0]        
         s = str(row)
         #for j, v in enumerate(df.iloc[i]):
             #if j not in df_img_col_indexs:

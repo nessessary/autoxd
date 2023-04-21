@@ -45,9 +45,13 @@ class DaPan:
     shengzheng = '399001'       #深成
     zhongxiao = '399005'        #中小板
     chuangyeban = '399006'      #创业板
-    etf = '510050'              #50etf
-    all_codes = ['399001', '999999','399005','399002','399006','510050']
+    kechuanban = 'sh000688'       #科创
+    all_codes = ['399001', '999999','399005','399002','399006', 'sh000688']
     
+class ETF:
+    etf_50 = '510050'              #50etf
+    all_codes = [etf_50]
+
 class boll_type:
     msg = ['布林下中轨', '布林下下中轨','布林下轨','布林中轨','布林上轨','布林上中轨']
     boll_down = 0

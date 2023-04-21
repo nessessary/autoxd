@@ -875,13 +875,11 @@ class MyTest(unittest.TestSuite):
 def test():
     from autoxd import stock
     code = jx.CYJM长盈精密
-    df = stock.getFiveFromRedis(code)
-    print(df.columns)
-    df.columns =  ('Open', 'Close','High', 'Low',  'Volume')
-    #mpf.plot(df, type='candle')
+    df = stock.getFiveHisdatDf(code)
     
     from autoxd.pypublish.publish import Publish
     pl = Publish()
+    df = df[-100:]
     drawKlineUseDf(pl, df)
 
     df = stock.getHisdatDataFrameFromRedis(code)
