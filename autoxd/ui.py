@@ -342,6 +342,13 @@ def bar(pl, x, y):
     pl.show()
     pl.close()
     
+def ParallelBar(pl, df):
+    """画多个并列的柱状图"""
+    plt.rcParams['font.sans-serif']=['SimHei'] # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False
+    df.plot.bar()
+    pl.show()
+    
 def ShowTradeResult(pl, bars, signals, returns, signal_dependent_num=0):
     """绘制策略的交易结果
     注意，bars不能有nan，否则画不出箭头
@@ -772,7 +779,7 @@ def Rectangle(pl,quotes, h,l, left, right,clr='b', linewidth=0.25):
     pl.plot([left,left],[h,l], clr, linewidth=linewidth)
     pl.plot([right, right], [h,l], clr, linewidth=linewidth)
 
-def drawKlineUseDf(pl, df):
+def drawKlineUseDf(pl, df, df_boll=None, dpi=100):
     df = copy.deepcopy(df)
     df.columns =  ('Open', 'Close','High', 'Low',  'Volume')
     from autoxd.pypublish import publish
@@ -780,7 +787,15 @@ def drawKlineUseDf(pl, df):
         pl: publish.Publish
         pl.save()
         img_path = pl.get_CurImgFname()
-        mpf.plot(df, type='candle',savefig=img_path, closefig=True)
+        if df_boll is None:
+            ap0 = []
+        else:
+            ap0 = [
+                mpf.make_addplot(df_boll['boll_up'], color = 'orange'),
+                mpf.make_addplot(df_boll['boll_mid'], color = 'g'),
+                mpf.make_addplot(df_boll['boll_lower'], color = 'r'),
+            ]        
+        mpf.plot(df, type='candle',savefig=img_path, closefig=True, figsize=(640/dpi, 480/dpi), addplot=ap0)
     else:
         mpf.plot(df, type='candle')
        
@@ -841,7 +856,7 @@ class MyTest(unittest.TestSuite):
     def _test_ShowTradeResult(self):
         #testShowTradeResult()
         testTradeResult_Boll()
-    def test_AsynDrawKline(self):
+    def _test_AsynDrawKline(self):
         from autoxd import stock
         code = jx.ZCKJ.b
         start_day = '2017-8-25'
@@ -871,36 +886,32 @@ class MyTest(unittest.TestSuite):
         code = jx.THS
         df = stock.getHisdatDataFrameFromRedis(code)
         drawKline(pl, df, legend2=['成交量'])
-
-def test():
-    from autoxd import stock
-    code = jx.CYJM长盈精密
-    df = stock.getFiveHisdatDf(code)
+    def test_parllelbar(self):
+        df = pd.DataFrame([[1, 2, 3], [2, 3, 4]])
+        ParallelBar(pl, df)
+        
+    def test_drawKlineUseDf(self):
+        from autoxd import stock
+        code = jx.CYJM长盈精密
+        df = stock.getFiveHisdatDf(code)
+        
+        from autoxd.pypublish.publish import Publish
+        pl = Publish()
+        df = df[-100:]
+        drawKlineUseDf(pl, df)
     
-    from autoxd.pypublish.publish import Publish
-    pl = Publish()
-    df = df[-100:]
-    drawKlineUseDf(pl, df)
-
-    df = stock.getHisdatDataFrameFromRedis(code)
-    drawKlineUseDf(pl, df)
-
-    pl.publish()
+        df = stock.getHisdatDataFrameFromRedis(code)
+        drawKlineUseDf(pl, df, None, 120)
+    
+        pl.publish()
     
     
         
 if __name__ == "__main__":
-    test()
+    t = MyTest()
+    #t.test_parllelbar()
+    t.test_drawKlineUseDf()
+
     
-    #unittest.main()    
-    
-    #t = MyTest()
-    #t.test_AsynDrawKline()
-    ##t.debug()
-    #suite = unittest.TestSuite()
-    #suite.addTest(t)
-    ##suite.debug()
-    #runner = unittest.TextTestRunner()
-    #runner.run(suite)
-    
+
     

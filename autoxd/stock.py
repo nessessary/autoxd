@@ -41,6 +41,15 @@ def get_codes(flag=myenum.all, n=100):
         codes = shuffle(codes)
         return list(codes[:n])
     return codes
+
+def get_beizhen_codes():
+    """北证A股"""
+    cur_path = os.path.dirname(os.path.abspath(__file__))
+    fname = cur_path + '/datas/tdx_beizhen_codes.csv'
+    df = pd.read_csv(fname, index_col=0, dtype=str)
+    df = df.sort_values(by=df.columns[0])
+    return df[df.columns[0]].tolist()    
+    
 def get_gan_codes():
     """港股通股票列表 """
     cur_path = os.path.dirname(os.path.abspath(__file__))
@@ -843,6 +852,14 @@ def GetCodeName(code):
         return '50ETF'
     cur_path = os.path.dirname(os.path.abspath(__file__))
     fname = cur_path + '/datas/tdx_codes.csv'
+    if code[0] == '8' or code[0] == '4':    #beizhen
+        fname = cur_path + '/datas/tdx_beizhen_codes.csv'
+        df = pd.read_csv(fname, index_col=0, dtype=str)
+        name = df[df[df.columns[0]] == code][df.columns[-1]].values[0]
+        if type(name) == str and len(name) > 0:
+            name = name.replace(' ', '')
+            return name
+        return '新股'
     df = pd.read_csv(fname,index_col=0, dtype=str)
     try:
         name = df[df[df.columns[0]] == code][df.columns[-1]].values[0]
