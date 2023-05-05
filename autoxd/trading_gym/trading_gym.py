@@ -5,16 +5,19 @@ import gym, time
 import pyglet
 import numpy as np
 from numpy.random import randn
-#from gym.envs.classic_control import rendering
+from gym.envs.classic_control import rendering
 import myplot
 from autoxd import myredis, stock, agl
 from autoxd import account
+from autoxd.pinyin import stock_pinyin3 as jx
+from gym import spaces
 
 id = 'autoxd-gym-v0'
 data_interval = 30
 
 class ATgymEnv(gym.Env):
     def __init__(self, code, df):
+        super(ATgymEnv, self).__init__()
         #v = randn(10)
         #self._plot(v)
         df = df.dropna()
@@ -37,10 +40,27 @@ class ATgymEnv(gym.Env):
         
         self._gen_label()
         
+        self.reward_range = (-100, 100)
+    
+        self.action_space = spaces.Discrete(3)
+    
+        # Prices contains the OHCL values for the last five prices
+        self.observation_space = spaces.Box(
+                low=0, high=255, shape=self.imgs[0].shape, dtype=np.int8)
+        
+        
     def step(self, action):
         """action: 1,0,-1
         return: observation, reward, done, info
         """
+        #action = action[0]
+        #if action < 1:
+            #action = 1
+        #elif action < 2:
+            #action = -1
+        #else:
+            #action = 0
+            
         n = data_interval
         self.index += 1
         done = False
@@ -49,7 +69,7 @@ class ATgymEnv(gym.Env):
         #observation = self.df[self.index:self.index+n]
         observation = self._get_observation()
         reward = action
-        info = None
+        info = {}
         code = self.code
         price = self.df['c'][self.index]
         num = 300
@@ -164,29 +184,10 @@ class ATgymEnv(gym.Env):
             self.viewer.draw_polygon(v, color=[1,0,0])
     
 def getData(code):
-    def get(code):
-        from autoxd.warp_pytdx import getFive
-        from autoxd.pinyin import stock_pinyin3 as jx
-        code = jx.YHGF洋河股份
-        df = getFive(code)
-        df = stock.TDX_BOLL_df(df)
-        return df
-    def getLocal(code):
-        import pandas as pd
-        from autoxd.cnn_boll import env
-        fname = '../datas/%s.csv'%(code)
-        fname = env.get_root_path() + '/datas/%s.csv'%(code)
-        import os
-        print(os.path.abspath(fname))
-        df = pd.read_csv(fname)
-        df.index = pd.DatetimeIndex( df[df.columns[0]])
-        df = stock.TDX_BOLL_df(df)
-        return df        
-    #key = myredis.gen_keyname(__file__, getData)
-    ##myredis.delkey(key)
-    #return myredis.createRedisVal(key, getLocal).get()
-    #return getLocal()
-    return get(code)
+    from autoxd.warp_pytdx import getFive
+    df = getFive(code)
+    df = stock.TDX_BOLL_df(df)
+    return df
 
 def genTradeDf(df, num):
     """产生随机交易位置
@@ -201,16 +202,15 @@ def genTradeDf(df, num):
     return df
     
 def test():
-    from autoxd.reinforcement_learning.img_dqn import DQN
-    agent = DQN()    
     
-    df = getData()
+    code = jx.YHGF洋河股份
+    df = getData(code)
     #为了测试缩短df
     df = df[-200:]
     df = genTradeDf(df, int(len(df)/10))
     
     #train
-    env = ATgymEnv(df)
+    env = ATgymEnv(code, df)
     for i in randn(100):
         observation = env.reset()
         assert(observation is not None)
@@ -222,13 +222,10 @@ def test():
             except:
                 pass
             
-            action = agent.egreedy_action(observation)
+            action = 1
             print('action=', action)
             next_observation, reward, done, info = env.step(action)
-            print('observation=', str(next_observation.shape))
-            agent.perceive(observation, action, reward, next_observation, done)
             observation = next_observation
-            #print('%d,%d', action, reward)
             print('reward=', reward)
             if done:
                 break
@@ -251,6 +248,5 @@ def test2():
             total_steps += 1    
     
 if __name__ == "__main__":
-    #test()
+    test()
     #test2()
-    getData()

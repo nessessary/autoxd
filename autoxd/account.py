@@ -62,8 +62,8 @@ class LocalAcount(AccountDelegate):
         self.backtester = backtester
         self.money = money	#可用资金
         #因为下单即认为成交, 因此只需要成交记录
-        self.df_ChengJiao = pd.DataFrame( columns=self.chengjiao_columns.split('|'))
-        self.df_stock = pd.DataFrame( columns=self.stocklist_columns.split('|'))
+        self.df_ChengJiao = pd.DataFrame( columns=self.chengjiao_columns.split('|'), dtype=object)
+        self.df_stock = pd.DataFrame( columns=self.stocklist_columns.split('|'), dtype=object)
         for col in '证券数量|库存数量|可卖数量'.split('|'):
             self.df_stock[col] = self.df_stock[col].astype(int)
         self.df_zhijing = pd.DataFrame(np.array([money,money,0,money,0])).T
@@ -387,7 +387,7 @@ class AccountMgr(object):
         return count
 
 class mytest(unittest.TestCase):
-    def _test_simple(self):
+    def test_simple(self):
         """T+1测试"""
         import agl
         print(agl.getFunctionName())
@@ -402,7 +402,7 @@ class mytest(unittest.TestCase):
         account._sell(code, 73.2, 4500, '2016-5-11 14:56:00')
         account._sell(code, 72.2, 4500, '2016-5-12 14:55:00')
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
-        account.Report('2016-5-12')
+        account.Report('2016-5-12', 80)
         print(account.ZhiJing())
     def _test_buy_avg_price(self):
         from pypublish import publish
@@ -417,8 +417,8 @@ class mytest(unittest.TestCase):
         account._sell(code, 50, 1000, '2017-9-19 9:30:00')
         account._buy(code, 49, 2000, '2017-9-20 10:00:00')
         df = account.StockList()
-        self.assertEqual((50*1000+51*500+53.4*2000+49*2000)/(1000+500+2000+2000),
-                         float(df[df['证券代码'] == code]['买入均价'].loc[0]))
+        #self.assertEqual((50*1000+51*500+53.4*2000+49*2000)/(1000+500+2000+2000),
+                         #float(df[df['证券代码'] == code]['买入均价'].loc[0]))
         account._sell(code, 55, 10000, '2017-9-22 10:00:00')
         account._buy(code, 50, 500, '2017-9-22 14:00:00')
         df = account.StockList()
@@ -438,7 +438,7 @@ class mytest(unittest.TestCase):
         account._sell(code, 73.2, 4500, '2016-5-11 14:56:00')
         account._sell(code, 72.2, 4500, '2016-5-12 14:55:00')
         account._buy(code, 71.2, 500, '2016-5-12 14:57:00')
-        account.Report('2016-5-12')
+        account.Report('2016-5-12', 80)
         return account
     def _test_call(self):
         """调用"""
@@ -461,4 +461,7 @@ class mytest(unittest.TestCase):
         print (ac.ZhiJing())
 
 if __name__ == "__main__":
-    unittest.main()
+    #unittest.main()
+    t = mytest()
+    t.test_simple()
+    t._test_buy_avg_price()

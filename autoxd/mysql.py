@@ -212,7 +212,6 @@ def putFiveHisdatRow(code, date, o,h,l,c,v):
     db.ExecSql('commit')
     
 db = 0
-if 0: createStockDb=StockMysql
 def createStockDb():
     global db
     if db == 0:

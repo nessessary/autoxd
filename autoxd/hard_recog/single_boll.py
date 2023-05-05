@@ -5,11 +5,11 @@
 输出符合技术指标组合的结果
 """
 from autoxd import stock, ui, myredis, agl, sign_observation
-from autoxd.cnn_boll.judge_boll_sign import getBolls
+#from autoxd.cnn_boll.judge_boll_sign import getBolls
 from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd.myenum import MYCOLS_NAME as colname
 from autoxd.hard_recog import kurtosis
-from autoxd.cnn_boll.judge_boll_sign import g_scope_len
+#from autoxd.cnn_boll.judge_boll_sign import g_scope_len
 import pylab as pl
 import pandas as pd
 import random
@@ -20,6 +20,7 @@ from autoxd.pypublish import publish
 #需要处理的字段
 #col_names = [""]
 #cols = ["close_zz_0", "close_zz_1", "boll_low_zz_0", "boll_low_zz_1", "boll_w"]
+g_scope_len = 30
 
 class calc_property:
     close_zz_0 = np.nan #zz的最后两段

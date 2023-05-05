@@ -1,9 +1,9 @@
 #coding:utf-8
 import pandas as pd
-import prettytable
+#import prettytable
 from autoxd import agl
 from autoxd import stock
-from autoxd.cnn_boll.judge_boll_sign import drawBoll, getData, drawfig
+#from autoxd.cnn_boll.judge_boll_sign import drawBoll, getData, drawfig
 
 """单设一个奖励判断， 集成不同的奖励函数
 """
@@ -52,7 +52,7 @@ def five_four(four, action):
 def watch_four():
     """观察当前数据源的four情况"""
     from autoxd.pinyin import stock_pinyin3 as jx
-    code = jx.ZXJT
+    code = jx.ZXJT中信建投
     df = stock.getFiveHisdatDf(code, method='tdx')
     #print(df)
     four = stock.FOUR(df['c'].values)
@@ -67,11 +67,6 @@ class boll_judge_score:
     def __init__(self, data):
         self.data = data
         self.boll_w = (self.data[0] - self.data[2]) / self.data[1]
-    def _show(self):
-        drawfig(200, self.data)
-        pass
-    def _judge(self):
-        pass
     def score(self):
         """见文档docs/readme.md, 分类加权综合评分
         (boll_w - boll_w_pre_corner) / period + (price - boll_up)/price + fn_vol(price, all_prices, all_vols) + four_day
@@ -80,15 +75,6 @@ class boll_judge_score:
         # 转角计算
         
         pass
-    @staticmethod
-    def test():
-        code = '000001'
-        data = getData(code)
-        obj = boll_judge_score(data)
-        obj._show()
     
 if __name__ == '__main__':
-    #genBollRewardTable()
-    #watch_four()
-    boll_judge_score.test()
     print('end')
