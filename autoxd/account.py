@@ -61,6 +61,7 @@ class LocalAcount(AccountDelegate):
         """
         self.backtester = backtester
         self.money = money	#可用资金
+        self.init_money = money
         #因为下单即认为成交, 因此只需要成交记录
         self.df_ChengJiao = pd.DataFrame( columns=self.chengjiao_columns.split('|'), dtype=object)
         self.df_stock = pd.DataFrame( columns=self.stocklist_columns.split('|'), dtype=object)
@@ -69,6 +70,8 @@ class LocalAcount(AccountDelegate):
         self.df_zhijing = pd.DataFrame(np.array([money,money,0,money,0])).T
         self.df_zhijing.columns = self.zhijing_columns.split('|')
         self.df_zhijing.index = pd.DatetimeIndex([date])
+    def getInitMoney(self):
+        return self.init_money
     def _T1(self, date):
         """经过了一天， 重置stock表可卖数量
         date: str datetime"""

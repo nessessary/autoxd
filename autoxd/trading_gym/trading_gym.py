@@ -11,6 +11,9 @@ from autoxd import myredis, stock, agl
 from autoxd import account
 from autoxd.pinyin import stock_pinyin3 as jx
 from gym import spaces
+from stable_baselines3 import DQN
+from stable_baselines3.common.evaluation import evaluate_policy
+from autoxd.account import AccountMgr
 
 id = 'autoxd-gym-v0'
 data_interval = 30
@@ -202,35 +205,42 @@ def genTradeDf(df, num):
     return df
     
 def test():
-    
     code = jx.YHGF洋河股份
     df = getData(code)
     #为了测试缩短df
-    df = df[-200:]
+    test_len = int(len(df)*0.2)
+    #df = df[-test_len:]
     df = genTradeDf(df, int(len(df)/10))
     
     #train
     env = ATgymEnv(code, df)
-    for i in randn(100):
-        observation = env.reset()
-        assert(observation is not None)
-        print('reset', observation.shape)
-        while True:
-            try:
-                env.render()
-                time.sleep(.1)
-            except:
-                pass
-            
-            action = 1
-            print('action=', action)
-            next_observation, reward, done, info = env.step(action)
-            observation = next_observation
-            print('reward=', reward)
-            if done:
-                break
-    
-    #test
+    model = DQN('MlpPolicy', env, verbose=1)
+    model.learn(total_timesteps=20000)
+    mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
+
+    observation = env.reset()
+    reward_total = 0
+    agl.tic()
+    while True:
+        
+        action,_ = model.predict(observation, deterministic=True)
+        #print('action=', action)
+        observation, reward, done, info = env.step(action)
+        try:
+            env.render()
+            time.sleep(.05)
+        except:
+            pass
+        
+        #print('%d,%d', action, reward)
+        reward_total += reward
+        if done:
+            print('reward_total=', reward_total)
+            account = AccountMgr(env.account, df.iloc[-1]['c'], env.code)
+            print(account.total_money())
+            print(env.account.ChengJiao())
+            agl.toc()
+            break
         
 def test2():        
     env = gym.make('CartPole-v0')
