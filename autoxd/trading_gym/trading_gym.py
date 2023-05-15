@@ -27,7 +27,8 @@ class ATgymEnv(gym.Env):
         self.df = df[['boll_up','boll_mid','boll_lower','c']]
         self.index = 0
         self.viewer = None
-        self.df_trade = df['trade']
+        self.df_trade = df['trade'].copy()
+        self.df_trade.is_copy = False
         self.code = code
         #clrs = []
         #for i in range(4):
@@ -65,17 +66,11 @@ class ATgymEnv(gym.Env):
             #action = 0
             
         n = data_interval
-        self.index += 1
-        done = False
-        if self.index >= len(self.df) - n:
-            done = True
-        #observation = self.df[self.index:self.index+n]
-        observation = self._get_observation()
         reward = action
         info = {}
         code = self.code
         price = self.df['c'][self.index]
-        num = 300
+        num = 1000
         reward_buy = self.label_buy[self.index]
         reward_sell = self.label_sell[self.index] 
         if action == 0:
@@ -83,16 +78,31 @@ class ATgymEnv(gym.Env):
                 reward = -1
             else:
                 reward = 0
+        row = self.df.iloc[self.index]
         if action > 0:
             reward = reward_buy
             if reward_buy>0:
-                reward = 2
+                reward = (row['boll_mid'] - price) / row['boll_mid']
             self.account.Order(0, code, price, num)
+            self.df_trade.iat[self.index] = 1
         if action < 0:
             reward = reward_sell
             if reward_sell > 0:
-                reward = 2
+                reward = (price - row['boll_mid']) / row['boll_mid']
             self.account.Order(1, code, price, num)
+            self.df_trade.iat[self.index] = -1
+            
+        self.index += 1
+        done = False
+        if self.index > len(self.df) - 1:
+            self.index = data_interval
+        #observation = self.df[self.index:self.index+n]
+        observation = self._get_observation()
+            
+            
+        acount_mgr = AccountMgr(self.account, price, self.code)
+        if abs(acount_mgr.total_money() - self.account.init_money) / self.account.init_money > 0.05:
+            done = True
         return observation, reward, done, info
 
     def reset(self):
@@ -201,7 +211,7 @@ def genTradeDf(df, num):
     df['trade'] = 0
     # -1, 0, 1
     a = np.random.randint(0,3, num, dtype=int) - 1
-    df.loc[df.index[indexs], 'trade'] = a
+    #df.loc[df.index[indexs], 'trade'] = a
     return df
     
 def test():
