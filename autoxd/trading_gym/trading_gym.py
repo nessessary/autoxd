@@ -42,8 +42,6 @@ class ATgymEnv(gym.Env):
 
         self.imgs = myplot.df_to_imgs(self.df, data_interval, 128, bInit=True)
         
-        self._gen_label()
-        
         self.reward_range = (-100, 100)
     
         self.action_space = spaces.Discrete(3)
@@ -57,13 +55,6 @@ class ATgymEnv(gym.Env):
         """action: 1,0,-1
         return: observation, reward, done, info
         """
-        #action = action[0]
-        #if action < 1:
-            #action = 1
-        #elif action < 2:
-            #action = -1
-        #else:
-            #action = 0
             
         n = data_interval
         reward = action
@@ -71,24 +62,15 @@ class ATgymEnv(gym.Env):
         code = self.code
         price = self.df['c'][self.index]
         num = 1000
-        reward_buy = self.label_buy[self.index]
-        reward_sell = self.label_sell[self.index] 
         if action == 0:
-            if reward_buy>0 or reward_sell>0:
-                reward = -1
-            else:
-                reward = 0
+            reward = 0
         row = self.df.iloc[self.index]
         if action > 0:
-            reward = reward_buy
-            if reward_buy>0:
-                reward = (row['boll_mid'] - price) / row['boll_mid']
+            reward = (row['boll_mid'] - price) / row['boll_mid']
             self.account.Order(0, code, price, num)
             self.df_trade.iat[self.index] = 1
         if action < 0:
-            reward = reward_sell
-            if reward_sell > 0:
-                reward = (price - row['boll_mid']) / row['boll_mid']
+            reward = (price - row['boll_mid']) / row['boll_mid']
             self.account.Order(1, code, price, num)
             self.df_trade.iat[self.index] = -1
             
@@ -160,26 +142,6 @@ class ATgymEnv(gym.Env):
         index = self.index - data_interval
         return self.imgs[index]
     
-    def _gen_label(self):
-        """整体计算一次， 在构造中调用"""
-        df = self.df
-        #有交易机会那么加1
-        #一个index是5分钟， 4个小时是48个周期
-        n = 48
-        r = 0.02
-        self.label_sell = np.zeros(len(df))
-        self.label_buy = np.zeros(len(df))
-        #分别记录买卖的label
-        index = 0
-        for i, row in df.iterrows():
-            cur_close = row['c']
-            index2 = min(index+n, len(df)-1)
-            after_high = np.max(df['c'][index:index2])
-            self.label_sell[index] = (after_high - cur_close) / cur_close > r
-            after_low = np.min(df['c'][index:index2])
-            self.label_buy[index] = (cur_close - after_low) / cur_close > r
-            index += 1
-
     def _draw_arrow(self, pt, is_sell):
         """画交易点, 绘制一个锐角三角形
         pt: (x,y) 为三角形的顶点
@@ -210,7 +172,7 @@ def genTradeDf(df, num):
     df.is_copy = False
     df['trade'] = 0
     # -1, 0, 1
-    a = np.random.randint(0,3, num, dtype=int) - 1
+    #a = np.random.randint(0,3, num, dtype=int) - 1
     #df.loc[df.index[indexs], 'trade'] = a
     return df
     

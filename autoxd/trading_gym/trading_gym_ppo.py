@@ -7,7 +7,7 @@ import numpy as np
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import PPO
 import datetime as dt
-from autoxd import stock
+from autoxd import stock, agl
 from autoxd.pinyin import stock_pinyin3 as jx
 
 MAX_ACCOUNT_BALANCE = 2147483647
@@ -27,6 +27,8 @@ class StockTradingEnv(gym.Env):
         super(StockTradingEnv, self).__init__()
 
         self.df = df
+        self.ma = pd.DataFrame(stock.MA(df['Close'].values))
+        self.ma = self.ma.fillna(method='backfill')
         self.reward_range = (0, MAX_ACCOUNT_BALANCE)
 
         # Actions of the format Buy x%, Sell x%, Hold, etc.
@@ -35,21 +37,22 @@ class StockTradingEnv(gym.Env):
 
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
-            low=0, high=1, shape=(6, 6), dtype=np.float16)
+            low=0, high=1, shape=(4, 6), dtype=np.float16)
 
     def _next_observation(self):
         # Get the stock data points for the last 5 days and scale to between 0-1
         frame = np.array([
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Open'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'High'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Low'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Close'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step: self.current_step +
-                        5, 'Volume'].values / MAX_NUM_SHARES,
+            #self.df.loc[self.current_step: self.current_step +
+                        #5, 'Open'].values / MAX_SHARE_PRICE,
+            #self.df.loc[self.current_step: self.current_step +
+                        #5, 'High'].values / MAX_SHARE_PRICE,
+            #self.df.loc[self.current_step: self.current_step +
+                        #5, 'Low'].values / MAX_SHARE_PRICE,
+            self.ma.loc[self.current_step-5:self.current_step, self.ma.columns[0]].values / MAX_SHARE_PRICE, 
+            self.df.loc[self.current_step-5: self.current_step +
+                        5-5, 'Close'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step-5: self.current_step +
+                        5-5, 'Volume'].values / MAX_NUM_SHARES,
         ])
 
         # Append additional data and scale each value to between 0-1
@@ -61,6 +64,7 @@ class StockTradingEnv(gym.Env):
             self.total_shares_sold / MAX_NUM_SHARES,
             self.total_sales_value / (MAX_NUM_SHARES * MAX_SHARE_PRICE),
         ]], axis=0)
+        #obs = frame
 
         return obs
 
@@ -106,8 +110,8 @@ class StockTradingEnv(gym.Env):
 
         self.current_step += 1
 
-        if self.current_step > len(self.df.loc[:, 'Open'].values) - 6:
-            self.current_step = 0
+        if self.current_step > len(self.df.loc[:, 'Open'].values) - 6 + 5:
+            self.current_step = 0 + 5
 
         delay_modifier = (self.current_step / MAX_STEPS)
 
@@ -130,7 +134,7 @@ class StockTradingEnv(gym.Env):
 
         # Set the current step to a random point within the data frame
         self.current_step = random.randint(
-            0, len(self.df.loc[:, 'Open'].values) - 6)
+            0, len(self.df.loc[:, 'Open'].values) - 6) + 5
 
         return self._next_observation()
 
