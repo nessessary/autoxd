@@ -27,8 +27,7 @@ class StockTradingEnv(gym.Env):
         super(StockTradingEnv, self).__init__()
 
         self.df = df
-        self.ma = pd.DataFrame(stock.MA(df['Close'].values))
-        self.ma = self.ma.fillna(method='backfill')
+
         self.reward_range = (0, MAX_ACCOUNT_BALANCE)
 
         # Actions of the format Buy x%, Sell x%, Hold, etc.
@@ -37,7 +36,7 @@ class StockTradingEnv(gym.Env):
 
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
-            low=0, high=1, shape=(4, 6), dtype=np.float16)
+            low=0, high=1, shape=(5, 6), dtype=np.float16)
 
     def _next_observation(self):
         # Get the stock data points for the last 5 days and scale to between 0-1
@@ -48,12 +47,14 @@ class StockTradingEnv(gym.Env):
                         #5, 'High'].values / MAX_SHARE_PRICE,
             #self.df.loc[self.current_step: self.current_step +
                         #5, 'Low'].values / MAX_SHARE_PRICE,
-            self.ma.loc[self.current_step-5:self.current_step, self.ma.columns[0]].values / MAX_SHARE_PRICE, 
+            self.df.loc[self.current_step-5:self.current_step, 'ma60'].values / MAX_SHARE_PRICE, 
+            self.df.loc[self.current_step-5:self.current_step, 'ma5'].values / MAX_SHARE_PRICE, 
             self.df.loc[self.current_step-5: self.current_step +
                         5-5, 'Close'].values / MAX_SHARE_PRICE,
             self.df.loc[self.current_step-5: self.current_step +
                         5-5, 'Volume'].values / MAX_NUM_SHARES,
         ])
+        #print(frame, self.current_step)
 
         # Append additional data and scale each value to between 0-1
         obs = np.append(frame, [[
@@ -117,7 +118,7 @@ class StockTradingEnv(gym.Env):
 
         reward = self.balance * delay_modifier
         done = self.net_worth <= 0
-
+        
         obs = self._next_observation()
 
         return obs, reward, done, {}
@@ -160,14 +161,19 @@ def test():
     df = stock.getHisdatDf(code=jx.THS同花顺)
     df.columns = ['High', 'Low','Open', 'Close', 'Volume']
     df['Date'] = df.index
-    df.index = range(len(df))
+    
+    # calc ma
+    df['ma5'] = stock.MA(df['Close'])
+    df['ma60'] = stock.MA(df['Close'], 60)
+    df = df[60:]
+    df.index = range(len(df))   #  step id == index id
     
     # The algorithms require a vectorized environment to run
     env = DummyVecEnv([lambda: StockTradingEnv(df)])
     
     #model = PPO2(MlpPolicy, env, verbose=1)
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=20000)
+    model.learn(total_timesteps=20000*5)
     
     obs = env.reset()
     for i in range(2000):

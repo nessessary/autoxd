@@ -807,35 +807,39 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
         df = convertVolToStockTrunover(df, df_gubenbiangen)
     return df
 
-def getFiveHisdatDf(code, start_day='', end_day='', method='tdx', path=''):
+def getFiveHisdatDf(code, start_day='', end_day='', method='tdx', path='', is_Trunover=False):
     """tdx五分钟 的vol是日线的100倍
     method: mysql , tdx, local, path
     return: df col('ohlcu')"""
     if method == 'mysql':
-        return mysql.getFiveHisdat(code,start_day,end_day)
+        df = mysql.getFiveHisdat(code,start_day,end_day)
     if method == 'tdx':
-        return tdx.getFive(code)
+        df = tdx.getFive(code)
     if method == 'local':
         fname = 'datas/'
         fname += code + '.csv'
         df = pd.read_csv(fname)
         df.index = pd.DatetimeIndex( df[df.columns[0]])
-        return df
     if method == 'live':
-        return LiveData().getFiveMinHisdat(code)
+        df = LiveData().getFiveMinHisdat(code)
     if method == 'path':
         fname = code + '.csv'
         fname = os.path.join(path, fname)
         df = pd.read_csv(fname)
         df.index = pd.DatetimeIndex( df[df.columns[0]])
-        return df
     if method == 'tushare':
         import tushare as ts
         df = ts.get_hist_data(code, ktype='5')[['high','low','open','close','volume']]
         df.index = pd.DatetimeIndex(df.index)
         df.columns = list('hlocv')
         df = df.sort_index()
-        return df
+    
+    if is_Trunover:
+        df['v'] = df['v']/100
+        df_gbbg = getGubenbiangen(code)
+        df = convertVolToStockTrunover(df, df_gbbg)
+    
+    return df        
     
         
 def IsShangHai(code):
