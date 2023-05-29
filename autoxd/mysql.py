@@ -220,6 +220,33 @@ def createStockDb():
 def get_codes():
     return createStockDb().getGupiao()
 
+class myException(Exception):
+    def __init__(self, errorcode, info):
+        self.errorcode = errorcode
+        self.info = info
+        
+class TblYc(object):
+    """预测表"""
+    def __init__(self):
+        self.db = createStockDb()
+        
+    def insert(self, corp, name,code,adjust, jll,yc_year: int,report_date):
+        try:
+            
+            sql = "insert into yc(corp, name,code,adjust,jll,yc_year,report_date) values('%s','%s','%s','%s','%s',%d,'%s');" %\
+                (corp, name,code,adjust, jll,yc_year,report_date)
+            self.db.ExecSql(sql)
+            self.db.ExecSql('commit')
+        except MySQLdb.IntegrityError as e:
+            # unique conflict
+            pass
+                
+        return True
+        
+    def get(self, code, year):
+        sql = "select * from yc where yc.code=%s and yc.yc_year >= year"
+        return pdsql.read_sql(sql, self.db.conn)
+        
 class Tc:
     """保存实盘交易信息"""
     class enum:
