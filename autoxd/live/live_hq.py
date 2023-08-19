@@ -26,7 +26,8 @@ def get_custom_codes():
     fname = os.path.join(dir_path , filted_files[0])
     
     df = pd.read_csv(fname, sep='\t', encoding='gbk')
-    df = df[:-1][df.columns[:2]]    
+    df = df[:-1][df.columns[:2]]
+    df = df[df[df.columns[0]].map(lambda x: len(x)==6)]
     
     return df[df.columns[0]].tolist()
 

@@ -244,7 +244,7 @@ class TblYc(object):
         return True
         
     def get(self, code, year):
-        sql = "select * from yc where yc.code=%s and yc.yc_year >= year"
+        sql = "select * from yc where yc.code=%s and yc.yc_year >= %s" % (code, year)
         return pdsql.read_sql(sql, self.db.conn)
         
 class Tc:

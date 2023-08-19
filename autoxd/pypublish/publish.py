@@ -117,9 +117,9 @@ class Publish:
         #写入html
         fname = self.path+self.name+str(os.getpid())+'.html'
         if self.platform_id == 0:
-            f = open(fname,'w')
+            f = open(fname,'w', errors='ignore')
         else:
-            f = codecs.open(fname, 'w', encoding='utf_16')
+            f = codecs.open(fname, 'w', encoding='utf_16', errors='ignore')
         f.write(self.t_html)
         f.close()
         

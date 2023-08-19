@@ -167,7 +167,7 @@ def run_fn(fn,args,mod,cpu_num=0):
     if cpu_num == 1:
         return fn(args)
     if cpu_num == 0:
-        cpu_num = os.cpu_count()
+        cpu_num = os.cpu_count() - 1
     multi = MultiSubProcess()
     multi.Map(cpu_num, mod,  fn, args)
     multi.Run()	  
