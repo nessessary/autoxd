@@ -72,8 +72,7 @@ class LiveHq(object):
             #print(agl.float_to_2(zhangfu))
             if so.assemble(
                (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[1] and close > self.dict_speaked[code]),
-               #1 if (code != jx.JSJD晶盛机电) else (close > 65.5 if close > boll_poss[2] else 1) ,  #对某一股票进行限定 
-               #abs(zhangfu) > 1,
+               abs(zhangfu) > 0.9, 
             ):
                 msg = f"{close}"
                 self.dict_speaked[code] = close
@@ -106,7 +105,6 @@ class LiveHq(object):
         # get hq
         while stock.is_livetime(): 
             for code in codes:
-                #df = myredis.gen_data(__file__, hq_loop, lambda: tdx.getFive(code))
                 try:
                     df = tdx.getFive(code, count)
                     msg = self.run(df, code)
@@ -114,6 +112,14 @@ class LiveHq(object):
                 except:
                     pass
             time.sleep(60)
+        for code in codes:
+            try:
+                df = tdx.getFive(code, count)
+                close = df['c'].values[-1]
+                msg = "[%s  %s]" % (stock.GetCodeName(code), close)
+                self.speak(msg)
+            except:
+                pass
 
 if __name__ == "__main__":
     hq = LiveHq()
