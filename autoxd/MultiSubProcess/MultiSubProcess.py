@@ -157,7 +157,7 @@ def main(args):
 
 #快捷执行
 def run_fn(fn,args,mod,cpu_num=0):
-    """多进程执行, 并行
+    """多进程执行, 并行; 在__main__里执行， 不能在全局状态下执行
     fn : 执行函数, Run(codes='', task_id=0)
     args: fn使用的参数, 只能传数组
     mod: 模块名称， 必须有 __file__

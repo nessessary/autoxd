@@ -72,7 +72,7 @@ class LiveHq(object):
             #print(agl.float_to_2(zhangfu))
             if so.assemble(
                (self.dict_speaked[code] > close and close < boll_poss[-2]) or (close > boll_poss[1] and close > self.dict_speaked[code]),
-               abs(zhangfu) > 0.9, 
+               #abs(zhangfu) > 0.5, 
             ):
                 msg = f"{close}"
                 self.dict_speaked[code] = close
@@ -117,6 +117,9 @@ class LiveHq(object):
                 df = tdx.getFive(code, count)
                 close = df['c'].values[-1]
                 msg = "[%s  %s]" % (stock.GetCodeName(code), close)
+                if msg != '':
+                    t = time.strftime('%H:%M:%S', time.localtime(time.time()))
+                    print(f"{t} {msg}")                
                 self.speak(msg)
             except:
                 pass
