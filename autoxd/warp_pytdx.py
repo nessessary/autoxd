@@ -1,6 +1,8 @@
 #coding:utf8
 
-"""pytdx test"""
+"""pytdx test
+通达信网络在8：45-9：05可能访问不了
+"""
 from __future__ import print_function
 import sys
 from pytdx.hq import TdxHq_API as tdx

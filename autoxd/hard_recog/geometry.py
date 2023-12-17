@@ -213,6 +213,7 @@ def Unittest():
     s = getFourPointArea(pts)
     #help.print2("获取四边形面积", pts, s)
     
+        
 def main(args):
     Unittest()
     

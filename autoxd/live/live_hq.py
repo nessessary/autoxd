@@ -10,7 +10,9 @@ import time,os
 import pandas as pd
 try:
     import get_detect_result
+    g_have_detect = False
 except:
+    g_have_detect = False
     pass
 
 def get_custom_codes():
@@ -78,17 +80,18 @@ class LiveHq(object):
                 self.dict_speaked[code] = close
             
             # hard_recog check ...
-            if 0:
+            if g_have_detect:
                 
                 # shape recognize
                 try:
-                    label = get_detect_result.detect(code, df)
-                    label = label[-1][0]
-                    if label >= 0:
-                        labels = ['u1','u2','u3','d1','d2','d3']
-                        msg = f"{labels[label]}"
+                    df['upper'] = upper
+                    df['middle'] = middle
+                    df['lower'] = lower                    
+                    r = get_detect_result.zmq_detect(df[-100:])
+                    #box[4], conf, class_index
+                    if len(r) > 0:
+                        msg = f'detected {close}'
                         self.dict_speaked[code] = close
-                    print('run shape recog', label)
                 except:
                     pass
             
@@ -121,8 +124,11 @@ class LiveHq(object):
                     t = time.strftime('%H:%M:%S', time.localtime(time.time()))
                     print(f"{t} {msg}")                
                 self.speak(msg)
+                
             except:
                 pass
+        if g_have_detect:
+            get_detect_result.zmq_close()
 
 if __name__ == "__main__":
     hq = LiveHq()

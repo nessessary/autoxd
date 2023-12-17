@@ -325,13 +325,13 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
     df = df[df['shizhi']>0]
     df['zhishu'] = df['shizhi'] / df['jizhun']
     return df['zhishu']
-def test_calc_bankuai_zhishu():
-    codes = ['600100', '600601', '600680', '600850', '600855', '603019', '000021', '000066', '000748', '000938', '000948', '000977', '000997', '002027', '002152', '002177', '002197', '002236', '002308', '002312', '002376', '002383', '002415', '002528', '002577', '300042', '300045', '300065', '300130', '300155', '300177', '300202', '300270', '300302', '300333', '300367', '300368', '300386']
-    ltgbs = [20.7, 21.95, 2.57, 1.71, 3.3, 0.75, 14.7, 13.24, 3.76, 2.06, 2.31, 4.3, 5.08, 2.03, 8.63, 5.43, 2.11, 6.6, 8.36, 3.04, 4.88, 1.1, 31.5, 3.38, 2.83, 0.73, 1.55, 1.61, 0.74, 1.78, 2.36, 5.5, 0.63, 0.41, 0.81, 0.61, 0.35, 0.2]
-    date = '2015-8-4'
-    #calc_bankuai_zhishu(codes, date, agl.CurDay(), ltgbs)
-    calc_bankuai_fenshi_zhishu(codes, date, agl.CurDay(), ltgbs)
-def run_adx():
+#def test_calc_bankuai_zhishu():
+    #codes = ['600100', '600601', '600680', '600850', '600855', '603019', '000021', '000066', '000748', '000938', '000948', '000977', '000997', '002027', '002152', '002177', '002197', '002236', '002308', '002312', '002376', '002383', '002415', '002528', '002577', '300042', '300045', '300065', '300130', '300155', '300177', '300202', '300270', '300302', '300333', '300367', '300368', '300386']
+    #ltgbs = [20.7, 21.95, 2.57, 1.71, 3.3, 0.75, 14.7, 13.24, 3.76, 2.06, 2.31, 4.3, 5.08, 2.03, 8.63, 5.43, 2.11, 6.6, 8.36, 3.04, 4.88, 1.1, 31.5, 3.38, 2.83, 0.73, 1.55, 1.61, 0.74, 1.78, 2.36, 5.5, 0.63, 0.41, 0.81, 0.61, 0.35, 0.2]
+    #date = '2015-8-4'
+    ##calc_bankuai_zhishu(codes, date, agl.CurDay(), ltgbs)
+    #calc_bankuai_fenshi_zhishu(codes, date, agl.CurDay(), ltgbs)
+def test_adx():
     code = '300033'
     df_five_hisdat = getFiveHisdatDf(code,'2016-1-1')
     highs, lows, closes = df_five_hisdat['h'], df_five_hisdat['l'], df_five_hisdat['c']    
@@ -358,7 +358,7 @@ class mytest(unittest.TestCase):
         BETA(df['c'], df_bk,pl)
 
     def test_calc_fuquan(self):
-        code = jx.SNYG
+        code = jx.SNYL赛诺医疗
         df = getHisdatDf(code)
         print(df)
         df = getHisdatDf(code, is_Trunover=True)
@@ -486,6 +486,9 @@ class mytest(unittest.TestCase):
         ui.DrawZZ(pl, zz)
     def _test_DumpToDir(self):
         DumpToDir()
+    def test_others(self):
+        #test_calc_bankuai_zhishu()
+        pass
 
 def IsKaiPan():
     """确定当前是处于开盘时间 return: bool"""
@@ -546,7 +549,7 @@ def calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs):
         return df_fenshi
     days = get_kaipan_days()
     #cur_day = agl.CurDay()
-    df = pd.DataFrame(index = pd.period_range(date, end_day,freq='1min').to_datetime())
+    df = pd.DataFrame(index = pd.period_range(date, end_day,freq='1min'))
     for i, code in enumerate(codes):
         #print 'calc_bankuai_zhishu ', code
         df_fenshi = getFenshiDfUseRedis(code, date, end_day)
@@ -715,15 +718,15 @@ def calc_fuquan_use_fenhong(df, df_fenhong):
             df['c'].loc[:date] /= gu
             df['l'].loc[:date] /= gu
     return df	    
-def test_calc_fuquan_use_fenhong():
-    ths = createThs()
-    code = get_codes(myenum.randn, 1)[0]
-    print(code)
-    df = mysql.getHisdat(code)
-    one = ths.createThsOneCode(code)
-    df_fenhong = one.get_fenhong()
-    print(df_fenhong)
-    print(calc_fuquan_use_fenhong(df, df_fenhong))
+#def test_calc_fuquan_use_fenhong():
+    #ths = createThs()
+    #code = get_codes(myenum.randn, 1)[0]
+    #print(code)
+    #df = mysql.getHisdat(code)
+    #one = ths.createThsOneCode(code)
+    #df_fenhong = one.get_fenhong()
+    #print(df_fenhong)
+    #print(calc_fuquan_use_fenhong(df, df_fenhong))
 
 ###基本面#######
 g_table_fenhong = None    
@@ -835,9 +838,11 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='tdx', path='', is_Tr
         df = df.sort_index()
     
     if is_Trunover:
-        df['v'] = df['v']/100
-        df_gbbg = getGubenbiangen(code)
-        df = convertVolToStockTrunover(df, df_gbbg)
+        if len(df) > 0:
+            df['v'] = df['v']/100
+            df_gbbg = getGubenbiangen(code)
+            if len(df_gbbg) > 0:
+                df = convertVolToStockTrunover(df, df_gbbg)
     
     return df        
     
@@ -1454,23 +1459,23 @@ def FENSHI_MA(df):
     df['avg'] = avg
     #print df
     return df
-def test_JiShuZhiBiao():
-    """测试技术指标"""
-    pl = publish.Publish()
-    code = '002440'
-    code = '999999'
+#def test_JiShuZhiBiao():
+    #"""测试技术指标"""
+    #pl = publish.Publish()
+    #code = '002440'
+    #code = '999999'
 
-    #计算分时的乖离率，rsi
-    df = FenshiEx(code, '2014-10-8', '2014-10-8').df
-    #df = FENSHI_MA(df)
-    df = FENSHI_BIAS(df)
-    df['rsi'] = RSI(df['p'])
-    df1 = df.drop(['v','b','bias','rsi'], axis=1)
-    ui.drawDf(pl, df1)
-    df2 = df.drop(['v','b','p','avg', 'rsi'], axis=1)
-    ui.drawDf(pl, df2)
-    df2 = df.drop(['v','b','p','avg', 'bias'], axis=1)
-    ui.drawDf(pl, df2)
+    ##计算分时的乖离率，rsi
+    #df = FenshiEx(code, '2014-10-8', '2014-10-8').df
+    ##df = FENSHI_MA(df)
+    #df = FENSHI_BIAS(df)
+    #df['rsi'] = RSI(df['p'])
+    #df1 = df.drop(['v','b','bias','rsi'], axis=1)
+    #ui.drawDf(pl, df1)
+    #df2 = df.drop(['v','b','p','avg', 'rsi'], axis=1)
+    #ui.drawDf(pl, df2)
+    #df2 = df.drop(['v','b','p','avg', 'bias'], axis=1)
+    #ui.drawDf(pl, df2)
 
 def FENSHI_BIAS(df):
     """分时乖离率计算 df: 分时 return: df 新增bias列"""
@@ -1646,6 +1651,7 @@ def calcChips(df:pd.DataFrame, n=0.01, m=1, k=1):
     
     df_chips[0] = df_chips[0].astype(float)
     df_chips = df_chips.sort_values(by=0, ascending=False)
+    df_chips.index = range(len(df_chips))
     return df_chips
     
 def boll_poss(upper, middle, lower):
@@ -1745,23 +1751,23 @@ def df_zhangfu(df):
     df.loc[:,'zhangfu']=(df['c'][1:] - c[:-1])/c[:-1]
     return df
 
-def test_fenshi_rsi():
-    """测试一个分时的rsi计算"""
-    code = '300059'
-    fenshi = CreateFenshiPd(code, '2015-8-6').resample('1min').mean().dropna()
-    print( fenshi)
-    closes = fenshi['p']
-    print(closes)
-    rsi = RSI(closes, 6)
-    print(rsi)
-    ui.DrawTs(pl, rsi)
-def test_hisdat_redis():
-    codes = get_codes(myenum.all)
-    end_day = agl.CurDay()
-    #end_day = '2015-8-16'
-    start_day = help.MyDate.s_Dec(end_day, -15)    
-    for code in codes:
-        getHisdatDataFrameFromRedis(code, start_day, end_day)
+#def test_fenshi_rsi():
+    #"""测试一个分时的rsi计算"""
+    #code = '300059'
+    #fenshi = CreateFenshiPd(code, '2015-8-6').resample('1min').mean().dropna()
+    #print( fenshi)
+    #closes = fenshi['p']
+    #print(closes)
+    #rsi = RSI(closes, 6)
+    #print(rsi)
+    #ui.DrawTs(pl, rsi)
+#def test_hisdat_redis():
+    #codes = get_codes(myenum.all)
+    #end_day = agl.CurDay()
+    ##end_day = '2015-8-16'
+    #start_day = help.MyDate.s_Dec(end_day, -15)    
+    #for code in codes:
+        #getHisdatDataFrameFromRedis(code, start_day, end_day)
 
 #----------------------------------------------------------------------
 def test_fenhong():
@@ -1787,7 +1793,7 @@ def debug_calcChips():
                 #df_chips = df_chips[df_chips[1]>0]
                 ui.drawChips(pl, df_chips, df,title)
     
-def test_chips(codes):
+def run_test_chips(codes):
     pl = publish.Publish()
     
     for code in codes:
@@ -1821,7 +1827,7 @@ def test_calcChips():
         cpu_num = 1
         codes = [code]
     from autoxd.MultiSubProcess import MultiSubProcess
-    MultiSubProcess.run_fn(test_chips, codes, __file__, cpu_num=cpu_num)
+    MultiSubProcess.run_fn(run_test_chips, codes, __file__, cpu_num=cpu_num)
           
 def test_codes():
     codes = get_codes()

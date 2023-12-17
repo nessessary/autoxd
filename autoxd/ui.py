@@ -294,7 +294,8 @@ def drawChips(pl, df, df_close, title=""):
     df_close['c'].plot()
     pl.subplot(122)
     chips = df[df.columns[1]].values
-    pl.barh(df[df.columns[0]].values, chips)
+    pl.barh(df[df.columns[0]].values, chips, height=0.01)
+    #df.hist(bins=len(df), orientation='horizontal')
     pl.show()
     pl.close()    
     

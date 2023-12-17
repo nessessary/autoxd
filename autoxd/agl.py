@@ -407,6 +407,9 @@ def Print(a1, a2='', a3='', a4='', a5='', a6='', a7=''):
     s += ''
     print(s)
 
+def print_single_line(s):
+    print('\r', s, end="", flush=True)
+    
 def ReadFile(fname):
     """return: str"""
     f = open(fname, 'r')

@@ -39,7 +39,6 @@ class Expire(object):
                 set_obj(self.EXPIRE_KEY, self.data)
                 
 g_expire = None
-g_expire : Expire
 
 def createRedis():
     #assert(False)
