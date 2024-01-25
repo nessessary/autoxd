@@ -275,7 +275,7 @@ def main_run():
     if myredis.createRedis() is None:
         cpu_num = 1
     #cpu_num = 1
-    codes = stock.get_codes(stock.myenum.randn, cpu_num)
+    codes = stock.get_codes(n=cpu_num)
     #agl.startDebug()
     #if agl.IsDebug():
         #codes = [jx.ZCKJ至纯科技]

@@ -6,14 +6,13 @@
 
 
 #
-one = 0	    #一个
-some = 2    #固定的列表
-all = 3	    #全部遍历
-exlucde_st = 4 #不包含st
-randn = 11
-hang_ye = 12
-exclude_dapan = 15  #排除大盘指数
-
+all = 0	    #全部遍历
+exclude_st = 1 #不包含st
+randn = 0x100
+exclude_dapan = 2  #排除大盘指数
+exclude_beizhen = 4 #剔除北证
+exclude_cyb = 8 #剔除创业板
+exclude_kcb = 0x10 #科创
 
 #描述曲线匹配形态
 class Curve:

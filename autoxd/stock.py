@@ -20,23 +20,31 @@ from autoxd import fenhong,mysql
 from autoxd.pypublish import publish
 #pl = publish.Publish()
 
-def get_codes(flag=myenum.all, n=100):
+def get_codes(flag=myenum.exclude_beizhen|myenum.exclude_st, n=0):
     """获取有效的股票列表, enum现在改为myenum
-    flag : enum.all 等枚举 , enum.exclude_cyb 排除创业板, enum.rand10 随机选10个
-    n : enum.rand时使用
+    flag : myenum
+    n : >0 random select 
     return: list """
     def readTDXlist():
         #从本地csv读取
         cur_path = os.path.dirname(os.path.abspath(__file__))
         fname = cur_path + '/datas/tdx_codes.csv'
         df = pd.read_csv(fname, index_col=0, dtype=str)
-        df = df.sort_values(by=df.columns[0])
-        if flag == myenum.exlucde_st:
-            df = df[df[df.columns[1]].map(lambda x: x.find('ST')<0)]
-        return df[df.columns[0]].tolist()
+        return df
+    df = readTDXlist()
+    df = df.sort_values(by=df.columns[0])
+    
+    if flag & myenum.exclude_st == myenum.exclude_st:
+        df = df[df[df.columns[1]].map(lambda x: x.find('ST')<0)]
+    if flag & myenum.exclude_beizhen == myenum.exclude_beizhen:
+        df = df[df[df.columns[0]].map(lambda x: int(x[0])<=6)]
+    if flag & myenum.exclude_cyb == myenum.exclude_cyb:
+        df = df[df[df.columns[0]].map(lambda x: x[0]!='3')]
+    if flag & myenum.exclude_kcb == myenum.exclude_kcb:
+        df = df[df[df.columns[0]].map(lambda x: x[: 3]!='688')]
         
-    codes = readTDXlist()    
-    if flag == myenum.randn:
+    codes =  df[df.columns[0]].tolist()
+    if n > 0:
         from sklearn.utils import shuffle
         codes = shuffle(codes)
         return list(codes[:n])
