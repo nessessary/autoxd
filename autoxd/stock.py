@@ -787,7 +787,7 @@ def convertVolToStockTrunover(df, df_GuBen_change):
 
 
 
-def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' , is_Trunover=False):
+def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tdx' , is_Trunover=False):
     """从数据库获取日线, 复权 
     is_fuquan : 使用前复权
     is_Trunover: 转换为换手率
@@ -797,12 +797,6 @@ def getHisdatDf(code, start_day='',end_day='',is_fuquan=True, method='tushare' ,
         df.index = pd.DatetimeIndex(df.index.map(lambda x: agl.DateTimeToDate(str(x))))
         #df = df[['high','low','open','close','vol']]
         #df.columns = list('hlocv')
-    if method == 'tushare':
-        import tushare as ts
-        df = ts.get_hist_data(code)[['high','low','open','close','volume']]
-        df.index = pd.DatetimeIndex(df.index)
-        df.columns = list('hlocv')
-        df = df.sort_index()
     if method == 'mysql':
         df = mysql.getHisdat(code)
     if len(df) == 0:
