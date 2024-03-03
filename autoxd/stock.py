@@ -1226,7 +1226,7 @@ class StockTime:
         return self.minute + object.getMinute()
     @staticmethod
     def ToTime(stock_fenshi_time):
-        hour = stock_fenshi_time/60
+        hour = int(stock_fenshi_time/60)
         minute = stock_fenshi_time%60
         return hour, minute
     @staticmethod

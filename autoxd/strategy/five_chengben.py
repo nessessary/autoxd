@@ -78,7 +78,7 @@ class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
         df_five_hisdat = self.data.get_hisdat(code, dtype='5min')	#5分钟k线
         if len(df_five_hisdat)<=30:
             return
-
+    
         account = self._getAccount()	#获取交易账户
         price = float(df_five_hisdat.iloc[-1]['c'])    #当前股价
         closes = df_hisdat['c']
@@ -274,7 +274,6 @@ def main_run():
     cpu_num = 2
     if myredis.createRedis() is None:
         cpu_num = 1
-    #cpu_num = 1
     codes = stock.get_codes(n=cpu_num)
     #agl.startDebug()
     #if agl.IsDebug():

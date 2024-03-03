@@ -33,28 +33,28 @@ class StockTradingEnv(gym.Env):
         # Actions of the format Buy x%, Sell x%, Hold, etc.
         self.action_space = spaces.Box(
             low=np.array([0, 0]), high=np.array([3, 1]), dtype=np.float16)
-
+        
+        obs_shape = self.reset().shape
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
-            low=0, high=1, shape=(5, 6), dtype=np.float16)
+            low=0, high=1, shape=obs_shape, dtype=np.float16)
 
     def _next_observation(self):
         # Get the stock data points for the last 5 days and scale to between 0-1
         frame = np.array([
-            #self.df.loc[self.current_step: self.current_step +
-                        #5, 'Open'].values / MAX_SHARE_PRICE,
-            #self.df.loc[self.current_step: self.current_step +
-                        #5, 'High'].values / MAX_SHARE_PRICE,
-            #self.df.loc[self.current_step: self.current_step +
-                        #5, 'Low'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step-5:self.current_step, 'ma60'].values / MAX_SHARE_PRICE, 
-            self.df.loc[self.current_step-5:self.current_step, 'ma5'].values / MAX_SHARE_PRICE, 
-            self.df.loc[self.current_step-5: self.current_step +
-                        5-5, 'Close'].values / MAX_SHARE_PRICE,
-            self.df.loc[self.current_step-5: self.current_step +
-                        5-5, 'Volume'].values / MAX_NUM_SHARES,
+            self.df.loc[self.current_step: self.current_step +
+                        5, 'Open'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step +
+                        5, 'High'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step +
+                        5, 'Low'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step:self.current_step+5, 'ma60'].values / MAX_SHARE_PRICE, 
+            self.df.loc[self.current_step:self.current_step+5, 'ma5'].values / MAX_SHARE_PRICE, 
+            self.df.loc[self.current_step: self.current_step+5, 'Close'].values / MAX_SHARE_PRICE,
+            self.df.loc[self.current_step: self.current_step+5, 'Volume'].values / MAX_NUM_SHARES,
         ])
         #print(frame, self.current_step)
+        #assert frame.shape == (4, 6)
 
         # Append additional data and scale each value to between 0-1
         obs = np.append(frame, [[
@@ -65,7 +65,6 @@ class StockTradingEnv(gym.Env):
             self.total_shares_sold / MAX_NUM_SHARES,
             self.total_sales_value / (MAX_NUM_SHARES * MAX_SHARE_PRICE),
         ]], axis=0)
-        #obs = frame
 
         return obs
 
@@ -111,13 +110,15 @@ class StockTradingEnv(gym.Env):
 
         self.current_step += 1
 
-        if self.current_step > len(self.df.loc[:, 'Open'].values) - 6 + 5:
-            self.current_step = 0 + 5
+        if self.current_step >= len(self.df) - 5:
+            self.current_step = 0 
 
         delay_modifier = (self.current_step / MAX_STEPS)
 
         reward = self.balance * delay_modifier
         done = self.net_worth <= 0
+        #if not done:
+            #done = self.current_step >= len(self.df) - 6
         
         obs = self._next_observation()
 
@@ -126,7 +127,7 @@ class StockTradingEnv(gym.Env):
     def reset(self):
         # Reset the state of the environment to an initial state
         self.balance = INITIAL_ACCOUNT_BALANCE  #余额
-        self.net_worth = INITIAL_ACCOUNT_BALANCE    #净值
+        self.net_worth = INITIAL_ACCOUNT_BALANCE    #净值( 总值)
         self.max_net_worth = INITIAL_ACCOUNT_BALANCE    #最大净值
         self.shares_held = 0    #持有股份
         self.cost_basis = 0
@@ -134,8 +135,9 @@ class StockTradingEnv(gym.Env):
         self.total_sales_value = 0
 
         # Set the current step to a random point within the data frame
+        self.current_step = 0
         self.current_step = random.randint(
-            0, len(self.df.loc[:, 'Open'].values) - 6) + 5
+                    0, len(self.df.loc[:, 'Open'].values) - 6)        
 
         return self._next_observation()
 
@@ -173,10 +175,10 @@ def test():
     
     #model = PPO2(MlpPolicy, env, verbose=1)
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=20000*5)
+    model.learn(total_timesteps=20000*10)
     
     obs = env.reset()
-    for i in range(2000):
+    for i in range(20000):
         action, _states = model.predict(obs)
         obs, rewards, done, info = env.step(action)
         env.render()

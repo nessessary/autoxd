@@ -131,7 +131,7 @@ class BackTestPolicy:
                 if self.mode&self.enum.hisdat_mode == self.enum.hisdat_mode:
                     if self.mode & self.enum.hisdat_five_mode == self.enum.hisdat_five_mode:
                         #按5分钟遍历
-                        for t in  range(575, 900, 5):
+                        for t in  list(range(575, 695, 5)) +  list(range(780, 905, 5)):
                             strategy.data.set_code(code, day, t)
                             strategy.Run()
                     else:
