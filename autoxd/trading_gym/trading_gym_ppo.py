@@ -1,3 +1,4 @@
+import os
 import random
 import json
 import gym
@@ -6,6 +7,7 @@ import pandas as pd
 import numpy as np
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import CheckpointCallback, EveryNTimesteps
 import datetime as dt
 from autoxd import stock, agl
 from autoxd.pinyin import stock_pinyin3 as jx
@@ -130,7 +132,7 @@ class StockTradingEnv(gym.Env):
         self.net_worth = INITIAL_ACCOUNT_BALANCE    #净值( 总值)
         self.max_net_worth = INITIAL_ACCOUNT_BALANCE    #最大净值
         self.shares_held = 0    #持有股份
-        self.cost_basis = 0
+        self.cost_basis = 0     #持股平均成本
         self.total_shares_sold = 0
         self.total_sales_value = 0
 
@@ -144,6 +146,9 @@ class StockTradingEnv(gym.Env):
     def render(self, mode='human', close=False):
         # Render the environment to the screen
         profit = self.net_worth - INITIAL_ACCOUNT_BALANCE   #盈利
+        
+        if self.current_step != 3168:
+            return
 
         print(f'Step: {self.current_step}')
         print(f'Balance: {self.balance}')
@@ -160,7 +165,7 @@ def test():
     #df = pd.read_csv('./data/AAPL.csv')
     #df = df.sort_values('Date')
     
-    df = stock.getHisdatDf(code=jx.THS同花顺)
+    df = stock.getHisdatDf(code=jx.THS同花顺, method='mysql')
     df.columns = ['High', 'Low','Open', 'Close', 'Volume']
     df['Date'] = df.index
     
@@ -169,19 +174,41 @@ def test():
     df['ma60'] = stock.MA(df['Close'], 60)
     df = df[60:]
     df.index = range(len(df))   #  step id == index id
+    print(len(df))
     
     # The algorithms require a vectorized environment to run
     env = DummyVecEnv([lambda: StockTradingEnv(df)])
     
     #model = PPO2(MlpPolicy, env, verbose=1)
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=20000*10)
+    # 创建一个CheckpointCallback，用于保存最优模型
+    checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='./logs/')    
+    best_model_path = os.path.join(checkpoint_callback.save_path, 'best_model')
+    if not os.path.exists(best_model_path):
+        model.learn(total_timesteps=20000*10, callback=checkpoint_callback, tb_log_name="ppo_stocktrade")
+        #model.learn(total_timesteps=20000)
+        model.save(best_model_path)
+    if os.path.exists(best_model_path):
+        model = PPO.load(best_model_path, env=env)
     
     obs = env.reset()
     for i in range(20000):
         action, _states = model.predict(obs)
         obs, rewards, done, info = env.step(action)
+        
         env.render()
+
+    #for i in range(10):
+        #while True:
+            #action, _states = model.predict(obs)
+            ##print(obs, action)
+            #obs, rewards, dones, info = env.step(action)
+            #if dones:
+                #env.render()
+                #break
+    
+    #output = env.get_output(visualize=True)
+    #output.to_csv(f'{env.title}_输出结果.csv', header=True, encoding='utf-8')
 
 if __name__ == "__main__":
     test()
