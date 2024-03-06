@@ -217,6 +217,14 @@ def createStockDb():
     if db == 0:
         db = StockMysql()
     return db
+
+def check_mysql():
+    try:
+        createStockDb()
+        return True
+    except:
+        return False
+    
 def get_codes():
     return createStockDb().getGupiao()
 

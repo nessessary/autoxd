@@ -51,6 +51,4 @@ autoxd 回测框架
 ```
    ![image](pics/autoxd_backtest_result.png)<br>
 
-   ![image](pics/autoxd_backtest_result_kline.png)<br>
-
 
