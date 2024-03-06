@@ -165,7 +165,10 @@ def test():
     #df = pd.read_csv('./data/AAPL.csv')
     #df = df.sort_values('Date')
     
-    df = stock.getHisdatDf(code=jx.THS同花顺, method='mysql')
+    method = 'mysql'
+    if not stock.mysql.check_mysql():
+        method = 'tdx'
+    df = stock.getHisdatDf(code=jx.THS同花顺, method=method)
     df.columns = ['High', 'Low','Open', 'Close', 'Volume']
     df['Date'] = df.index
     
@@ -183,9 +186,9 @@ def test():
     model = PPO("MlpPolicy", env, verbose=1)
     # 创建一个CheckpointCallback，用于保存最优模型
     checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='./logs/')    
-    best_model_path = os.path.join(checkpoint_callback.save_path, 'best_model')
+    best_model_path = os.path.join(checkpoint_callback.save_path, 'best_model.zip')
     if not os.path.exists(best_model_path):
-        model.learn(total_timesteps=20000*10, callback=checkpoint_callback, tb_log_name="ppo_stocktrade")
+        model.learn(total_timesteps=20000*20, callback=checkpoint_callback, tb_log_name="ppo_stocktrade")
         #model.learn(total_timesteps=20000)
         model.save(best_model_path)
     if os.path.exists(best_model_path):
