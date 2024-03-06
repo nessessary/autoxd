@@ -49,6 +49,6 @@ autoxd 回测框架
 ```
 	python boll_fencang.py
 ```
-   ![image](pics/autoxd_backtest_result.png)<br>
+   ![image](pics/autoxd_backtest_result.jpg)<br>
 
 
