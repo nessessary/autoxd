@@ -40,6 +40,8 @@ class StockTradingEnv(gym.Env):
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
             low=0, high=1, shape=obs_shape, dtype=np.float16)
+        
+        self.is_training = True
 
     def _next_observation(self):
         # Get the stock data points for the last 5 days and scale to between 0-1
@@ -119,8 +121,8 @@ class StockTradingEnv(gym.Env):
 
         reward = self.balance * delay_modifier
         done = self.net_worth <= 0
-        #if not done:
-            #done = self.current_step >= len(self.df) - 6
+        if not done and not self.is_training:
+            done = self.current_step >= len(self.df) - 6
         
         obs = self._next_observation()
 
@@ -138,8 +140,11 @@ class StockTradingEnv(gym.Env):
 
         # Set the current step to a random point within the data frame
         self.current_step = 0
-        self.current_step = random.randint(
-                    0, len(self.df.loc[:, 'Open'].values) - 6)        
+        if self.is_training:
+            
+            self.current_step = random.randint(
+                    0, len(self.df.loc[:, 'Open'].values) - 6)
+        #print(self.current_step)
 
         return self._next_observation()
 
@@ -147,9 +152,6 @@ class StockTradingEnv(gym.Env):
         # Render the environment to the screen
         profit = self.net_worth - INITIAL_ACCOUNT_BALANCE   #盈利
         
-        if self.current_step != 3168:
-            return
-
         print(f'Step: {self.current_step}')
         print(f'Balance: {self.balance}')
         print(
@@ -195,20 +197,18 @@ def test():
         model = PPO.load(best_model_path, env=env)
     
     obs = env.reset()
-    for i in range(20000):
-        action, _states = model.predict(obs)
-        obs, rewards, done, info = env.step(action)
-        
-        env.render()
+    #for i in range(20000):
+        #action, _states = model.predict(obs)
+        #obs, rewards, done, info = env.step(action)
+        #env.render()
 
-    #for i in range(10):
-        #while True:
-            #action, _states = model.predict(obs)
-            ##print(obs, action)
-            #obs, rewards, dones, info = env.step(action)
-            #if dones:
-                #env.render()
-                #break
+    for i in range(10):
+        while True:
+            action, _states = model.predict(obs)
+            obs, rewards, dones, info = env.step(action)
+            if dones:
+                env.render()
+                break
     
     #output = env.get_output(visualize=True)
     #output.to_csv(f'{env.title}_输出结果.csv', header=True, encoding='utf-8')

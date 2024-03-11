@@ -17,6 +17,7 @@ def convert(view_width, view_height, df):
     """转换值到屏幕点， pyglet的视图是以左下角为0,0
     return: list df的每一列 [[x,y],...]
     """
+    df = df[['boll_up', 'boll_lower', 'boll_mid', 'c']]
     #先把df按最大最小归一化
     max_value = df.values.max()
     min_value = df.values.min()
