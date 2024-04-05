@@ -82,8 +82,8 @@ class ATgymEnv(gym.Env):
         if action > 0:#buy
             if acount_mgr.can_use_money() > num * price:
                 self.account._buy(code, price, num, str(self.df.index[self.index]))
-                #reward =  acount_mgr.yin_kui() * 0.95 - price
-                reward = (row['boll_mid'] - price) / row['boll_mid'] 
+                reward =  (acount_mgr.yin_kui() - price) / (price * 2)
+                #reward = (row['boll_mid'] - price) / row['boll_mid'] 
                 self.df['trade'].iat[self.index] = 1
             #满仓扣分
             else:
@@ -94,8 +94,8 @@ class ATgymEnv(gym.Env):
                 self.account._sell(code, price, num, str(self.df.index[self.index]))
                 self.df['trade'].iat[self.index] = -1
                 #reward = (acount_mgr.last_chengjiao_price() - price) / price
-                reward = (acount_mgr.yin_kui() - price) / (price * 2)
-                reward = (price - row['boll_mid']) / row['boll_mid'] 
+                reward = (price - acount_mgr.yin_kui()) / (price * 2)
+                #reward = (price - row['boll_mid']) / row['boll_mid'] 
             else:
                 reward = -1
                 
@@ -265,7 +265,7 @@ def test():
     #model = DQN('MlpPolicy', env, verbose=1)
     #model.learn(total_timesteps=20000)
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=20000*1)
+    model.learn(total_timesteps=20000*3)
     if 0:
         # 创建一个CheckpointCallback，用于保存最优模型
         checkpoint_callback = CheckpointCallback(save_freq=1000, save_path='./logs/')    
@@ -285,17 +285,17 @@ def test():
     while True:
         
         action,_ = model.predict(observation, deterministic=True)
-        print('action=', action)
+        #print('action=', action)
         observation, reward, done, info = env.step(action)
         if env.index >= len(env.df) - 7:
             done = True
-        try:
-            env.render()
-            time.sleep(.05)
-        except:
-            pass
+        #try:
+            #env.render()
+            #time.sleep(.05)
+        #except:
+            #pass
         
-        print('%d,%d' % (action, reward))
+        print('%d,%f' % (action, reward))
         reward_total += reward
         if done:
             print('reward_total=', reward_total)
