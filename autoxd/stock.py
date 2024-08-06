@@ -141,7 +141,7 @@ def getFiveFromRedis(code):
 
 def is_livetime():
     c = agl.getCurTime()
-    start = agl.CurDay() + ' 9:20:00'
+    start = agl.CurDay() + ' 9:15:00'
     end = agl.CurDay() +' 15:00:00'
     c = time.strptime(c, '%Y-%m-%d %H:%M:%S')
     end = time.strptime(end, '%Y-%m-%d %H:%M:%S')
