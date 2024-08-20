@@ -6,7 +6,10 @@
 
 #to define key is F4
 from __future__ import print_function
-import MySQLdb, struct
+try:
+    import MySQLdb, struct
+except:
+    pass
 import pandas.io.sql as pdsql
 import pandas as pd
 import numpy as np
