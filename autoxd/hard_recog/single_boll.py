@@ -261,7 +261,7 @@ def main():
     pl = publish.Publish(is_clear_path=True)
 
     #codes = [jx.NDSD宁德时代, jx.PAYH平安银行]
-    codes = stock.get_codes(stock.myenum.randn, n=100)
+    codes = stock.get_codes(stock.myenum.randn, n=10)
     #codes = codes[:10]
     pl.myimgs += "<table>"
     for code in codes:
