@@ -18,6 +18,14 @@ except:
 def get_custom_codes():
     """获取通达信自选股导出"""
     fname = r'I:\MyApp\new_zxjt_ctp\T0002\export\自选股%s.txt'
+    if not os.path.exists(fname):
+        # 手工输入自定义
+        codes = [
+            jx.XSKJ兴森科技,
+            jx.YGDY阳光电源,
+        ]
+        return codes
+    
     #获取最新文件
     dir_path = os.path.dirname(fname)
     #获取目录的文件名列表， 降序

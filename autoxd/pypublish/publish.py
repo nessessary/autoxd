@@ -58,7 +58,7 @@ class Publish:
         self.explicit = explicit
         #获取模板html
         self.t_html = ''
-        f = open(os.path.dirname(__file__)+'/test.html', 'r')
+        f = open(os.path.abspath(os.path.dirname(__file__))+'/test.html', 'r')
         self.t_html = f.read()
         if agl.IsRunAtCmd() or sys.version>'3':
             self.t_html = self.t_html.replace('utf-8', 'gb2312')
