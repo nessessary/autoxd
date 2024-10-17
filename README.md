@@ -18,6 +18,7 @@ autoxd 回测框架
 1. redis 默认使用(推荐)
 2. 支持各平台py3, py2已不维护； 开发平台为win， 其它平台测试比较少， 可能有轻微的问题.
 3. 推荐conda env python=3.7.4
+4. 机器学习相关包不在requirements里安装， 需要的手工安装
 
 #### 安装
   * 安装Anaconda
@@ -25,9 +26,10 @@ autoxd 回测框架
   ```
   git clone https://github.com/nessessary/autoxd.git
   cd autoxd
+  conda install -c conda-forge ta-lib -y
   pip install -r requirements.txt
   pip install git+https://github.com/hanxiaomax/pyh.git
-  python setup.py install
+  pip install -e .
   ```
 
 #### 使用
