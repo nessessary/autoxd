@@ -4,7 +4,11 @@ from autoxd import warp_pytdx as tdx
 from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd import stock, myredis, agl
 from autoxd import sign_observation as so
-from win32com import client
+try:
+    from win32com import client
+    g_have_speaker = True
+except:
+    g_have_speaker = False
 import time,os
 #from autoxd import profile
 import pandas as pd
@@ -43,7 +47,8 @@ def get_custom_codes():
 
 class LiveHq(object):
     def __init__(self):
-        self.speaker = client.Dispatch('SAPI.SPVOICE')
+        if g_have_detect:
+            self.speaker = client.Dispatch('SAPI.SPVOICE')
         self.codes = get_custom_codes()
         self.dict_speaked = {}# code, price
         
@@ -52,8 +57,8 @@ class LiveHq(object):
             self.d[code] = tdx.getHisdat(code)
         
     def speak(self, s):
-    
-        self.speaker.Speak(s)
+        if g_have_speaker:
+            self.speaker.Speak(s)
 
 
     def run(self, df, code):

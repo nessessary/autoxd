@@ -12,6 +12,7 @@ else:
     from autoxd import stock_pinyin as jx
 import pandas as pd
 import time
+from autoxd import stock
 
 g_api = None
 def create():
@@ -28,7 +29,6 @@ def create():
 
 def getFive(code, count=800):
     """return: df"""
-    from autoxd import stock
     api = create()
     market = stock.IsShangHai(code)
     for i in range(3):
@@ -53,7 +53,6 @@ def DataIsValid(df:pd.DataFrame):
     return True
 
 def getHisdat(code):
-    from autoxd import stock
     api = create()
     market = stock.IsShangHai(code)
     for i in range(3):
@@ -72,7 +71,7 @@ def getHisdat(code):
 
     
 def test():
-    print(getFive(jx.HWWH))
+    print(getFive(jx.HWDQ禾望电气))
     
 #test()
 
