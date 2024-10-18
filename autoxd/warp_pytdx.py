@@ -19,12 +19,10 @@ def create():
     global g_api;
     if g_api == None:
         g_api = tdx()
-        ip = '202.130.235.189'
-        #ip = '140.207.241.60'
+        #from connect.cfg
+        ip = '123.125.108.219'
         b = g_api.connect(ip, 7709)
-        if not b:
-            #换一个ip， list见通达信目录的connect.cfg
-            g_api.connect('119.147.212.81', 7709)
+        assert b
     return g_api
 
 def getFive(code, count=800):
@@ -73,5 +71,7 @@ def getHisdat(code):
 def test():
     print(getFive(jx.HWDQ禾望电气))
     
-#test()
+if __name__ == "__main__":
+    
+    test()
 
