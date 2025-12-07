@@ -27,7 +27,7 @@ def get_hq(code):
     #print(df[[df.columns[2], df.columns[3]]])
     print(df.loc[0, df.columns[2]], df.loc[0, df.columns[3]], end=" ")
 
-for c in ['哔哩哔哩-w', '兴森科技', '第四范式']:
+for c in [ '兴森科技','华正新材']:
     get_hq(c)
     
     

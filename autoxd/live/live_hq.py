@@ -26,7 +26,6 @@ def get_custom_codes():
         # 手工输入自定义
         codes = [
             jx.XSKJ兴森科技,
-            jx.YGDY阳光电源,
         ]
         return codes
     
@@ -47,7 +46,7 @@ def get_custom_codes():
 
 class LiveHq(object):
     def __init__(self):
-        if g_have_detect:
+        if g_have_speaker:
             self.speaker = client.Dispatch('SAPI.SPVOICE')
         self.codes = get_custom_codes()
         self.dict_speaked = {}# code, price
