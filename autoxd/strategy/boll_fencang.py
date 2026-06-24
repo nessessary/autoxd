@@ -1,15 +1,11 @@
 #-*- coding:utf-8 -*-
 
 """boll分仓, 择时策略"""
-import sys
 import numpy as np
 import pandas as pd, pylab as pl
 from autoxd.strategy import boll_pramid
 from autoxd import backtest_policy, stock, myenum, agl, account as ac, help, myredis, sign_observation as so, ui
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 import os,warnings
 from autoxd.stock import DataSources
 
@@ -31,12 +27,8 @@ class BollFenCangKline(boll_pramid.Strategy_Boll_Pre):
                             #跌幅， 当前资金占比 
         self.base_four = [-0.1, 0.1]		#第一次买卖的技术指标阀值
         self.first_price = 0
-        if sys.version > '3':
-            for k, v in kwargs.items():
-                setattr(self, k, v)
-        else:
-            for k, v in kwargs.iteritems():
-                setattr(self, k, v)            
+        for k, v in kwargs.items():
+            setattr(self, k, v)            
     def OnFirstRun(self):
         self.key_sell_avg_price = 'BollFenCangKline.SellAvgPrice'+ str(os.getpid())
         self.key_sell_num = 'BollFenCangKline.SellNum'+ str(os.getpid())

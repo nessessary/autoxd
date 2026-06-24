@@ -3,13 +3,8 @@
 """pytdx test
 通达信网络在8：45-9：05可能访问不了
 """
-from __future__ import print_function
-import sys
 from pytdx.hq import TdxHq_API as tdx
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 import pandas as pd
 import time
 from autoxd import stock

@@ -5,7 +5,6 @@
 # mail: nessessary@qq.com
 
 #to define key is F4
-from __future__ import print_function
 try:
     import MySQLdb, struct
 except:

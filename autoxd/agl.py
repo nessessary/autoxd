@@ -4,16 +4,12 @@
 # found in the LICENSE file.
 # mail: nessessary@qq.com
 
-from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
 from autoxd import help,myenum,myredis
 import sys,pickle,os,random,shutil, urllib, dateutil, logging, charade, zipfile, re, math,time, datetime,dateutil,gzip
-if sys.version > '3':
-    import _pickle as cPickle
-else:
-    import cPickle
+import _pickle as cPickle
 from PIL import Image
 from sklearn.utils import shuffle
 import traceback
@@ -745,7 +741,7 @@ def genPwd(num=128):
     print(s)
 def genStrMem(n=100):
     s = ''
-    for i in xrange(n):
+    for i in range(n):
         s += " "
     return s
 #----------------------------------------------------------------------

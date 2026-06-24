@@ -58,11 +58,8 @@ class Publish:
         self.explicit = explicit
         #获取模板html
         self.t_html = ''
-        f = open(os.path.abspath(os.path.dirname(__file__))+'/test.html', 'r')
-        self.t_html = f.read()
-        if agl.IsRunAtCmd() or sys.version>'3':
-            self.t_html = self.t_html.replace('utf-8', 'gb2312')
-        f.close()
+        with open(os.path.abspath(os.path.dirname(__file__))+'/test.html', 'r', encoding='utf-8') as f:
+            self.t_html = f.read()
         
         self.name = name 
         self.fig_num = 1
@@ -73,10 +70,7 @@ class Publish:
             os.mkdir("html")
         #重定向输出
         self.redirect_fname = 'html/log'+str(os.getpid())+'.txt'
-        if self.platform_id == 0:
-            self.logfile = open(self.redirect_fname, "w")
-        else:
-            self.logfile = codecs.open(self.redirect_fname,'w', encoding='utf_16')
+        self.logfile = open(self.redirect_fname, "w", encoding='utf-8')
         self.oldstdout = sys.stdout
         sys.stdout = self.logfile
         
@@ -99,12 +93,8 @@ class Publish:
         
         self.logfile.close()
         sys.stdout = self.oldstdout
-        if self.platform_id == 0:
-            f = open(self.redirect_fname, "r")
-        else:
-            f = codecs.open(self.redirect_fname, 'r', encoding='utf_16')
-        output = f.read()
-        f.close()
+        with open(self.redirect_fname, "r", encoding='utf-8') as f:
+            output = f.read()
         
         self.AddTitle(self.name)
         self.AddImg()
@@ -116,12 +106,8 @@ class Publish:
         
         #写入html
         fname = self.path+self.name+str(os.getpid())+'.html'
-        if self.platform_id == 0:
-            f = open(fname,'w', errors='ignore')
-        else:
-            f = codecs.open(fname, 'w', encoding='utf_16', errors='ignore')
-        f.write(self.t_html)
-        f.close()
+        with open(fname, 'w', encoding='utf-8') as f:
+            f.write(self.t_html)
         
         #打开html
         if self.is_run_shell:

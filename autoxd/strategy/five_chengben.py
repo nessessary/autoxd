@@ -5,16 +5,11 @@
 # mail: nessessary@qq.com
 
 
-"""基于成本交易
-"""
-from __future__ import print_function
+"""基于成本交易"""
 import sys
 from autoxd.strategy import boll_fencang, pd_help
 from autoxd import myredis, agl, help, stock, backtest_policy, ui,account as ac, sign_observation as so
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd.backtest_runner import BackTestPolicy
 #import tushare as ts
 import datetime
@@ -33,12 +28,8 @@ class Strategy_Boll_Pre(boll_fencang.BollFenCangKline):
         self.trade_four=[-0.04, 0.04]
         self.trade_adx = 40
         #必须实现
-        if sys.version > '3':
-            for k, v in kwargs.items():
-                setattr(self, k, v)
-        else:
-            for k, v in kwargs.iteritems():
-                setattr(self, k, v)        
+        for k, v in kwargs.items():
+            setattr(self, k, v)        
         #系统开关
         self.is_tick_report = False     #显示中间过程
     def AllowCode(self, code):

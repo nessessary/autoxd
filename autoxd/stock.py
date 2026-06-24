@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 # mail: nessessary@qq.com
-from __future__ import print_function
 import os,sys
 from autoxd import help,agl,ui,myenum,myredis
 from autoxd.pinyin import stock_pinyin3 as jx
@@ -272,7 +271,7 @@ class LiveData:
         l = len(codes)
         a = []
         n = 6
-        for i in xrange(l/6):
+        for i in range(l//6):
             a.append(codes[n*i:n*(i+1)])
         return np.array(a)
     def getFrameHwnd(self):
@@ -543,7 +542,7 @@ def calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs):
         if 0: df_fenshi = pd.DataFrame
         #对于分时， 判断时间范围内的nan， 并用前一个值填充
         nonan_row = None
-        for i in xrange(len(df_fenshi)):
+        for i in range(len(df_fenshi)):
             row = df_fenshi.iloc[i]
             cur_t = row.name.time()
             if (cur_t >= t[0] and cur_t<= t[1]) or (cur_t>t[2] and cur_t <t[3]):

@@ -19,10 +19,7 @@ import pylab as pl
 import pandas as pd
 import copy,unittest, datetime
 #from autoxd import stock
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 from autoxd import agl
 
 #动态设置中文字体

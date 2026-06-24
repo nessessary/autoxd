@@ -21,21 +21,21 @@ except:
 
 def get_custom_codes():
     """获取通达信自选股导出"""
-    fname = r'I:\MyApp\new_zxjt_ctp\T0002\export\自选股%s.txt'
-    if not os.path.exists(fname):
-        # 手工输入自定义
-        codes = [
-            jx.XSKJ兴森科技,
-        ]
-        return codes
+    fname = r'I:\MyApp\zd_zxjtzq\T0002\export\自选股%s.txt'
     
     #获取最新文件
     dir_path = os.path.dirname(fname)
     #获取目录的文件名列表， 降序
     files = os.listdir(dir_path)
+    if len(files) == 0:
+        # 手工输入自定义
+        codes = [
+            jx.XSKJ兴森科技,
+        ]
+        return codes    
     files:list
     files.sort(reverse=True)
-    filted_files = list(filter(lambda x: x.find('自选股')>=0, files))
+    filted_files = list(filter(lambda x: x.find('自选股')>=0 and x.endswith('.txt'), files))
     fname = os.path.join(dir_path , filted_files[0])
     
     df = pd.read_csv(fname, sep='\t', encoding='gbk')

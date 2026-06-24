@@ -22,12 +22,9 @@ import sys, copy, traceback
 import help
 import agl
 import live_policy
-reload(live_policy)
 from strategy import qjjy
-reload(qjjy)
 
 from strategy import boll_pramid
-reload(boll_pramid)
 
 def StartDebug():
     import wingdbstub

@@ -11,13 +11,9 @@
 2. 回撤到均线时就要回补, 用大的量来弥补
 3. 超过限额就不要做波动了
 """
-import sys
 from autoxd.strategy import pd_help, qjjy
 from autoxd import myredis, agl, help, stock, backtest_policy, ui, account as ac, sign_observation as so
-if sys.version > '3':
-    from autoxd.pinyin import stock_pinyin3 as jx
-else:
-    from autoxd import stock_pinyin as jx
+from autoxd.pinyin import stock_pinyin3 as jx
 
 from autoxd.backtest_runner import BackTestPolicy
 import datetime

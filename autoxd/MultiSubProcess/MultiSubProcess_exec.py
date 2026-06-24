@@ -54,14 +54,8 @@ def main(args):
     s += '.%s(%s)'%(v[1:-1])
     #print(s)
     
-    if sys.version > '3':
-        from autoxd.pinyin.myexec import myexec
-        r = myexec(s)
-        #_locals = locals()
-        #r = exec(s, globals(), _locals)
-        #r = _locals['r']        
-    else:
-        exec(s)
+    from autoxd.pinyin.myexec import myexec
+    r = myexec(s)
     
     #print(type(r))
     #print('result=',r)
