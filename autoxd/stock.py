@@ -1591,8 +1591,8 @@ def PE(shizhi, jll):
 
 def calc_CAGR(jll:pd.Series):
     """计算复合增长率"""
-    jll = jll.astype(float)
-    if np.isnan(jll.iloc[-1].var()):
+    jll = pd.to_numeric(jll, errors='coerce')
+    if np.isnan(jll.iloc[-1]):
         return np.nan    
     #print(jll)
     #计算当前行比上一行增长的百分比

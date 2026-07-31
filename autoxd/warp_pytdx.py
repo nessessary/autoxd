@@ -10,14 +10,38 @@ import time
 from autoxd import stock
 
 g_api = None
+
+# 可用的公共行情服务器列表
+HQ_HOSTS = [
+    ('60.191.117.167', 7709),
+    ('115.238.56.198', 7709),
+    ('218.75.126.9', 7709),
+]
+
+def _find_working_host(hosts, test_code='603063', timeout=5):
+    """从候选服务器中挑一个能返回有效数据的"""
+    market = stock.IsShangHai(test_code)
+    for ip, port in hosts:
+        try:
+            api = tdx()
+            api.connect(ip, port, time_out=timeout)
+            data = api.get_security_bars(category=0, market=market,
+                                         code=test_code, start=0, count=10)
+            if data:
+                return ip, port
+        except Exception:
+            continue
+    return None
+
 def create():
-    global g_api;
-    if g_api == None:
+    global g_api
+    if g_api is None:
+        addr = _find_working_host(HQ_HOSTS)
+        if addr is None:
+            raise ConnectionError("no available tdx hq host")
+        ip, port = addr
         g_api = tdx()
-        #from connect.cfg
-        ip = '123.125.108.219'
-        b = g_api.connect(ip, 7709)
-        assert b
+        g_api.connect(ip, port)
     return g_api
 
 def getFive(code, count=800):
