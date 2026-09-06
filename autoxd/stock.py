@@ -295,10 +295,17 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
         df_hisdat = myredis.get_obj(code)
         if df_hisdat is None:
             continue
-        df_hisdat = df_hisdat.loc[date:end_day]
+        df_hisdat = df_hisdat.sort_index()
+        start_idx = df_hisdat.index.searchsorted(pd.Timestamp(date))
+        end_idx = df_hisdat.index.searchsorted(pd.Timestamp(end_day), side='right')
+        df_hisdat = df_hisdat.iloc[start_idx:end_idx]
         if len(df_hisdat) == 0:
             continue
         ltgb = ltgbs[i]
+        # 过滤close异常值：去除close为0、负数或NaN的异常数据
+        df_hisdat = df_hisdat[df_hisdat['c'] > 0]
+        if len(df_hisdat) == 0:
+            continue
         df_hisdat['shizhi'] = ltgb * df_hisdat['c']
         first_shizhi = df_hisdat.dropna().iloc[0]['shizhi']	
         if(first_shizhi < 0.1):
@@ -310,8 +317,15 @@ def calc_bankuai_zhishu(codes, date, end_day, ltgbs):
         df_hisdat = df_hisdat.fillna(0)
         if len(df.columns) == 0:
             df['shizhi'] = df_hisdat['shizhi']
-            #基准市值
-            df['jizhun'] = first_shizhi
+            #基准市值 - 只在有数据的日期计入基准，避免新股上市时产生凸起
+            df_zero = copy.deepcopy(df['shizhi'])
+            df_zero[:] = 0
+            df_zero = df_zero + df_hisdat['shizhi']
+            df['jizhun'] = copy.deepcopy(df['shizhi'])
+            df['jizhun'][:] = first_shizhi
+            df['jizhun'][np.isnan(df_zero)] = 0
+            df_zero = df_zero.fillna(0)
+            df['shizhi'] = df['shizhi'].fillna(0)
         else:
             assert(first_shizhi > 0)
             df['shizhi'] = df['shizhi'].fillna(0)
@@ -563,6 +577,10 @@ def calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs):
         if len(df_fenshi) == 0:
             continue
         ltgb = ltgbs[i]
+        # 过滤分时价格异常值：去除价格为0、负数或NaN的异常数据
+        df_fenshi = df_fenshi[df_fenshi['p'] > 0]
+        if len(df_fenshi) == 0:
+            continue
         df_fenshi['shizhi'] = ltgb * df_fenshi['p']
         first_shizhi = df_fenshi.dropna().iloc[0]['shizhi']	
         if first_shizhi<=0:
@@ -575,8 +593,15 @@ def calc_bankuai_fenshi_zhishu(codes, date, end_day, ltgbs):
         #df_fenshi = df_fenshi[:-30]
         if len(df.columns) == 0:
             df['shizhi'] = df_fenshi['shizhi']
-            #基准市值
-            df['jizhun'] = first_shizhi
+            #基准市值 - 只在有数据的日期计入基准，避免新股上市时产生凸起
+            df_zero = copy.deepcopy(df['shizhi'])
+            df_zero[:] = 0
+            df_zero = df_zero + df_fenshi['shizhi']
+            df['jizhun'] = copy.deepcopy(df['shizhi'])
+            df['jizhun'][:] = first_shizhi
+            df['jizhun'][np.isnan(df_zero)] = 0
+            df_zero = df_zero.fillna(0)
+            df['shizhi'] = df['shizhi'].fillna(0)
         else:
             assert(first_shizhi > 0)
             df['shizhi'] = df['shizhi'].fillna(0)
@@ -851,7 +876,9 @@ def getFiveHisdatDf(code, start_day='', end_day='', method='tdx', path='', is_Tr
 def IsShangHai(code):
     """判断股票代码属于那个市场
     code: 个股代码"""
-    if code[:3] == '688':
+    if code[:3] == '688' or code[:3] == '689':
+        return 1
+    if code == '999999':
         return 1
     if code[0] == '6' and code[1] == '0':
         return 1

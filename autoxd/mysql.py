@@ -175,6 +175,21 @@ def putHisdatRow(code, date, o,h,l,c,v):
             (code, date, o, h, l, c, v)
     db.ExecSql(sql)
     db.ExecSql('commit')
+def putHisdatRows(rows):
+    """批量插入kline, 一次commit
+    rows: list of (code, date, o, h, l, c, v)"""
+    db = createStockDb()
+    sql = "insert into kline (stock_code,kline_time,kline_open,kline_high,kline_low,kline_close,kline_volume) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+    db.cursor.executemany(sql, rows)
+    db.conn.commit()
+def getLastHisdatDay(code):
+    """获取该股票在kline表中的最后日期 return: str 'YYYY-MM-DD' or None"""
+    db = createStockDb()
+    db.cursor.execute("select max(kline_time) from kline where stock_code=%s", (code,))
+    row = db.cursor.fetchone()
+    if row and row[0]:
+        return str(row[0])
+    return None
 def putFundRow(row):
     cols = 'code,code_name,report_date,ranking,stock_symbol,stock_name,ratio,stock_num,market_value'
     rows = []

@@ -72,8 +72,13 @@ def DataIsValid(df:pd.DataFrame):
 def getHisdat(code):
     api = create()
     market = stock.IsShangHai(code)
+    #指数必须用get_index_bars, get_security_bars对指数返回损坏数据
+    is_index = code[:3] == '399' or code == '999999'
     for i in range(3):
-        data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
+        if is_index:
+            data = api.get_index_bars(category=9, market=market, code=code, start=0, count=800)
+        else:
+            data = api.get_security_bars(category=9, market=market, code=code, start=0, count=800)
         data = api.to_df(data)
         if DataIsValid(data):
             break
