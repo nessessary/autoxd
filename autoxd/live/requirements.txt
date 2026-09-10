@@ -1,0 +1,15 @@
+# live_hq + 形态识别蒸馏(shape_distill/yolo_infer) 运行依赖
+# 版本为当前开发环境实测可用的Anaconda环境版本, 仅供参考
+numpy==1.21.6
+pandas==1.3.5
+matplotlib==3.1.3
+scikit-learn==0.22.1
+torch==1.13.1+cu117     # cu117来源: pip install torch==1.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117; CPU版亦可
+opencv-python==4.2.0
+pyzmq==18.1.1
+Pillow==7.0.0
+pytdx
+redis==3.5.0
+pywin32                 # 语音播报, 可选, Linux下删除
+tqdm
+efinance
